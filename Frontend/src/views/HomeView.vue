@@ -1,5 +1,5 @@
 <template>
-  <Navbar/>
+  <HelloWorld/>
   <SignUp />
 </template>
 
@@ -8,13 +8,13 @@ import { defineComponent } from "vue";
 
 // Components
 import SignUp from "../components/SignUp.vue";
-import Navbar from "../components/Navbar.vue";
+import HelloWorld from "../components/HelloWorld.vue";
 export default defineComponent({
   name: "HomeView",
 
   components: {
     SignUp,
-    Navbar,
+    HelloWorld,
   },
 });
 </script>

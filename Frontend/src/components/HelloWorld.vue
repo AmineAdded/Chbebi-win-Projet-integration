@@ -19,7 +19,7 @@
 import logo from '../assets/logo.png'; // Importez l'image ici
 
 export default {
-  name: "Navbar",
+  name: "App",
   data() {
     return {
       logo: logo, // Utilisez l'image importée
