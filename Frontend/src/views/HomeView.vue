@@ -1,5 +1,6 @@
 <template>
   <Navbar />
+  <About />
   <Login />
   <SignUp />
   <Footer />
@@ -13,6 +14,7 @@ import Login from "../components/Login.vue";
 import SignUp from "../components/SignUp.vue";
 import Navbar from "../components/Navbar.vue";
 import Footer from "../components/Footer.vue";
+import About from "../components/About.vue";
 export default defineComponent({
   name: "HomeView",
 
@@ -21,6 +23,7 @@ export default defineComponent({
     SignUp,
     Navbar,
     Footer,
+    About,
   },
 });
 </script>
