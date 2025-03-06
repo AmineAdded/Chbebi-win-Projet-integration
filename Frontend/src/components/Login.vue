@@ -10,17 +10,6 @@
 
             <v-form style="width: 420px;position: relative; left: 30px;">
                 <v-card class="mb-4 widthField" variant="outlined" rounded="lg">
-                    <v-text-field v-model="fullName" :placeholder="'اسمك الكامل'" variant="plain" density="comfortable"
-                        hide-details dir="rtl">
-                        <template v-slot:append-inner>
-                            <v-avatar color="grey" size="32" class="icon">
-                                <v-icon size="20" color="white">mdi-account</v-icon>
-                            </v-avatar>
-                        </template>
-                    </v-text-field>
-                </v-card>
-
-                <v-card class="mb-4 widthField" variant="outlined" rounded="lg">
                     <v-text-field v-model="email" :placeholder="'بريدك الإلكتروني'" variant="plain"
                         density="comfortable" hide-details class="widthFild" dir="rtl">
                         <template v-slot:append-inner>
@@ -50,31 +39,9 @@
                     </v-text-field>
                 </v-card>
 
-                <v-card class="mb-6 widthField" variant="outlined" rounded="lg">
-                    <v-text-field v-model="confirmPassword" :placeholder="'إعادة كلمة السر'"
-                        :type="showConfirmPassword ? 'text' : 'password'" variant="plain" density="comfortable"
-                        hide-details class="widthFild" dir="rtl">
-                        <template v-slot:append-inner>
-                            <v-avatar color="grey" size="32" class="icon">
-                                <v-icon size="20" color="white">mdi-lock</v-icon>
-                            </v-avatar>
-                        </template>
-                        <template v-slot:prepend-inner>
-                            <v-icon @click="showConfirmPassword = !showConfirmPassword"
-                                style="padding-left: 20px;"
-                                :color="black">
-                                {{ showConfirmPassword ? 'mdi-eye-off' : 'mdi-eye' }}
-                            </v-icon>
-                        </template>
-                    </v-text-field>
-                </v-card>
-
                 <div class="d-flex" style="justify-content: center;">
-                    <v-btn class="me-2 buttonStyle" color="#4fe3b9" size="large" rounded="lg">
-                        عندي حساب
-                    </v-btn>
                     <v-btn class="me-2 buttonStyle" color="#4287f5" size="large" rounded="lg">
-                        تسجيل الحساب
+                        تسجيل الدخول
                     </v-btn>
                 </div>
             </v-form>
@@ -84,10 +51,9 @@
 
 <script>
 export default {
-    name: "SignUp",
+    name: "Login",
     data() {
         return {
-            fullName: '',
             email: '',
             password: '',
             confirmPassword: '',
@@ -96,9 +62,8 @@ export default {
         }
     },
     methods: {
-        register() {
-            console.log('Inscription avec:', {
-                fullName: this.fullName,
+        login() {
+            console.log('Connexion avec:', {
                 email: this.email,
                 password: this.password
             });
