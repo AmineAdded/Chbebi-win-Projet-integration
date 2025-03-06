@@ -7,7 +7,7 @@
       <v-btn text to="/time-management">إدارة الوقت</v-btn>
       <v-spacer></v-spacer>
       <v-btn text to="">الصفحة الرئيسية</v-btn>
-      <img :src="logo" alt="logo" height="60px" width="60px" />
+      <img :src="logo" alt="logo" height="63px" width="80px" />
     </v-app-bar>
     <v-main>
       <router-view></router-view>
