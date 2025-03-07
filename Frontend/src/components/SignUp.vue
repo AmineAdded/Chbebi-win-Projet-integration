@@ -70,7 +70,7 @@
                     <v-btn class="me-2 buttonStyle" color="#4fe3b9" size="large" rounded="lg" @click.prevent="$emit('openLogin')">
                         عندي حساب
                     </v-btn>
-                    <v-btn class="me-2 buttonStyle" color="#4287f5" size="large" rounded="lg">
+                    <v-btn class="me-2 buttonStyle" color="#4287f5" size="large" rounded="lg" @click.prevent="register">
                         تسجيل الحساب
                     </v-btn>
                 </div>
@@ -98,7 +98,8 @@ export default {
                 fullName: this.fullName,
                 email: this.email,
                 password: this.password
-            });
+            })
+            this.$router.push('/AvantTest');
         }
     }
 }
