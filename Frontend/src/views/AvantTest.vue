@@ -41,7 +41,7 @@
                 class="start-button" 
                 rounded 
                 x-large
-                @click.prevent="$emit('openSignUp')"
+                @click="handleClick"
               >
                 <v-icon left>mdi-play-circle</v-icon>
                 <span class="button-text">بدء</span>
@@ -70,6 +70,12 @@
             this.isLoading = false;
         }, 1000);
     },
+    methods:{
+      handleClick(){
+        this.$router.push('/Test');
+      }
+
+    }
   };
   </script>
     
