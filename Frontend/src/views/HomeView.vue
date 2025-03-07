@@ -38,3 +38,8 @@ export default defineComponent({
   },
 });
 </script>
+<style>
+.v-dialog {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+</style>

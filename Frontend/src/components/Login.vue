@@ -105,12 +105,4 @@ export default {
     text-align: right;
     padding-right: 20px; 
 }
-.v-dialog {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-.v-dialog-overlay {
-  background: rgba(0, 0, 0, 0.5);
-}
-
-
 </style>
