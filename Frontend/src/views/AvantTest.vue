@@ -1,7 +1,18 @@
 <template>
+    <div v-if="isLoading" class="loader-container">
+        <div class="loader-content">
+            <v-progress-circular
+                indeterminate
+                color="primary"
+                size="64"
+            ></v-progress-circular>
+            <span class="loader-text">...مرحبا بك</span>
+        </div>
+    </div>
+    <div v-else>
     <v-container fluid class="about-container">
       <v-row justify="center" align="center">
-        <v-col cols="20" md="8" lg="7" class="content-wrapper">
+        <v-col cols="20" md="8" lg="7">
           <!-- Logo and Title Section with improved layout -->
           <div class="header-section">
             <div class="title-container">
@@ -40,6 +51,7 @@
         </v-col>
       </v-row>
     </v-container>
+</div>
   </template>
     
   <script>
@@ -50,7 +62,13 @@
     data() {
       return {
         logo: logo,
+        isLoading:true,
       };
+    },
+    created() {
+        setTimeout(() => {
+            this.isLoading = false;
+        }, 1000);
     },
   };
   </script>
@@ -66,15 +84,6 @@
     padding: 20px;
   }
   
-  .content-wrapper {
-    background-color: rgba(255, 255, 255, 0.15); 
-    backdrop-filter: blur(10px);
-    border-radius: 24px; 
-    padding: 40px;
-    box-shadow: 0 8px 32px rgba(21, 37, 56, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-  
   /* Header section with improved spacing and alignment */
   .header-section {
     display: flex;
@@ -82,12 +91,13 @@
     justify-content: space-between;
     margin-bottom: 50px;
     flex-wrap: wrap;
-    gap: 30px;
   }
   
   .title-container {
     flex: 1;
     min-width: 220px;
+    position: relative;
+    left:50px;
   }
   
   .main-title {
@@ -112,6 +122,8 @@
     height: 180px;
     filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
     transition: transform 0.4s ease, filter 0.4s ease;
+    position: relative;
+    right:50px;
   }
   
   .logo-img:hover {
@@ -314,4 +326,26 @@
       height: 55px;
     }
   }
+
+  .loader-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(25, 118, 210, 0.03);
+    z-index: 1001;
+    backdrop-filter: blur(8px);
+}
+.loader-text {
+    color: #1976d2;
+    font-size: 2em;
+    font-weight: 500;
+    animation: pulse 2s infinite;
+    padding-left: 14px;
+    padding-top: 6px;
+}
   </style>
