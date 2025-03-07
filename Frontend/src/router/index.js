@@ -3,6 +3,7 @@ import HomeView from "../views/HomeView.vue";
 import AvantTest from "../views/AvantTest.vue";
 import Test from "../views/Test.vue";
 import EntranceView from "@/views/EntranceView.vue";
+import DetailsPersonnality from "@/views/DetailsPersonnality.vue";
 
 const routes = [
   {
@@ -24,6 +25,11 @@ const routes = [
     path: "/Entrance",
     name: "Entrance",
     component: EntranceView,
+  },
+  {
+    path: "/DetailsPersonnality",
+    name: "DetailsPersonnality",
+    component: DetailsPersonnality,
   }
 ];
 

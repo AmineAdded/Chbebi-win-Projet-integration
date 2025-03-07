@@ -1,15 +1,13 @@
 <template>
-  <v-app>
-    <v-app-bar color="white">
-      <v-btn text to="/agenda">أجندة</v-btn>
-      <v-btn text to="/islam">دين الإسلام</v-btn>
-      <v-btn text to="/culture">الثقافة التونسية</v-btn>
-      <v-btn text to="/time-management">إدارة الوقت</v-btn>
-      <v-spacer></v-spacer>
-      <v-btn text to="">الصفحة الرئيسية</v-btn>
-      <img :src="logo" alt="logo" height="63px" width="80px" />
-    </v-app-bar>
-  </v-app>
+  <v-app-bar color="white">
+    <v-btn text to="/agenda">أجندة</v-btn>
+    <v-btn text to="/islam">دين الإسلام</v-btn>
+    <v-btn text to="/culture">الثقافة التونسية</v-btn>
+    <v-btn text to="/time-management">إدارة الوقت</v-btn>
+    <v-spacer></v-spacer>
+    <v-btn text to="">الصفحة الرئيسية</v-btn>
+    <img :src="logo" alt="logo" height="63px" width="80px" />
+  </v-app-bar>
 </template>
 
 <script>
@@ -19,13 +17,13 @@ export default {
   name: "Navbar",
   data() {
     return {
-      logo: logo, // Utilisez l'image importée
+      logo: logo,
     };
   },
 };
 </script>
 
-<style>
+<style scoped>
 .v-btn {
   font-size: 22px;
   font-weight: bold;

@@ -2,13 +2,11 @@
     <div v-if="isLoading" class="loader-container">
         <div class="loader-content">
             <div class="custom-loader">
-                <div class="spinner"></div>
                 <div class="pulse-ring"></div>
             </div>
         </div>
     </div>
     <div v-else class="entrance-container">
-        <!-- Éléments décoratifs en arrière-plan -->
         <div class="bg-decorations">
             <div class="circle circle-1"></div>
             <div class="circle circle-2"></div>
@@ -16,20 +14,17 @@
         </div>
 
         <div class="content-wrapper">
-            <!-- Logo animé et illustration -->
             <div class="logo-container">
                 <div class="logo-glow"></div>
                 <img :src="brainLogo" alt="Logo" class="brain-logo" />
             </div>
 
-            <!-- Texte d'accueil avec animation -->
             <div class="welcome-text">
                 <p class="arabic-subtitle">مرحبا بيك في</p>
                 <h1 class="arabic-title">شبابي وين</h1>
                 <div class="underline-decoration"></div>
             </div>
 
-            <!-- Boutons de navigation améliorés -->
             <div class="navigation-buttons">
                 <button class="custom-button home-button" @click="navigateTo('home')">
                     <span class="button-icon home-icon"></span>
@@ -67,7 +62,6 @@ export default {
         };
     },
     created() {
-        // Animation de chargement plus longue pour montrer l'effet
         setTimeout(() => {
             this.isLoading = false;
         }, 1500);
@@ -78,10 +72,9 @@ export default {
                 home: '/',
                 learn: '/learn',
                 religion: '/religion',
-                personality: '/personality'
+                personality: '/DetailsPersonnality',
             };
 
-            // Animation de transition avant la navigation
             const buttons = document.querySelectorAll('.custom-button');
             buttons.forEach(button => {
                 button.classList.add('fade-out');
@@ -149,19 +142,6 @@ export default {
     position: relative;
     width: 100px;
     height: 100px;
-}
-
-.spinner {
-    position: absolute;
-    width: 64px;
-    height: 64px;
-    border: 4px solid transparent;
-    border-top: 4px solid #1a3a5f;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
 }
 
 .pulse-ring {

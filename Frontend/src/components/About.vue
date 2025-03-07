@@ -1,5 +1,5 @@
 <template>
-    <v-container fluid class="about-container" style="position: relative; bottom: 780px;">
+    <v-container fluid class="about-container">
       <v-row justify="center" align="center">
         <!-- Colonne pour le texte -->
         <v-col cols="12" md="10" class="text-center">
