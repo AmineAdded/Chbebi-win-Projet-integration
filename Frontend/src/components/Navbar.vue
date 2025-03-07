@@ -9,9 +9,6 @@
       <v-btn text to="">الصفحة الرئيسية</v-btn>
       <img :src="logo" alt="logo" height="63px" width="80px" />
     </v-app-bar>
-    <v-main>
-      <router-view></router-view>
-    </v-main>
   </v-app>
 </template>
 

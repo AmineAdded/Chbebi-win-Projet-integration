@@ -3,7 +3,7 @@
         <v-card class="mx-auto pa-4 card" elevation="3">
             <div class="text-center mb-4">
                 <v-btn class="teal-lighten-2 white--text" rounded="pill" size="large"
-                    style="background-color: #01F3F3;">
+                    style="background-color: #01F3F3;" @click.prevent="$emit('closeSignUp')">
                     العودة
                 </v-btn>
             </div>
@@ -41,9 +41,7 @@
                             </v-avatar>
                         </template>
                         <template v-slot:prepend-inner>
-                            <v-icon @click="showPassword = !showPassword"
-                                style="padding-left: 20px;"
-                                :color="black">
+                            <v-icon @click="showPassword = !showPassword" style="padding-left: 20px;" :color="black">
                                 {{ showPassword ? 'mdi-eye-off' : 'mdi-eye' }}
                             </v-icon>
                         </template>
@@ -60,8 +58,7 @@
                             </v-avatar>
                         </template>
                         <template v-slot:prepend-inner>
-                            <v-icon @click="showConfirmPassword = !showConfirmPassword"
-                                style="padding-left: 20px;"
+                            <v-icon @click="showConfirmPassword = !showConfirmPassword" style="padding-left: 20px;"
                                 :color="black">
                                 {{ showConfirmPassword ? 'mdi-eye-off' : 'mdi-eye' }}
                             </v-icon>
@@ -70,7 +67,7 @@
                 </v-card>
 
                 <div class="d-flex" style="justify-content: center;">
-                    <v-btn class="me-2 buttonStyle" color="#4fe3b9" size="large" rounded="lg">
+                    <v-btn class="me-2 buttonStyle" color="#4fe3b9" size="large" rounded="lg" @click.prevent="$emit('openLogin')">
                         عندي حساب
                     </v-btn>
                     <v-btn class="me-2 buttonStyle" color="#4287f5" size="large" rounded="lg">
@@ -133,11 +130,20 @@ export default {
     border-radius: 10px;
     transition: box-shadow 0.3s ease;
 }
+
 .v-text-field ::placeholder {
     padding-right: 20px;
 }
+
 .v-text-field :deep(input) {
     text-align: right;
-    padding-right: 20px; 
+    padding-right: 20px;
 }
+.v-dialog {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.v-dialog-overlay {
+  background: rgba(0, 0, 0, 0.5);
+}
+
 </style>

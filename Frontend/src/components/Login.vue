@@ -3,7 +3,7 @@
         <v-card class="mx-auto pa-4 card" elevation="3">
             <div class="text-center mb-4">
                 <v-btn class="teal-lighten-2 white--text" rounded="pill" size="large"
-                    style="background-color: #01F3F3;">
+                    style="background-color: #01F3F3;" @click.prevent="$emit('closeLogin')">
                     العودة
                 </v-btn>
             </div>
@@ -105,4 +105,12 @@ export default {
     text-align: right;
     padding-right: 20px; 
 }
+.v-dialog {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.v-dialog-overlay {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+
 </style>

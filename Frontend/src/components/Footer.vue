@@ -25,7 +25,7 @@
             </v-btn>
           </div>
           <div class="mt-6 subtitle">
-            <span class="text-subtitle-1 font-weight-light">Suivez-nous sur les réseaux sociaux</span>
+            <span class="text-subtitle-1 font-weight-light">تابعونا على وسائل التواصل الاجتماعي</span>
           </div>
         </v-col>
       </v-row>

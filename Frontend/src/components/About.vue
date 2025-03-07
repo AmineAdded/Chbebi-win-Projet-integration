@@ -1,5 +1,5 @@
 <template>
-    <v-container fluid class="about-container">
+    <v-container fluid class="about-container" style="position: relative; bottom: 780px;">
       <v-row justify="center" align="center">
         <!-- Colonne pour le texte -->
         <v-col cols="12" md="10" class="text-center">
@@ -13,7 +13,7 @@
             شبابي وين هو تطبيق معمول للشباب التونسي باش يعاونك تفهم روحك<br />
             تعرف تاريخك، تتعلم حاجات تنفعك، وتنظم وقتك بطريقة سهلة💡
           </p>
-          <v-btn class="btn">أبدا توا</v-btn>
+          <v-btn class="btn" @click.prevent="$emit('openSignUp')">أبدا توا</v-btn>
         </v-col>
       </v-row>
     </v-container>
