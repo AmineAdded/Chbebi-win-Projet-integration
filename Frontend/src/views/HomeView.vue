@@ -52,7 +52,7 @@ export default defineComponent({
   },
 });
 </script>
-<style>
+<style scoped>
 .v-dialog {
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
