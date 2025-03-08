@@ -35,13 +35,14 @@
   <style scoped>
   /* Conteneur principal avec fond prenant tout l'espace */
   .about-container {
-    min-height: 100vh; /* Prend toute la hauteur de l'écran */
-    background-color: #91b5c9;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 50px 10%;
-  }
+  padding-top: 20px; /* Diminue l'espacement en haut */
+  padding-bottom: 80px;
+  background-color: #91b5c9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+ }
+
   
   /* Conteneur du titre et de l'image */
   .title-container {

@@ -15,7 +15,11 @@
     <v-dialog v-model="showSignUp" persistent width="auto">
       <SignUp @closeSignUp="showSignUp = false" @openLogin="showLogin = true, showSignUp = false" />
     </v-dialog>
-
+    <Slide />
+    <Contact @openRate="showRate = true"/>
+    <v-dialog v-model="showRate" persistent max-width="600px">
+      <Rate @closeRate="showRate = false" />
+    </v-dialog>
     <Footer />
   </div>
 
@@ -28,6 +32,9 @@ import SignUp from "../components/SignUp.vue";
 import Navbar from "../components/Navbar.vue";
 import Footer from "../components/Footer.vue";
 import About from "../components/About.vue";
+import Contact from "@/components/Contact.vue";
+import Slide from "@/components/Slide.vue";
+import Rate from "@/components/Rate.vue";
 
 export default defineComponent({
   name: "HomeView",
@@ -37,12 +44,16 @@ export default defineComponent({
     Navbar,
     Footer,
     About,
+    Contact,
+    Slide,
+    Rate,
   },
   data() {
     return {
       showSignUp: false,
       showLogin: false,
       isLoading: true,
+      showRate: false,
     };
   },
   created() {
