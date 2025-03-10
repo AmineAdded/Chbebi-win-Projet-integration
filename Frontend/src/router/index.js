@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
+import PublicHomeView from "../views/PublicHomeView.vue";
+import PrivateHomeView from "../views/PrivateHomeView.vue";
 import AvantTest from "../views/AvantTest.vue";
 import Test from "../views/Test.vue";
 import EntranceView from "@/views/EntranceView.vue";
@@ -8,8 +9,13 @@ import DetailsPersonnality from "@/views/DetailsPersonnality.vue";
 const routes = [
   {
     path: "/",
-    name: "home",
-    component: HomeView,
+    name: "publichome",
+    component: PublicHomeView,
+  },
+  {
+    path: "/privatehome",
+    name: "privatehome",
+    component: PrivateHomeView,
   },
   {
     path: "/AvantTest",
