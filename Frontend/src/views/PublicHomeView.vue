@@ -4,8 +4,9 @@
       <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
     </div>
   </div>
-  <div v-else>
+  <div v-else class="main-container">
     <Navbar />
+    
     <About @openSignUp="showSignUp = true" />
 
     <v-dialog v-model="showLogin" persistent width="auto">
@@ -15,6 +16,7 @@
     <v-dialog v-model="showSignUp" persistent width="auto">
       <SignUp @closeSignUp="showSignUp = false" @openLogin="showLogin = true, showSignUp = false" />
     </v-dialog>
+    <EventsWorkshops/>
     <Slide />
     <Contact @openRate="showRate = true"/>
     <v-dialog v-model="showRate" persistent max-width="600px">
@@ -29,6 +31,7 @@
 import { defineComponent } from "vue";
 import Login from "../components/Login.vue";
 import SignUp from "../components/SignUp.vue";
+import EventsWorkshops from "@/components/EventsWorkshops.vue";
 import Navbar from "../components/Navbar.vue";
 import Footer from "../components/Footer.vue";
 import About from "../components/About.vue";
@@ -39,6 +42,7 @@ import Rate from "@/components/Rate.vue";
 export default defineComponent({
   name: "HomeView",
   components: {
+    EventsWorkshops,
     Login,
     SignUp,
     Navbar,

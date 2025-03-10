@@ -26,7 +26,7 @@
             </div>
 
             <div class="navigation-buttons">
-                <button class="custom-button home-button" @click="navigateTo('home')">
+                <button class="custom-button home-button" @click="navigateTo('privatehome')">
                     <span class="button-icon home-icon"></span>
                     <span class="button-text">الصفحة الرئيسية</span>
                 </button>
@@ -69,7 +69,7 @@ export default {
     methods: {
         navigateTo(route) {
             const routes = {
-                home: '/',
+                privatehome: '/privatehome',
                 learn: '/learn',
                 religion: '/religion',
                 personality: '/DetailsPersonnality',
