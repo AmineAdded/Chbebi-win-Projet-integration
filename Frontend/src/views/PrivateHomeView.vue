@@ -20,12 +20,12 @@
             </div>
             
             <!-- Events and Workshops Section -->
-            <div class="events-wrapper mt-4 mb-4">
+            <div class="events-wrapper">
                 <EventsWorkshops />
             </div>
             
             <!-- Slide Section -->
-            <div class="slide-wrapper mb-4">
+            <div class="slide-wrapper ">
                 <Slide />
             </div>
             
@@ -80,25 +80,27 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* .main-container {
-    background: linear-gradient(135deg, #e3f2fd 0%, #91B5C9 100%);
-    min-height: 100vh;
-    padding: 20px;
-    max-width: 1350px;
-    margin: 0 auto;
-} */
-
+.main-container{
+    padding: 0;
+}
+.loader-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .content-wrapper {
     display: flex;
     background-color: #b2cfe0;
     justify-content: space-between;
-    width: 100%;
-    margin: 0 auto 20px auto;
+    margin: 0;
     gap: 20px;
     direction: rtl;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 80px;
 }
 
 .personality-section, .agenda-section {

@@ -4,7 +4,7 @@
         <v-col cols="12" md="12" class="text-center">
           <!-- Titre principal -->
           <h1 class="title">علاش تطبيقنا مهم؟</h1>
-          
+          <br>
           <!-- Texte explicatif -->
           <p class="description">
             الشباب في تونس يعاني من الضغط وعدم وضوح الرؤية المستقبلية✅<br>
@@ -64,7 +64,7 @@
   
   /* Titres */
   .title {
-    font-size: 2.7rem;
+    font-size: 2.3rem;
     font-weight: bold;
     color: #152538;
     text-align: center;
@@ -76,7 +76,7 @@
   .description {
     line-height: 1.8;
     text-align: center;
-    font-size: 26px;
+    font-size: 22px;
     font-weight: 600;
     font-family: "Segoe UI", sans-serif;
     color: #152538;
@@ -85,7 +85,7 @@
   .mini-description {
     line-height: 1.8;
     text-align: center;
-    font-size: 26px;
+    font-size: 22px;
     font-weight: 600;
     font-family: "Segoe UI", sans-serif;
     color: #152538;
@@ -110,7 +110,7 @@
   /* Avis des utilisateurs */
   .review-card {
     background-color: white;
-    margin: 10px auto;
+    margin: 20px auto;
     padding: 10px;
     border-radius: 12px;
     max-width: 500px;
