@@ -6,13 +6,13 @@
         <div class="title-container">
           <h1 class="display-2 font-weight-bold">CHBEBIWIN<br />شبابي وين</h1>
           <img :src="logo" alt="logo" class="logo-img" />
-        </div>
+        </div><br>
         <p class="subtitle-1">
           تحس روحك ضايع؟ عندك برشا أفكار وأسئلة وما لقيتش شكون يجاوبك؟<br />
           تحب تنظم وقتك، تتعلم حاجات جديدة، وتلقى طريقك في الحياة؟ 🤔<br />
           شبابي وين هو تطبيق معمول للشباب التونسي باش يعاونك تفهم روحك<br />
           تعرف تاريخك، تتعلم حاجات تنفعك، وتنظم وقتك بطريقة سهلة💡
-        </p>
+        </p><br>
         <v-btn class="btn" elevation="3" @click.prevent="$emit('openSignUp')">
           أبدا توّا
         </v-btn>
@@ -56,14 +56,14 @@ export default {
 /* Style du titre */
 .display-2 {
   color: #152538;
-  font-size: 2.8rem;
+  font-size: 3.2rem;
   text-align: center;
   max-width: 100%;
 }
 
 /* Image */
 .logo-img {
-  width: 200px;
+  width: 270px;
   height: auto;
   max-width: 100%;
 }

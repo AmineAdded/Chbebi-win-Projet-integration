@@ -129,7 +129,7 @@ export default {
     align-items: center;
     justify-content: space-between;
     padding: 8px 15px;
-    background-color: #b2cfe0; /* Match the blue from the image */
+    background-color: #5285a2; /* Match the blue from the image */
     border-bottom: 1px solid #e0e0e0;
 }
 
@@ -153,10 +153,10 @@ export default {
 }
 
 .month-title {
-  font-size: 1.1rem;
+  font-size: 1.9rem;
   font-weight: bold;
   margin: 0;
-  color: #333;
+  color: #000000;
 }
 
 .calendar-wrapper {

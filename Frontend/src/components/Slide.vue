@@ -1,7 +1,7 @@
 <template>
     <v-container fluid class="how-to-use-container">
       <h2 class="section-title">كيفاش نستعمل تطبيقنا</h2>
-  
+  <br>
       <v-carousel 
         hide-delimiters 
         show-arrows="hover" 
@@ -82,10 +82,11 @@
     background-color: #91B5C9;
     text-align: center;
     padding: 40px 0;
+    
   }
   
   .section-title {
-    font-size: 3rem;
+    font-size: 2.3rem;
     font-weight: bold;
     color: #152538;
     font-family: 'Segoe UI';
@@ -93,7 +94,7 @@
   }
   
   .carousel {
-    max-width: 1200px;
+    max-width: 1000px;
     margin: auto;
   }
   
@@ -101,27 +102,30 @@
     display: flex;
     justify-content: center;
     gap: 20px;
+    margin-bottom: 2px;
+    padding-right: 20px; 
+    padding-left: 20px;
   }
   
   .slide-card {
-    width: 400px;
+    width: 350px;
     border-radius: 16px;
-    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.2);
     transition: transform 0.5s ease-in-out;
   }
   
   .slide-card:hover {
-    transform: scale(1.05);
+    transform: scale(1.01);
   }
   
   .slide-image {
     height: 220px;
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
+    margin-top: 7px;
   }
   
   .slide-title {
-    font-size: 1.7rem;
+    font-size: 1.2rem;
     font-weight: bold;
     color: #152538;
     display: flex;
@@ -133,7 +137,7 @@
   .step-number {
     background-color: #27c4f5;
     color: white;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: bold;
     padding: 5px 12px;
     border-radius: 50%;
@@ -142,7 +146,7 @@
   }
   
   .slide-text {
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: #333;
     text-align: center;
     padding: 15px;
@@ -163,6 +167,35 @@
       opacity: 1;
       transform: translateX(0);
     }
+  }
+
+  @media (max-width: 768px) {
+    .carousel-slide {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 2px;
+    padding-right: 10px; 
+    padding-left: 10px;
+  }
+  
+  .slide-image {
+    height: 200px;
+    margin-top: 9px;
+    margin-left: 9px;
+    margin-right: 9px;
+  }
+ 
+  .step-number {
+    background-color: #27c4f5;
+    color: white;
+    font-size: 1rem;
+    font-weight:normal;
+    padding: 2px 9px;
+    border-radius: 50%;
+    margin-left: 2px;
+    font-family: 'Segoe UI';
+  }
   }
   </style>
   
