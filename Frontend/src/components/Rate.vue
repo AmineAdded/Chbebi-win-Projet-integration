@@ -51,7 +51,7 @@
       <v-col cols="12" md="8" class="text-center">
         <v-rating
           v-model="rating"
-          color="yellow darken-3"
+          color="gold darken-3"
           background-color="grey lighten-2"
           dense
           hover

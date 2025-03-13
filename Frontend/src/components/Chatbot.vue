@@ -11,7 +11,9 @@
         </div>
         <div class="input-container">
             <input v-model="userMessage" type="text" placeholder="Poser une question..." @keyup.enter="sendMessage" />
-            <button @click="sendMessage">Envoyer</button>
+            <button @click="sendMessage">
+                <v-icon color="dark" size="38">mdi-arrow-up-circle</v-icon>
+            </button>
         </div>
     </div>
 </template>
@@ -56,7 +58,7 @@ export default {
 
 <style>
 .chat-container {
-    width: 400px;
+    width: 300px;
     margin: auto;
     background: white;
     padding: 15px;
@@ -69,6 +71,9 @@ export default {
     overflow-y: auto;
     border-bottom: 1px solid #ddd;
     padding-bottom: 10px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #a8edea, #fed6e3); /* Dégradé amusant */
+    padding: 10px;
 }
 
 .message {
@@ -119,10 +124,12 @@ input {
     border-radius: 5px;
 }
 
+input:focus {
+    outline: none;
+}
+
 button {
     padding: 10px;
-    background: #007bff;
-    color: white;
     border: none;
     cursor: pointer;
 }
