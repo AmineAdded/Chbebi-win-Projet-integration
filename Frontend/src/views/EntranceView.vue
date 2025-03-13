@@ -6,7 +6,7 @@
             </div>
         </div>
     </div>
-    <div v-else class="entrance-container">
+    <div v-else class="entrance-container main-container">
         <div class="bg-decorations">
             <div class="circle circle-1"></div>
             <div class="circle circle-2"></div>

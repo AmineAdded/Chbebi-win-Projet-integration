@@ -9,7 +9,7 @@
       </div>
     </div>
     
-    <div v-else class="page-wrapper">
+    <div v-else class="page-wrapper main-container">
       <Navbar />
       
       <div class="page-header">
