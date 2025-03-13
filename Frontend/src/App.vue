@@ -7,7 +7,7 @@
         </transition>
       </router-view>
       <div class="chatbot-icon">
-      <v-btn icon color="black" @click="showChatbot = !showChatbot">
+        <v-btn icon color="black" @click="showChatbot = !showChatbot" :class="{'chatbotOpen': showChatbot}">
         <v-icon>mdi-robot</v-icon>
       </v-btn>
       <Chatbot v-if="showChatbot" />
@@ -35,9 +35,13 @@ export default defineComponent({
   position: fixed;
   bottom: 20px;
   right: 20px;
-  /* background: #ffffff; */
   padding: 10px;
   border-radius: 50%;
-  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+}
+.chatbotOpen{
+  position: relative;
+  top: 55px;
+  left: 20px;
+  padding: 5px;
 }
 </style>
