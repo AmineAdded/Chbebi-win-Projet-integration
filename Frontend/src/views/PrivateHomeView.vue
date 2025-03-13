@@ -1,9 +1,4 @@
 <template>
-    <!-- <div v-if="isLoading" class="loader-container">
-        <div class="loader-content">
-            <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
-        </div>
-    </div> -->
     <div v-if="isLoading" class="loader-container">
       <div class="loader-content">
         <div class="custom-loader">

@@ -163,7 +163,7 @@
   }
   
   .page-header {
-    background-color:rgba(25, 118, 210, 0.9);
+    background-color: #b2cfe0;
     padding: 40px 0;
     color: white;
     margin-bottom: 40px;
@@ -273,7 +273,7 @@
     position: absolute;
     top: 20px;
     left: 20px;
-    background-color: rgba(25, 118, 210, 0.9);
+    background-color: rgba(25, 118, 210, 0.9); 
     color: white;
     padding: 8px 16px;
     border-radius: 20px;
@@ -324,7 +324,7 @@
   .section-divider {
     height: 4px;
     width: 80px;
-    background: linear-gradient(to right, #2962ff, #1565c0);
+     background: linear-gradient(to right, #2962ff, #1565c0); 
     border-radius: 2px;
     margin-bottom: 24px;
   }
@@ -353,7 +353,7 @@
     margin-left: 150px;
     margin-top: 30px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #2962ff, #1565c0);
+     background: linear-gradient(135deg, #2962ff, #1565c0);
     box-shadow: 0 4px 10px rgba(41, 98, 255, 0.3);
     z-index: 2;
   }
