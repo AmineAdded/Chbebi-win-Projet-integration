@@ -14,7 +14,7 @@
     <About @openSignUp="showSignUp = true" />
 
     <v-dialog v-model="showLogin" persistent width="auto">
-      <Login @closeLogin="showLogin = false, showSignUp = true" />
+      <Login @closeLogin="showLogin = false, showSignUp = true" @openSignUp="showLogin = false,showSignUp= true "/>
     </v-dialog>
 
     <v-dialog v-model="showSignUp" persistent width="auto">
