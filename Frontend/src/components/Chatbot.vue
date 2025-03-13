@@ -33,57 +33,57 @@ export default {
             messages: [],
         };
     },
+    mounted() {
+        this.loadMessages(); // Charger les messages sauvegardés
+    },
     methods: {
         async sendMessage() {
             if (!this.userMessage.trim()) return;
 
-            // Ajout du message utilisateur avec timestamp
-            const now = new Date();
-            const timeString = now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
-            
-            this.messages.push({ 
-                text: this.userMessage, 
-                type: "user",
-                time: timeString
-            });
+            // Ajouter le message de l'utilisateur
+            this.messages.push({ text: this.userMessage, type: "user" });
+            this.saveMessages(); // Sauvegarder après l'ajout
 
             try {
-                // Ajouter un indicateur de chargement
-                const loadingIndex = this.messages.length;
-                this.messages.push({ 
-                    text: "En cours de réponse...", 
-                    type: "bot",
-                    loading: true
-                });
-
                 const response = await axios.post("http://127.0.0.1:5000/chat", {
                     message: this.userMessage,
                 });
 
-                // Remplacer l'indicateur de chargement par la réponse
-                this.messages.splice(loadingIndex, 1);
-                this.messages.push({ 
-                    text: response.data.response, 
-                    type: "bot",
-                    time: timeString
-                });
+                // Ajouter la réponse du bot
+                this.messages.push({ text: response.data.response, type: "bot" });
+                this.saveMessages(); // Sauvegarder après la réponse
             } catch (error) {
                 console.error("Erreur:", error);
                 this.messages.push({
-                    text: "Désolé, je rencontre un problème de connexion. Veuillez réessayer.",
+                    text: "Erreur de connexion avec le bot.",
                     type: "bot",
-                    time: timeString
                 });
+                this.saveMessages();
             }
 
             this.userMessage = ""; // Effacer la saisie utilisateur
-            
-            // Scroll to bottom
-            this.$nextTick(() => {
-                const chatBox = document.querySelector('.chat-box');
-                chatBox.scrollTop = chatBox.scrollHeight;
-            });
+            this.resetHeight();
         },
+
+        // Sauvegarde dans le localStorage
+        saveMessages() {
+            localStorage.setItem("chatMessages", JSON.stringify(this.messages));
+        },
+
+        // Chargement des messages sauvegardés
+        loadMessages() {
+            const savedMessages = localStorage.getItem("chatMessages");
+            if (savedMessages) {
+                this.messages = JSON.parse(savedMessages);
+            }
+        },
+
+        resetHeight() {
+            const input = this.$refs.input;
+            if (input) {
+                input.style.height = "40px";
+            }
+        }
     },
 };
 </script>
