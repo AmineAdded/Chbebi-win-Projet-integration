@@ -152,6 +152,11 @@ export default {
   .logo-img {
     width: 60px;
   }
+
+  .v-toolbar-title {
+    position: absolute;
+    right: 10px; /* Déplace le logo vers la droite */
+  }
 }
 
 @media (max-width: 600px) {
@@ -162,5 +167,11 @@ export default {
   .logo-img {
     width: 50px;
   }
+
+  .v-toolbar-title {
+    position: absolute;
+    right: 10px; /* Déplace le logo vers la droite */
+  }
 }
+
 </style>
