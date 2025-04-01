@@ -1,0 +1,21 @@
+package app.chbebiwin.backend.entities;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+public class Test {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String nomTest;
+    @OneToMany(mappedBy = "test")
+    private List<Question> questions;
+}

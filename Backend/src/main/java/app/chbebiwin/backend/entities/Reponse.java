@@ -1,0 +1,22 @@
+package app.chbebiwin.backend.entities;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+public class Reponse {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String contenu;
+    @ManyToOne
+    @JoinColumn(name = "id")
+    @JsonIgnore
+    private Question question;
+}
