@@ -18,7 +18,8 @@ public class Question {
     private Long id;
     private String contenu;
     @ManyToOne
-    @JoinColumn(name = "id")
+    //clé etrangére
+    @JoinColumn(name = "test_id")
     @JsonIgnore
     private Test test;
     @OneToMany(mappedBy = "question")

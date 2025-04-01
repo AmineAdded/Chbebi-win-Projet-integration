@@ -16,7 +16,7 @@ public class Reponse {
     private Long id;
     private String contenu;
     @ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "question_id")
     @JsonIgnore
     private Question question;
 }
