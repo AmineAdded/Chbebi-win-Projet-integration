@@ -1,9 +1,6 @@
 package app.chbebiwin.backend.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +15,9 @@ public class Utilisateur {
     private Long id;
     private String nom;
     private String email;
-    private String mdps;
+    @Column(nullable = false)
+    private String  mdpsCompte;
+    private String mdpsSuperAdmin;
+    private int role;
     private String typePersonnalite;
 }
