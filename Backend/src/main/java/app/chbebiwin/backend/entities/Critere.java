@@ -10,21 +10,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Utilisateur {
+public class Critere {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nom;
-    private String email;
-    @Column(nullable = false)
-    private String  mdpsCompte;
-    private String mdpsSuperAdmin;
-    private int role;
-    private String typePersonnalite;
+    private String contenu;
 
     @ManyToOne
     @JoinColumn(name = "Personnalite_id")
     @JsonIgnore
     private Personnalite personnalite;
-
 }
