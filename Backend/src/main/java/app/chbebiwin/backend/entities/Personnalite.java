@@ -1,6 +1,5 @@
 package app.chbebiwin.backend.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,18 +11,15 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Question {
+public class Personnalite {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String nom;
     private String contenu;
-    @ManyToOne
-    //clé etrangére
-    @JoinColumn(name = "test_id")
-    @JsonIgnore
-    private Test test;
-    //question : représente l'attribut question dans la classe Reponse
-    @OneToMany(mappedBy = "question")
-    private List<Reponse> reponses;
+    @OneToMany(mappedBy = "personnalite")
+    private List<Utilisateur> utilisateurs;
 
+    @OneToMany(mappedBy = "personnalite")
+    private List<Critere> criteres;
 }
