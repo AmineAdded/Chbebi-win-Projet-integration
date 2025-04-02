@@ -99,7 +99,7 @@ export default {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    height: 600px;
+    height: 585px;
 }
 
 .chat-header {
