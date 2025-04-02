@@ -26,5 +26,9 @@ public class Utilisateur {
     @JoinColumn(name = "Personnalite_id")
     @JsonIgnore
     private Personnalite personnalite;
+    @ManyToOne
+    @JoinColumn(name = "quote_id")
+    @JsonIgnore
+    private Quote quote;
 
 }
