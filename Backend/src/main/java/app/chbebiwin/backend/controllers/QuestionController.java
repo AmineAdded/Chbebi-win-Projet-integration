@@ -1,6 +1,5 @@
 package app.chbebiwin.backend.controllers;
 
-import app.chbebiwin.backend.repositories.QuestionRepository;
 import app.chbebiwin.backend.services.QuestionService;
 import org.springframework.web.bind.annotation.RestController;
 
