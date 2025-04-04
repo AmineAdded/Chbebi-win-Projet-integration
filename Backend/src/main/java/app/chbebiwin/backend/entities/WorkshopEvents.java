@@ -14,12 +14,13 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Workshop {
+public class WorkshopEvents {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nom;
     private String description;
     private Date date;
+    private String lien;
     private String image;
 }
