@@ -15,6 +15,7 @@ public class Quote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String nomAuteur;
     private String contenu;
     @OneToMany(mappedBy = "quote")
     private List<Utilisateur> utilisateurs;

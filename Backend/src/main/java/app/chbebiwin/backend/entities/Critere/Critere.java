@@ -1,5 +1,6 @@
-package app.chbebiwin.backend.entities;
+package app.chbebiwin.backend.entities.Critere;
 
+import app.chbebiwin.backend.entities.Personnalite;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

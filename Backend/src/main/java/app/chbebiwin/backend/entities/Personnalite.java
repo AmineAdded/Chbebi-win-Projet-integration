@@ -1,5 +1,6 @@
 package app.chbebiwin.backend.entities;
 
+import app.chbebiwin.backend.entities.Critere.Critere;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
