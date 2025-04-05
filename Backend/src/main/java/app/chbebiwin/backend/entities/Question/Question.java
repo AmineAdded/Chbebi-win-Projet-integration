@@ -1,5 +1,7 @@
-package app.chbebiwin.backend.entities;
+package app.chbebiwin.backend.entities.Question;
 
+import app.chbebiwin.backend.entities.Reponse;
+import app.chbebiwin.backend.entities.Test;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
