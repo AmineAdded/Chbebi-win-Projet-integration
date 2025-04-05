@@ -1,6 +1,6 @@
 package app.chbebiwin.backend.entities.Question;
 
-import app.chbebiwin.backend.entities.Reponse;
+import app.chbebiwin.backend.entities.Reponse.Reponse;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package app.chbebiwin.backend.entities;
+package app.chbebiwin.backend.entities.Reponse;
 
 import app.chbebiwin.backend.entities.Question.Question;
 import com.fasterxml.jackson.annotation.JsonIgnore;
