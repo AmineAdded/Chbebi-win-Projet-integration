@@ -54,6 +54,9 @@ public class FeedbackService {
         return feedbackRepository.findById(id)
                 .map(existingFeedback -> {
                     existingFeedback.setMessage(request.getMessage());
+                    Utilisateur utilisateur = utilisateurRepository.findById(request.getUtilisateurId())
+                            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec ID: "+request.getUtilisateurId()));
+                    existingFeedback.setUtilisateur(utilisateur);
                     return feedbackRepository.save(existingFeedback);
                 })
                 .orElseGet(() -> {
