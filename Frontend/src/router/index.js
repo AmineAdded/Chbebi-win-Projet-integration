@@ -40,7 +40,17 @@ const routes = [
     path: "/DetailsPersonnality",
     name: "DetailsPersonnality",
     component: DetailsPersonnality,
-  }
+  },
+  {
+    path: '/reset-password/:token',
+    name: 'ResetPassword',
+    component: () => import('@/views/ResetPassword.vue')
+  },
+  {
+    path: '/password',
+    name: 'Password',
+    component: () => import('@/components/ForgotPassword.vue')
+  }  
 ];
 
 const router = createRouter({

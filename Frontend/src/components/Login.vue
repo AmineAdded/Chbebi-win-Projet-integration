@@ -32,6 +32,7 @@
                             </template>
                         </v-text-field>
                     </v-sheet>
+                    <v-btn text to="/Password" class="nav-btn" style="position: relative; left: 30%;">نسيت كلمة السر؟</v-btn>
                 </v-container>
 
                 <div class="d-flex justify-center">
