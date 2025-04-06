@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -19,13 +20,16 @@ public class Utilisateur {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nom;
-    @Column(unique = true,nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
     @Column(nullable = false)
     private String  mdpsCompte;
     private String mdpsSuperAdmin;
-    private int role =0;
     private String typePersonnalite;
+    private int role =0;
+    private String resetToken;
+    private LocalDateTime tokenExpiry;
+
 
     @ManyToOne
     @JoinColumn(name = "Personnalite_id")
