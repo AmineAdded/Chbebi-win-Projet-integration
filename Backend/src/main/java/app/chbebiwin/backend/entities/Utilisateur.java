@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class Utilisateur {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nom;
+    @Column(unique = true,nullable = false)
     private String email;
     @Column(nullable = false)
     private String  mdpsCompte;
