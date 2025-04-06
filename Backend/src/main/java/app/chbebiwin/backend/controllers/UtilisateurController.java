@@ -1,5 +1,7 @@
 package app.chbebiwin.backend.controllers;
 
+import app.chbebiwin.backend.entities.Authentification.loginRequest;
+import app.chbebiwin.backend.entities.Authentification.signUpRequest;
 import app.chbebiwin.backend.entities.Utilisateur;
 import app.chbebiwin.backend.services.UtilisateurService;
 import org.springframework.web.bind.annotation.*;
@@ -26,5 +28,14 @@ public class UtilisateurController {
     @GetMapping("/getAll")
     public List<Utilisateur> getAll (){
         return utilisateurService.getAllUsers();
+    }
+
+    @PostMapping("/register")
+    public Utilisateur register(@RequestBody signUpRequest request) {
+        return utilisateurService.registerUser(request);
+    }
+    @PostMapping("/login")
+    public Utilisateur login (@RequestBody loginRequest request){
+        return utilisateurService.loginUser(request);
     }
 }
