@@ -29,7 +29,7 @@ public class AuthController {
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
         String email = body.get("email");
-        Utilisateur user = utilisateurRepository.findByEmail(email);
+        Utilisateur user = utilisateurRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email introuvable.");
