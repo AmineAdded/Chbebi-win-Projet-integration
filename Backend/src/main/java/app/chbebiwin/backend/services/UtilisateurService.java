@@ -27,4 +27,13 @@ public class UtilisateurService {
     public List<Utilisateur> getAllUsers () {
         return utilisateurRepository.findAll();
     }
+
+    /*public Utilisateur register(String nom,String email, String password,String confirmPassword) {
+        if(nom != null && email != null && password != null && confirmPassword != null &&(password.equals(confirmPassword))){
+            Utilisateur utilisateur = new Utilisateur();
+            utilisateur.setNom(nom);
+            utilisateur.setEmail(email);
+            utilisateur.setMdpsCompte(password);
+        }
+    }*/
 }
