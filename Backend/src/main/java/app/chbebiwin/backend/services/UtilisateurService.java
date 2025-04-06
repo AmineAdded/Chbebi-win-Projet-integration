@@ -35,10 +35,26 @@ public class UtilisateurService {
         this.utilisateurRepository = utilisateurRepository;
     }
 
-    public Utilisateur create(Utilisateur user) {
+    public Utilisateur createUtilisateur(Utilisateur user) {
         return utilisateurRepository.save(user);
     }
-    public List<Utilisateur> getUsers () {
+    public String deleteUtilisateur(Long id) {
+        if(utilisateurRepository.existsById(id)){
+            utilisateurRepository.deleteById(id);
+            return "Utilisateur supprimé avec succès!";
+        }
+        return "Utilisateur non touvé!";
+    }
+    public List<Utilisateur> getAllUsers () {
         return utilisateurRepository.findAll();
     }
+
+    /*public Utilisateur register(String nom,String email, String password,String confirmPassword) {
+        if(nom != null && email != null && password != null && confirmPassword != null &&(password.equals(confirmPassword))){
+            Utilisateur utilisateur = new Utilisateur();
+            utilisateur.setNom(nom);
+            utilisateur.setEmail(email);
+            utilisateur.setMdpsCompte(password);
+        }
+    }*/
 }

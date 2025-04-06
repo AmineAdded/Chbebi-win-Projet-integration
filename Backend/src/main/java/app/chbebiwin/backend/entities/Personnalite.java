@@ -18,9 +18,9 @@ public class Personnalite {
     private Long id;
     private String nom;
     private String contenu;
-    @OneToMany(mappedBy = "personnalite")
+    @OneToMany(mappedBy = "personnalite",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Utilisateur> utilisateurs;
 
-    @OneToMany(mappedBy = "personnalite")
+    @OneToMany(mappedBy = "personnalite",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Critere> criteres;
 }

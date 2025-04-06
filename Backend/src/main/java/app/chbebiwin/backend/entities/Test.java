@@ -17,6 +17,6 @@ public class Test {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nomTest;
-    @OneToMany(mappedBy = "test")
+    @OneToMany(mappedBy = "test",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Question> questions;
 }
