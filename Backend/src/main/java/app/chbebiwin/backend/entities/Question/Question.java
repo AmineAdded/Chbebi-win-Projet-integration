@@ -25,7 +25,7 @@ public class Question {
     @JsonIgnore
     private Test test;
     //question : représente l'attribut question dans la classe Reponse
-    @OneToMany(mappedBy = "question")
+    @OneToMany(mappedBy = "question",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Reponse> reponses;
 
 }

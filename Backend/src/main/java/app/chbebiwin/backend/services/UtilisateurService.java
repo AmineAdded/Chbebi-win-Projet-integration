@@ -14,10 +14,17 @@ public class UtilisateurService {
         this.utilisateurRepository = utilisateurRepository;
     }
 
-    public Utilisateur create(Utilisateur user) {
+    public Utilisateur createUtilisateur(Utilisateur user) {
         return utilisateurRepository.save(user);
     }
-    public List<Utilisateur> getUsers () {
+    public String deleteUtilisateur(Long id) {
+        if(utilisateurRepository.existsById(id)){
+            utilisateurRepository.deleteById(id);
+            return "Utilisateur supprimé avec succès!";
+        }
+        return "Utilisateur non touvé!";
+    }
+    public List<Utilisateur> getAllUsers () {
         return utilisateurRepository.findAll();
     }
 }

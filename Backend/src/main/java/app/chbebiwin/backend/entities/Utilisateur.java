@@ -36,7 +36,7 @@ public class Utilisateur {
     @JsonIgnore
     private Quote quote;
 
-    @OneToMany(mappedBy = "utilisateur")
+    @OneToMany(mappedBy = "utilisateur",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Feedback> feedbacks;
 
 }

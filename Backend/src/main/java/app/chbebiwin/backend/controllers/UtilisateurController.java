@@ -15,12 +15,16 @@ public class UtilisateurController {
         this.utilisateurService = utilisateurService;
     }
 
-    @PostMapping ("/createUtilisateur")
-    public Utilisateur createUtilisateur(@RequestBody Utilisateur utilisateur) {
-        return utilisateurService.create(utilisateur);
+    @PostMapping ("/create")
+    public Utilisateur create(@RequestBody Utilisateur utilisateur) {
+        return utilisateurService.createUtilisateur(utilisateur);
     }
-    @GetMapping("/getUsers")
-    public List<Utilisateur> getUsers (){
-        return utilisateurService.getUsers();
+    @DeleteMapping("/delete/{id}")
+    public String delete(@PathVariable Long id){
+        return utilisateurService.deleteUtilisateur(id);
+    }
+    @GetMapping("/getAll")
+    public List<Utilisateur> getAll (){
+        return utilisateurService.getAllUsers();
     }
 }
