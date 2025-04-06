@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -18,12 +19,16 @@ public class Utilisateur {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nom;
+    @Column(unique = true, nullable = false)
     private String email;
     @Column(nullable = false)
     private String  mdpsCompte;
     private String mdpsSuperAdmin;
     private int role;
     private String typePersonnalite;
+    private String resetToken;
+    private LocalDateTime tokenExpiry;
+
 
     @ManyToOne
     @JoinColumn(name = "Personnalite_id")
