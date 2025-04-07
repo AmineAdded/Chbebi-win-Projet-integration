@@ -16,7 +16,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // désactive la protection CSRF pour les APIs REST
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/Utilisateur/register", "/api/Utilisateur/login").permitAll() // Autoriser ces endpoints
+                        .requestMatchers("/api/Utilisateur/register", "/api/Utilisateur/login","/api/Utilisateur/getAll","/api/Utilisateur/get/{id}").permitAll() // Autoriser ces endpoints
                         .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults()); // ou .formLogin() si tu veux une UI HTML

@@ -50,6 +50,12 @@ public class UtilisateurService {
     public List<Utilisateur> getAllUsers () {
         return utilisateurRepository.findAll();
     }
+    public Utilisateur getUserById(Long id){
+        if(utilisateurRepository.existsById(id)){
+            return utilisateurRepository.findById(id).get();
+        }
+        return null;
+    }
 
     public Utilisateur loginUser(loginRequest request){
         return utilisateurRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));

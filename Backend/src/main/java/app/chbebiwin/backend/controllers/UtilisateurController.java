@@ -29,6 +29,10 @@ public class UtilisateurController {
     public List<Utilisateur> getAll (){
         return utilisateurService.getAllUsers();
     }
+    @GetMapping("/get/{id}")
+    public Utilisateur get(@PathVariable Long id){
+        return utilisateurService.getUserById(id);
+    }
 
     @PostMapping("/register")
     public Utilisateur register(@RequestBody signUpRequest request) {
