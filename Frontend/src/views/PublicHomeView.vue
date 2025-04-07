@@ -14,19 +14,28 @@
     <About @openSignUp="showSignUp = true" />
 
     <v-dialog v-model="showLogin" persistent width="auto">
-      <Login @closeLogin="showLogin = false, showSignUp = true" @openSignUp="showLogin = false,showSignUp= true "/>
+      <Login @closeLogin="showLogin = false, showSignUp = true" @openSignUp="showLogin = false,showSignUp= true " @openForgotPassword="showLogin = false,showForgotPassword= true "/>
+    </v-dialog>
+
+    <v-dialog v-model="showForgotPassword" persistent width="auto">
+      <ForgotPassword @closeForgotPassword="showForgotPassword = false, showLogin = true" />
     </v-dialog>
 
     <v-dialog v-model="showSignUp" persistent width="auto">
       <SignUp @closeSignUp="showSignUp = false" @openLogin="showLogin = true, showSignUp = false" />
     </v-dialog>
+
     <EventsWorkshops/>
     <Slide />
+
     <Contact @openRate="showRate = true"/>
+
     <v-dialog v-model="showRate" persistent max-width="600px">
       <Rate @closeRate="showRate = false" />
     </v-dialog>
+
     <Footer />
+
   </div>
 
 </template>
@@ -42,6 +51,7 @@ import About from "../components/About.vue";
 import Contact from "@/components/Contact.vue";
 import Slide from "@/components/Slide.vue";
 import Rate from "@/components/Rate.vue";
+import ForgotPassword from "@/components/ForgotPassword.vue"
 
 export default defineComponent({
   name: "HomeView",
@@ -55,6 +65,7 @@ export default defineComponent({
     Contact,
     Slide,
     Rate,
+    ForgotPassword
   },
   data() {
     return {
@@ -62,6 +73,7 @@ export default defineComponent({
       showLogin: false,
       isLoading: true,
       showRate: false,
+      showForgotPassword : false
     };
   },
   created() {
