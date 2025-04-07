@@ -58,9 +58,7 @@ public class UtilisateurService {
     public Utilisateur registerUser(signUpRequest request) throws EmailAlreadyExistsException {
         if(request.getNom()!=null && request.getEmail() != null && request.getPassword() != null && request.getConfirmPassword() != null &&(request.getPassword().equals(request.getConfirmPassword()))){
         Utilisateur utilisateur = new Utilisateur();
-            if (utilisateurRepository.findByEmail(request.getEmail()).isPresent()) {
-                throw new EmailAlreadyExistsException("Email is already taken");
-            }
+            if (utilisateurRepository.findByEmail(request.getEmail()).isPresent()) throw new EmailAlreadyExistsException("Email is already taken");
 
             utilisateur.setNom(request.getNom());
         utilisateur.setEmail(request.getEmail());
