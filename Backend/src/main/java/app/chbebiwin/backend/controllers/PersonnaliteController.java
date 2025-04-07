@@ -1,6 +1,7 @@
 package app.chbebiwin.backend.controllers;
 
 import app.chbebiwin.backend.entities.Personnalite;
+import app.chbebiwin.backend.services.FeedbackService;
 import app.chbebiwin.backend.services.PersonnaliteService;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,9 +11,11 @@ import java.util.List;
 @RequestMapping("/api/Personnalite")
 public class PersonnaliteController {
     private final PersonnaliteService personnaliteService;
+    private final FeedbackService feedbackService;
 
-    public PersonnaliteController(PersonnaliteService personnaliteService){
+    public PersonnaliteController(PersonnaliteService personnaliteService, FeedbackService feedbackService){
         this.personnaliteService = personnaliteService;
+        this.feedbackService = feedbackService;
     }
     @PostMapping("/create")
     public Personnalite createPersonnalite(@RequestBody Personnalite personnalite) {
@@ -33,5 +36,9 @@ public class PersonnaliteController {
     @PutMapping("/update/{id}")
     public Personnalite update(@PathVariable Long id, @RequestBody Personnalite personnalite) {
         return personnaliteService.updatePersonnalite(id,personnalite);
+    }
+    @DeleteMapping("/deleteAll")
+    public String deleteAll(){
+        return personnaliteService.deleteAllPersonnalites();
     }
 }

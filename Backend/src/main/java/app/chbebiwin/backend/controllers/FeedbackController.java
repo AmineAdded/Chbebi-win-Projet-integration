@@ -36,4 +36,8 @@ public class FeedbackController {
     public Feedback update(@PathVariable long id, @RequestBody FeedbackRequest request) {
         return feedbackService.updateFeedback(id,request);
     }
+    @DeleteMapping("/deleteAll")
+    public String deleteAll(){
+        return feedbackService.deleteAllFeedback();
+    }
 }

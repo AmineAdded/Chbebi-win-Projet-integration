@@ -63,5 +63,9 @@ public class QuestionService {
                     return questionRepository.save(newQuestion);
                 });
     }
+    public String deleteAllQuestions(){
+        questionRepository.deleteAll();
+        return "Tous les questions sont supprimés!";
+    }
 
 }

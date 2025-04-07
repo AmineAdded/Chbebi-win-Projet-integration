@@ -55,7 +55,7 @@ public class UtilisateurService {
         return utilisateurRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
     }
 
-    public Utilisateur registerUser(signUpRequest request) {
+    public Utilisateur registerUser(signUpRequest request) throws EmailAlreadyExistsException {
         if(request.getNom()!=null && request.getEmail() != null && request.getPassword() != null && request.getConfirmPassword() != null &&(request.getPassword().equals(request.getConfirmPassword()))){
         Utilisateur utilisateur = new Utilisateur();
             if (utilisateurRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -68,5 +68,9 @@ public class UtilisateurService {
         return utilisateurRepository.save(utilisateur);
         }
         return null;
+    }
+    public String deleteAllUsers(){
+        utilisateurRepository.deleteAll();
+        return "Tous les utilisateurs sont supprimés!";
     }
 }

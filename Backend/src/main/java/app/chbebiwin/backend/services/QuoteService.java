@@ -44,6 +44,10 @@ public class QuoteService {
                 })
                 .orElseGet(() -> quoteRepository.save(quote));
     }
+    public String deleteAllQuote(){
+        quoteRepository.deleteAll();
+        return "Tous les quotes sont supprimés!";
+    }
 
 
 }
