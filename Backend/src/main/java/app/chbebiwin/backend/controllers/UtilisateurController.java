@@ -17,10 +17,6 @@ public class UtilisateurController {
         this.utilisateurService = utilisateurService;
     }
 
-    @PostMapping ("/create")
-    public Utilisateur create(@RequestBody Utilisateur utilisateur) {
-        return utilisateurService.createUtilisateur(utilisateur);
-    }
     @DeleteMapping("/delete/{id}")
     public String delete(@PathVariable Long id){
         return utilisateurService.deleteUtilisateur(id);

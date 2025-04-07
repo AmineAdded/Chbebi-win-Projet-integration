@@ -37,9 +37,6 @@ public class UtilisateurService {
         return token;
     }
 
-    public Utilisateur createUtilisateur(Utilisateur user) {
-        return utilisateurRepository.save(user);
-    }
     public String deleteUtilisateur(Long id) {
         if(utilisateurRepository.existsById(id)){
             utilisateurRepository.deleteById(id);
