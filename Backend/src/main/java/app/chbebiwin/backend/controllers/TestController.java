@@ -35,4 +35,8 @@ public class TestController {
     public Test update(@RequestBody Test test, @PathVariable Long id) {
         return testService.updateTest(id, test);
     }
+    @DeleteMapping("/deleteAll")
+    public String deleteAll(){
+        return testService.deleteAllTest();
+    }
 }

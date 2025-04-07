@@ -61,5 +61,9 @@ public class ReponseService {
             return reponseRepository.save(reponse);
         });
     }
+    public String deleteAllReponses(){
+        reponseRepository.deleteAll();
+        return "Tous les réponses sont supprimés!";
+    }
 
 }

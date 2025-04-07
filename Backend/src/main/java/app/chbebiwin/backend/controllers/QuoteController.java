@@ -35,5 +35,9 @@ public class QuoteController {
     public Quote update(@RequestBody Quote quote,@PathVariable Long id){
         return quoteService.updateQuote(quote,id);
     }
+    @DeleteMapping("/deleteAll")
+    public String deleteAll(){
+        return quoteService.deleteAllQuote();
+    }
 
 }

@@ -44,5 +44,9 @@ public class TestService {
                 })
                 .orElseGet(() -> testRepository.save(test));
     }
+    public String deleteAllTest(){
+        testRepository.deleteAll();
+        return "Tous les tests sont supprimés!";
+    }
 
 }

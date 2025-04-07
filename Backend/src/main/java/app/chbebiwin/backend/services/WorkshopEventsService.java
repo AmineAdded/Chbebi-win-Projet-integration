@@ -42,4 +42,8 @@ public class WorkshopEventsService {
                     return workshopEventsRepository.save(existingWorkshopEvents);
                 }).orElseGet(() -> workshopEventsRepository.save(workshopEvents));
     }
+    public String deleteAllWorkshopEvents(){
+        workshopEventsRepository.deleteAll();
+        return "Tous les workshops et events sont supprimés!";
+    }
 }

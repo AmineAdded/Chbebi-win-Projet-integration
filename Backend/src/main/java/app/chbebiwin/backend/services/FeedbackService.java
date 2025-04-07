@@ -67,5 +67,9 @@ public class FeedbackService {
                     return feedbackRepository.save(newFeedback);
                 });
     }
+    public String deleteAllFeedback(){
+        feedbackRepository.deleteAll();
+        return "Tous les feedback sont supprimés!";
+    }
 
 }

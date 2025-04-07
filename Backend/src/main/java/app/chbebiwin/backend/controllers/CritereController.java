@@ -36,4 +36,8 @@ public class CritereController {
     public Critere update(@PathVariable Long id, @RequestBody CritereRequest request) {
         return critereService.updateCritere(id,request);
     }
+    @DeleteMapping("/deleteAll")
+    public String deleteAll(){
+        return critereService.deleteAllCriteres();
+    }
 }

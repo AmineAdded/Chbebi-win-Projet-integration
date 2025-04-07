@@ -36,4 +36,8 @@ public class QuestionController {
     public Question update(@PathVariable Long id, @RequestBody QuestionRequest request) {
         return questionService.updateQuestion(id,request);
     }
+    @DeleteMapping("/deleteAll")
+    public String deleteAll(){
+        return questionService.deleteAllQuestions();
+    }
 }

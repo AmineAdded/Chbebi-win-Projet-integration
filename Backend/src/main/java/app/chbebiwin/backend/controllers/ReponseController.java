@@ -36,4 +36,8 @@ public class ReponseController {
     public Reponse update(@PathVariable Long id, @RequestBody ReponseRequest request) {
         return reponseService.updateReponse(id, request);
     }
+    @DeleteMapping("/deleteAll")
+    public String deleteAll(){
+        return reponseService.deleteAllReponses();
+    }
 }

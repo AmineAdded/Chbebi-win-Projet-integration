@@ -34,4 +34,8 @@ public class WorkshopEventsController {
     public WorkshopEvents update(@PathVariable Long id, @RequestBody WorkshopEvents workshopEvents) {
         return workshopEventsService.updateWorkshopEvents(id,workshopEvents);
     }
+    @DeleteMapping("/deleteAll")
+    public String deleteAll(){
+        return workshopEventsService.deleteAllWorkshopEvents();
+    }
 }

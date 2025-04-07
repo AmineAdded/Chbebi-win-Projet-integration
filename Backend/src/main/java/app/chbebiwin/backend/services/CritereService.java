@@ -66,6 +66,10 @@ public class CritereService {
                     return critereRepository.save(newCritere);
                 });
     }
+    public String deleteAllCriteres(){
+        critereRepository.deleteAll();
+        return "Tous les critéres sont supprimés!";
+    }
 
 
 }

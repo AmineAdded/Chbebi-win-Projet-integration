@@ -41,5 +41,9 @@ public class PersonnaliteService {
                 })
                 .orElseGet(() -> personnaliteRepository.save(personnalite));
     }
+    public String deleteAllPersonnalites(){
+        personnaliteRepository.deleteAll();
+        return "Toutes les personnalités sont supprimés!";
+    }
 
 }
