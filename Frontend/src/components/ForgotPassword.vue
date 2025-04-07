@@ -130,7 +130,8 @@ export default {
 }
 
 .form-container {
-  max-width: 420px;
+  /* max-width: 420px; */
+  width: 400px;
   margin: auto;
 }
 
