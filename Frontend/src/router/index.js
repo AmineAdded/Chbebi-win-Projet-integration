@@ -42,7 +42,7 @@ const routes = [
     component: DetailsPersonnality,
   },
   {
-    path: '/reset-password/:token',
+    path: '/reset-password',
     name: 'ResetPassword',
     component: () => import('@/views/ResetPassword.vue')
   },

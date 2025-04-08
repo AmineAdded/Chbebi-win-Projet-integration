@@ -8,7 +8,7 @@
       <v-card-text>
         <v-form @submit.prevent="resetPassword">
           <!-- Champ Token -->
-          <v-text-field
+          <!-- <v-text-field
             v-model="tokenInput"
             label="رمز التحقق (Token)"
             placeholder="أدخل الرمز المرسل عبر البريد الإلكتروني"
@@ -17,7 +17,7 @@
             :rules="[v => !!v || 'الرمز مطلوب']"
             required
             class="mb-4"
-          ></v-text-field>
+          ></v-text-field> -->
 
           <!-- Champ Nouveau mot de passe -->
           <v-text-field
@@ -47,6 +47,17 @@
             required
             @click:append-inner="showConfirmPassword = !showConfirmPassword"
           ></v-text-field>
+          <div class="code-input-section mt-4">
+            <div class="text-subtitle-1 mb-2">Code de vérification</div>
+            <v-otp-input
+              v-model="tokenInput"
+              type="number"
+              length="6"
+              :rules="[v => !!v || 'الرمز مطلوب']"
+              required
+              class="otp-input"
+            ></v-otp-input>
+          </div>
 
           <!-- Bouton de soumission -->
           <v-btn
@@ -140,7 +151,8 @@ export default {
           "http://localhost:9090/api/auth/reset-password",
           {
             token: this.tokenInput,
-            password: this.password
+            password: this.password,
+            confirmPassword: this.confirmPassword
           }
         );
         this.message = res.data?.message || "تم إعادة تعيين كلمة المرور بنجاح";
