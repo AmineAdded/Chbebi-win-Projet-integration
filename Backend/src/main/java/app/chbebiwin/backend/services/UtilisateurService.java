@@ -41,8 +41,15 @@ public class UtilisateurService {
         return null;
     }
 
-    public Utilisateur loginUser(loginRequest request){
-        return utilisateurRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+    public Utilisateur loginUser(loginRequest request) {
+        Utilisateur user = utilisateurRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Email incorrect"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getMdpsCompte())) {
+            throw new RuntimeException("Mot de passe incorrect");
+        }
+
+        return user;
     }
 
     public Utilisateur registerUser(signUpRequest request) throws EmailAlreadyExistsException {
