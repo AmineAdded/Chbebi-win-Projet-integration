@@ -1,14 +1,24 @@
 <template>
   <v-container class="d-flex justify-center align-center" style="min-height: 100vh;" dir="rtl">
     <v-card class="pa-6" width="100%" max-width="500" elevation="3">
-      <!-- Titre en arabe -->
       <v-card-title class="text-center text-h4 mb-6" style="font-family: 'Segoe UI';">
         إعادة تعيين كلمة المرور
       </v-card-title>
 
-      <!-- Formulaire -->
       <v-card-text>
         <v-form @submit.prevent="resetPassword">
+          <!-- Champ Token -->
+          <v-text-field
+            v-model="tokenInput"
+            label="رمز التحقق (Token)"
+            placeholder="أدخل الرمز المرسل عبر البريد الإلكتروني"
+            prepend-inner-icon="mdi-key"
+            variant="outlined"
+            :rules="[v => !!v || 'الرمز مطلوب']"
+            required
+            class="mb-4"
+          ></v-text-field>
+
           <!-- Champ Nouveau mot de passe -->
           <v-text-field
             v-model="password"
@@ -38,7 +48,7 @@
             @click:append-inner="showConfirmPassword = !showConfirmPassword"
           ></v-text-field>
 
-          <!-- Bouton de réinitialisation -->
+          <!-- Bouton de soumission -->
           <v-btn
             type="submit"
             color="primary"
@@ -63,11 +73,11 @@
         </v-alert>
 
         <!-- Lien de retour -->
-        <div class="text-center mt-4">
-          <router-link to="/login" class="text-primary">
-            العودة إلى الصفحة الرئيسية
-          </router-link>
-        </div>
+        <div class="text-center mb-4">
+                <v-btn class="close" to="/">
+                  العودة إلى الصفحة الرئيسية
+                </v-btn>
+            </div>
       </v-card-text>
     </v-card>
   </v-container>
@@ -79,6 +89,7 @@ import axios from "axios";
 export default {
   data() {
     return {
+      tokenInput: "",
       password: "",
       confirmPassword: "",
       showPassword: false,
@@ -97,9 +108,6 @@ export default {
     alertType() {
       return this.message.includes("خطأ") ? "error" : "success";
     },
-    token() {
-      return this.$route.params.token;
-    },
     confirmPasswordRules() {
       return [
         v => !!v || 'يجب تأكيد كلمة المرور',
@@ -110,21 +118,28 @@ export default {
       return this.password && this.confirmPassword && this.password === this.confirmPassword;
     }
   },
+  mounted() {
+    // Extraire automatiquement le token de l'URL si présent
+    const tokenParam = this.$route.query.token;
+    if (tokenParam) {
+      this.tokenInput = tokenParam;
+    }
+  },
   methods: {
     async resetPassword() {
-      if (!this.password || !this.passwordsMatch) {
-        this.message = "يجب أن تتطابق كلمتا المرور";
+      if (!this.tokenInput || !this.passwordsMatch) {
+        this.message = "يرجى التحقق من صحة المعلومات المدخلة";
         return;
       }
-      
+
       this.loading = true;
       this.message = "";
 
       try {
         const res = await axios.post(
           "http://localhost:9090/api/auth/reset-password",
-          { 
-            token: this.token,
+          {
+            token: this.tokenInput,
             password: this.password
           }
         );
@@ -140,38 +155,15 @@ export default {
   }
 };
 </script>
-
 <style scoped>
-.v-card {
-  transition: transform 0.3s ease;
-}
-
-.v-card:hover {
-  transform: translateY(-5px);
-}
-
-a {
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-a:hover {
-  color: #1976D2 !important;
-}
-
-/* Pour le support RTL */
-[dir="rtl"] .v-text-field .v-input__prepend-inner {
-  margin-right: 0;
-  margin-left: 8px;
-}
-
-[dir="rtl"] .v-text-field .v-input__append-inner {
-  margin-left: 0;
-  margin-right: 8px;
-}
-
-/* Espacement entre les champs */
-.v-text-field {
-  margin-bottom: 16px;
+.close {
+    background-color: #01F3F3;
+    color: aliceblue;
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: 30px;
+    width: 55%;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    margin-top: 5%;
 }
 </style>
