@@ -2,6 +2,7 @@ package app.chbebiwin.backend.controllers;
 
 import app.chbebiwin.backend.entities.Utilisateur;
 import app.chbebiwin.backend.repositories.UtilisateurRepository;
+import app.chbebiwin.backend.services.EmailService;
 import app.chbebiwin.backend.services.UtilisateurService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,22 +26,27 @@ public class AuthController {
     @Autowired
     private UtilisateurService utilisateurService;
 
+    @Autowired
+    private EmailService emailService;
+
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
         String email = body.get("email");
-        Utilisateur user = utilisateurRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        Optional<Utilisateur> user = utilisateurRepository.findByEmail(email);
 
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email introuvable.");
+        if (user.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email not found.");
         }
 
-        String token = utilisateurService.generateResetToken(user);
-        String resetLink = "http://localhost:5173/reset-password/" + token;
+        Utilisateur utilisateur = user.get();
+        String token = utilisateurService.generateResetToken(utilisateur);
+        String resetLink = "http://localhost:5173/reset-password?token=" + token;
 
-        System.out.println("🔗 Lien de réinitialisation : " + resetLink);
-        return ResponseEntity.ok("Lien de réinitialisation envoyé !");
+        emailService.sendResetEmail(email, resetLink);
+
+        return ResponseEntity.ok("Email envoyé !");
     }
 
     @PostMapping("/reset-password")

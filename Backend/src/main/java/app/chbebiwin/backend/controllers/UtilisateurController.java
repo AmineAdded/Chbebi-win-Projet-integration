@@ -34,10 +34,12 @@ public class UtilisateurController {
     public Utilisateur register(@RequestBody signUpRequest request) {
         return utilisateurService.registerUser(request);
     }
+
     @PostMapping("/login")
     public Utilisateur login (@RequestBody loginRequest request){
         return utilisateurService.loginUser(request);
     }
+
     @DeleteMapping("/deleteAll")
     public String deleteAll(){
         return utilisateurService.deleteAllUsers();
