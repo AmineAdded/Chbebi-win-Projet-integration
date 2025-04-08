@@ -29,7 +29,8 @@ public class AuthController {
     @Autowired
     private EmailService emailService;
 
-    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
@@ -41,25 +42,27 @@ public class AuthController {
         }
 
         Utilisateur utilisateur = user.get();
-        String token = utilisateurService.generateResetToken(utilisateur);
-        String resetLink = "http://localhost:5173/reset-password?token=" + token;
+        String token = emailService.generateResetToken(utilisateur);
 
-        emailService.sendResetEmail(email, resetLink);
+        emailService.sendResetPasswordEmail(email,token);
 
         return ResponseEntity.ok("Email envoyé !");
     }
 
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
+        String password = body.get("password");
+        String confirmPassword = body.get("confirmPassword");
         String token = body.get("token");
-        String newPassword = body.get("password");
 
         Utilisateur user = utilisateurRepository.findByResetToken(token);
         if (user == null || user.getTokenExpiry().isBefore(LocalDateTime.now())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token invalide ou expiré.");
         }
-
-        user.setMdpsCompte(passwordEncoder.encode(newPassword));
+        if(!password.equals(confirmPassword)) {{
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Les mots de passe ne correspondent pas.");}
+        }
+        user.setMdpsCompte(passwordEncoder.encode(password));
         user.setResetToken(null);
         user.setTokenExpiry(null);
         utilisateurRepository.save(user);

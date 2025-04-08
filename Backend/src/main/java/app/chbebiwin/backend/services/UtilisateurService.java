@@ -12,31 +12,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
 public class UtilisateurService {
     @Autowired
     private UtilisateurRepository utilisateurRepository;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public String generateResetToken(Utilisateur utilisateur) {
-        // Générer un token aléatoire (UUID)
-        String token = UUID.randomUUID().toString();
-
-        // Définir la date d'expiration (ex : 15 minutes)
-        LocalDateTime expiry = LocalDateTime.now().plusMinutes(15);
-
-        // Mettre à jour l'utilisateur
-        utilisateur.setResetToken(token);
-        utilisateur.setTokenExpiry(expiry);
-
-        // Sauvegarder dans la base de données
-        utilisateurRepository.save(utilisateur);
-
-        return token;
-    }
 
     public String deleteUtilisateur(Long id) {
         if(utilisateurRepository.existsById(id)){
