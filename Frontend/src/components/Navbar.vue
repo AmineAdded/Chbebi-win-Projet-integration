@@ -1,30 +1,58 @@
 <template>
   <div class="navbar-container">
     <v-app-bar color="white" elevation="2" class="custom-navbar" height="80">
-      <!-- Bouton de menu hamburger pour mobile -->
+      <!-- Bouton hamburger (mobile) -->
       <v-app-bar-nav-icon @click="drawer = !drawer" class="d-flex d-md-none"></v-app-bar-nav-icon>
-      
-      <!-- Logo pour mobile (centré) -->
+
+      <!-- Logo mobile -->
       <v-toolbar-title class="d-flex d-md-none justify-center flex-grow-1">
         <img :src="logo" alt="logo" class="logo-img" @click="$router.push('/')" style="cursor: pointer;" />
       </v-toolbar-title>
-      
-      <!-- Liens de navigation pour grand écran -->
+
+      <!-- Liens desktop -->
       <v-container class="nav-container d-none d-md-flex">
         <v-btn text to="/agenda" class="nav-btn">أجندة</v-btn>
         <v-btn text to="/time-management" class="nav-btn">إدارة الوقت</v-btn>
         <v-btn text to="/culture" class="nav-btn">الثقافة التونسية</v-btn>
         <v-btn text to="/islam" class="nav-btn">الدين الإسلامي</v-btn>
-
         <v-spacer></v-spacer>
-
-        <!-- Logo cliquable aligné à droite (desktop) -->
         <v-btn text to="/" class="nav-btn">الصفحة الرئيسية</v-btn>
         <img :src="logo" alt="logo" class="logo-img" />
+
+        <!-- Menu avatar desktop -->
+        <v-menu offset-y>
+          <template v-slot:activator="{ props }">
+            <v-btn icon class="avatar-btn ml-4" v-bind="props">
+              <v-avatar color="#152538" size="40">
+                <v-icon color="white">mdi-account</v-icon>
+              </v-avatar>
+            </v-btn>
+          </template>
+
+          <v-card>
+            <v-list>
+              <v-list-item :to="{ path: '/account' }" link>
+                <v-list-item-icon>
+                  <v-icon>mdi-account-cog</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>إدارة الحساب</v-list-item-title>
+              </v-list-item>
+
+              <v-divider></v-divider>
+
+              <v-list-item @click="logout">
+                <v-list-item-icon>
+                  <v-icon>mdi-logout</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>تسجيل الخروج</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-card>
+        </v-menu>
       </v-container>
     </v-app-bar>
-    
-    <!-- Drawer pour mobile -->
+
+    <!-- Drawer mobile -->
     <v-navigation-drawer v-model="drawer" temporary app right>
       <v-list>
         <v-list-item class="text-center py-4">
@@ -32,40 +60,53 @@
             <img :src="logo" alt="logo" class="drawer-logo" />
           </v-list-item-content>
         </v-list-item>
-        
+
         <v-divider></v-divider>
-        
+
         <v-list-item to="/" link>
-          <v-list-item-content class="text-right">
-            <v-list-item-title class="nav-drawer-item">الصفحة الرئيسية</v-list-item-title>
-          </v-list-item-content>
+          <v-list-item-title class="text-right nav-drawer-item">الصفحة الرئيسية</v-list-item-title>
         </v-list-item>
 
         <v-list-item to="/islam" link>
-          <v-list-item-content class="text-right">
-            <v-list-item-title class="nav-drawer-item">الدين الإسلامي</v-list-item-title>
-          </v-list-item-content>
+          <v-list-item-title class="text-right nav-drawer-item">الدين الإسلامي</v-list-item-title>
         </v-list-item>
 
         <v-list-item to="/culture" link>
-          <v-list-item-content class="text-right">
-            <v-list-item-title class="nav-drawer-item">الثقافة التونسية</v-list-item-title>
-          </v-list-item-content>
+          <v-list-item-title class="text-right nav-drawer-item">الثقافة التونسية</v-list-item-title>
         </v-list-item>
 
         <v-list-item to="/time-management" link>
-          <v-list-item-content class="text-right">
-            <v-list-item-title class="nav-drawer-item">إدارة الوقت</v-list-item-title>
-          </v-list-item-content>
+          <v-list-item-title class="text-right nav-drawer-item">إدارة الوقت</v-list-item-title>
         </v-list-item>
-        
+
         <v-list-item to="/agenda" link>
-          <v-list-item-content class="text-right">
-            <v-list-item-title class="nav-drawer-item">أجندة</v-list-item-title>
-          </v-list-item-content>
+          <v-list-item-title class="text-right nav-drawer-item">أجندة</v-list-item-title>
+        </v-list-item>
+
+        <v-divider></v-divider>
+
+        <v-list-item to="/account" link>
+          <v-list-item-title class="text-right nav-drawer-item">إدارة الحساب</v-list-item-title>
+        </v-list-item>
+
+        <v-list-item @click="logout">
+          <v-list-item-title class="text-right nav-drawer-item">تسجيل الخروج</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
+
+    <!-- Dialog de confirmation -->
+    <v-dialog v-model="logoutDialog" max-width="400">
+      <v-card>
+        <v-card-title class="text-right">تسجيل الخروج</v-card-title>
+        <v-card-text class="text-right">هل أنت متأكد أنك تريد تسجيل الخروج؟</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="grey darken-1" text @click="logoutDialog = false">إلغاء</v-btn>
+          <v-btn color="red darken-1" text @click="confirmLogout">تأكيد</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -77,14 +118,23 @@ export default {
   data() {
     return {
       logo: logo,
-      drawer: false
+      drawer: false,
+      logoutDialog: false
     };
   },
+  methods: {
+    logout() {
+      this.logoutDialog = true;
+    },
+    confirmLogout() {
+      this.logoutDialog = false;
+      this.$router.push("/login");
+    }
+  }
 };
 </script>
 
 <style scoped>
-/* Style de la NavBar */
 .custom-navbar {
   position: fixed;
   top: 0;
@@ -95,13 +145,11 @@ export default {
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Conteneur des liens */
 .nav-container {
   display: flex;
   align-items: center;
 }
 
-/* Style des boutons de navigation */
 .nav-btn {
   font-size: 20px;
   font-weight: bold;
@@ -111,25 +159,21 @@ export default {
   padding: 0 15px;
 }
 
-/* Effet au survol */
 .nav-btn:hover {
   color: #2d80d5;
   text-decoration: none;
 }
 
-/* Style du logo */
 .logo-img {
   width: 75px;
   height: auto;
   transition: transform 0.3s ease-in-out;
 }
 
-/* Effet au survol du logo */
 .logo-img:hover {
   transform: scale(1.1);
 }
 
-/* Style pour le drawer mobile */
 .drawer-logo {
   width: 60px;
   height: auto;
@@ -143,19 +187,29 @@ export default {
   font-family: "Segoe UI", sans-serif;
 }
 
-/* Media queries pour différentes tailles d'écran */
+.avatar-btn {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  position: absolute;
+  right: 20px;
+}
+
+.avatar-btn:hover {
+  transform: scale(1.1);
+}
+
 @media (max-width: 960px) {
   .custom-navbar {
     padding: 0 10px;
   }
-  
+
   .logo-img {
     width: 60px;
   }
 
   .v-toolbar-title {
     position: absolute;
-    right: 10px; /* Déplace le logo vers la droite */
+    right: 10px;
   }
 }
 
@@ -163,15 +217,14 @@ export default {
   .custom-navbar {
     height: 60px !important;
   }
-  
+
   .logo-img {
     width: 50px;
   }
 
   .v-toolbar-title {
     position: absolute;
-    right: 10px; /* Déplace le logo vers la droite */
+    right: 10px;
   }
 }
-
 </style>
