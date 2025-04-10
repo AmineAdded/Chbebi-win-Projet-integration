@@ -71,6 +71,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
     name: "SignUp",
     data() {
@@ -84,13 +85,23 @@ export default {
         }
     },
     methods: {
-        register() {
+        async register() {
             console.log('Inscription avec:', {
                 fullName: this.fullName,
                 email: this.email,
                 password: this.password
             })
-            this.$router.push('/AvantTest');
+            try{
+                await axios.post("Utilisateur/register",{
+                    nom: this.fullName,
+                    email: this.email,
+                    password: this.password,
+                    confirmPassword: this.confirmPassword
+                });
+                this.$router.push('/AvantTest');
+            }catch(err){
+                console.log(err.response?.data?.message || "Message d'erreur");
+            }
         }
     }
 }

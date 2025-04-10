@@ -94,7 +94,7 @@ export default {
 
       try {
         const res = await axios.post(
-          "http://localhost:9090/api/auth/forgot-password",
+          "auth/forgot-password",
           { email: this.email }
         );
         this.message =

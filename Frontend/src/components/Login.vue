@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
     name: "Login",
     data() {
@@ -59,12 +60,19 @@ export default {
         }
     },
     methods: {
-        login() {
+        async login() {
             console.log('Connexion avec:', {
                 email: this.email,
                 password: this.password
             })
-            this.$router.push('/privatehome');
+            try{
+                await axios.post("Utilisateur/login",{email:this.email,password:this.password});
+                this.$router.push('/privatehome');
+            }
+            catch(err){
+                console.log(err.response?.data?.message || "Email introuvable");
+            }
+            
         }
     }
 }
