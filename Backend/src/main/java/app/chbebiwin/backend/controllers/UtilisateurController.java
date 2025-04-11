@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/Utilisateur")
+@CrossOrigin(origins = "*")
 public class UtilisateurController {
     private final UtilisateurService utilisateurService;
 
@@ -30,14 +31,14 @@ public class UtilisateurController {
         return utilisateurService.getUserById(id);
     }
 
-    @PostMapping("/register")
-    public Utilisateur register(@RequestBody signUpRequest request) {
-        return utilisateurService.registerUser(request);
-    }
-
     @PostMapping("/login")
     public Utilisateur login (@RequestBody loginRequest request){
         return utilisateurService.loginUser(request);
+    }
+
+    @PostMapping("/register")
+    public Utilisateur register(@RequestBody signUpRequest request) {
+        return utilisateurService.registerUser(request);
     }
 
     @DeleteMapping("/deleteAll")

@@ -9,6 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/Critere")
+@CrossOrigin(origins = "*")
 public class CritereController {
     private final CritereService critereService;
 

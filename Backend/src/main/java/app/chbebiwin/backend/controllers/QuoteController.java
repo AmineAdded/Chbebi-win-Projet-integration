@@ -8,6 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/Quote")
+@CrossOrigin(origins = "*")
 public class QuoteController {
     private final QuoteService quoteService;
 

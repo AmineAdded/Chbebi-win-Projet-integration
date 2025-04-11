@@ -9,6 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/Personnalite")
+@CrossOrigin(origins = "*")
 public class PersonnaliteController {
     private final PersonnaliteService personnaliteService;
     private final FeedbackService feedbackService;
