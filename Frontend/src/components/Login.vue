@@ -11,7 +11,10 @@
                 <v-container>
                     <v-sheet class="field-container" elevation="1">
                         <v-text-field v-model="email" placeholder="بريدك الإلكتروني" variant="outlined"
-                            density="comfortable" hide-details dir="rtl" class="custom-input">
+                            :error-messages="errors.email" 
+                            @input="errors.email = ''"
+                            density="comfortable" hide-details="auto" dir="rtl" class="custom-input">
+                            
                             <template v-slot:append-inner>
                                 <v-icon color="primary">mdi-email</v-icon>
                             </template>
@@ -21,7 +24,10 @@
                     <v-sheet class="field-container" elevation="1">
                         <v-text-field v-model="password" placeholder="كلمة السر"
                             :type="showPassword ? 'text' : 'password'" variant="outlined" density="comfortable"
-                            hide-details dir="rtl" class="custom-input">
+                            :error-messages="errors.password"
+                            @input="errors.password = ''"
+                            hide-details="auto" dir="rtl" class="custom-input">
+                            
                             <template v-slot:append-inner>
                                 <v-icon color="primary">mdi-lock</v-icon>
                             </template>
@@ -46,33 +52,57 @@
             </v-form>
         </v-card>
     </v-container>
+
+    <v-snackbar v-model="showSnackBar" :color="snackbarColor" top timeout="3000">
+      <div class="d-flex align-center">
+        <v-icon class="mr-2" color="white">
+          {{ snackbarIcon }}
+        </v-icon>
+        {{ text }}
+      </div>
+      <template v-slot:actions>
+        <v-btn icon @click="showSnackBar = false">
+          <v-icon color="white">mdi-close</v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
 </template>
 
 <script>
-import axios from 'axios';
+import userService from '../Services/userService.js';
 export default {
     name: "Login",
     data() {
         return {
             email: '',
             password: '',
-            showPassword: false
+            showPassword: false,
+            showSnackBar: false,
+            snackbarColor: 'error',
+            snackbarIcon: 'mdi-alert-circle',
+            text:"",
+            errors:{
+                email:"",
+                password:""
+            }
         }
     },
     methods: {
-        async login() {
-            console.log('Connexion avec:', {
-                email: this.email,
-                password: this.password
-            })
-            try{
-                await axios.post("Utilisateur/login",{email:this.email,password:this.password});
-                this.$router.push('/privatehome');
+        async login(){
+            if(this.email!="" && this.password!=""){
+                try{
+                    await userService.login(this.email,this.password);
+                    this.$router.push('/privatehome');
+                }
+                catch(err){
+                    this.showSnackBar = true;
+                    this.text = err.response.data.message || "حدث خطأ أثناء تسجيل الدخول";
+                }
             }
-            catch(err){
-                console.log(err.response?.data?.message || "Email introuvable");
+            else{
+                this.errors.email =  "البريد الإلكتروني مطلوب";
+                this.errors.password ="كلمة السر مطلوبة";
             }
-            
         }
     }
 }

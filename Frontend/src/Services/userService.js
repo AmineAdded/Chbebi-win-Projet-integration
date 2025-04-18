@@ -1,0 +1,25 @@
+import Axios from 'axios';
+import {useUserStore} from '@/store/User/userStore';
+
+export default{
+    async login(email, password){
+       try{
+            const store = useUserStore();
+            const response = await Axios.post('Utilisateur/login', {
+                email: email,
+                password: password
+            });
+            const { id, nom, email: mail, accessToken, role } = response.data;
+            const filteredUser = { id, nom, email: mail, accessToken, role };
+
+            store.login(filteredUser);
+            
+            return response.data;
+        }
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
+            
+       }
+};
