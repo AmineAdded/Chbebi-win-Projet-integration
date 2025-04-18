@@ -29,6 +29,7 @@ public class Utilisateur {
     private int role =0;
     private String resetToken;
     private LocalDateTime tokenExpiry;
+    private String accessToken;
 
 
     @ManyToOne

@@ -49,6 +49,11 @@ public class UtilisateurService {
             throw new RuntimeException("Mot de passe incorrect");
         }
 
+        //Générer un token lors du login
+        int tokenInt = 100000 + new Random().nextInt(900000);
+        String token = String.valueOf(tokenInt);
+        user.setAccessToken(token);
+        utilisateurRepository.save(user);
         return user;
     }
 
