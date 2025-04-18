@@ -52,7 +52,19 @@ const routes = [
     path: '/password',
     name: 'Password',
     component: () => import('@/components/ForgotPassword.vue')
-  }  
+  } ,
+  {
+    path: '/islam',
+    name: 'Islam',
+    component: () => import('@/views/IslamicView.vue')
+  }  ,
+  {
+    path: '/islamic/:topicId',
+    name: 'TopicChaptersView',
+    component: () => import('@/views/TopicChaptersView.vue'),
+    props: true,
+  }
+  
 ];
 
 const router = createRouter({
