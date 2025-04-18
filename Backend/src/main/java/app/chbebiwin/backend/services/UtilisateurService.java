@@ -58,17 +58,33 @@ public class UtilisateurService {
     }
 
     public Utilisateur registerUser(signUpRequest request) throws EmailAlreadyExistsException {
-        if(request.getNom()!=null && request.getEmail() != null && request.getPassword() != null && request.getConfirmPassword() != null &&(request.getPassword().equals(request.getConfirmPassword()))){
-        Utilisateur utilisateur = new Utilisateur();
-            if (utilisateurRepository.findByEmail(request.getEmail()).isPresent()) throw new EmailAlreadyExistsException("Email is already taken");
+        if (request.getNom() != null &&
+                request.getEmail() != null &&
+                request.getPassword() != null &&
+                request.getConfirmPassword() != null) {
 
+            if (!request.getPassword().equals(request.getConfirmPassword()))
+                throw new RuntimeException("كلمتا المرور غير متطابقتين");
+
+            if (utilisateurRepository.findByEmail(request.getEmail()).isPresent())
+                throw new EmailAlreadyExistsException("البريد الإلكتروني مُسجّل مسبقًا");
+
+            Utilisateur utilisateur = new Utilisateur();
             utilisateur.setNom(request.getNom());
-        utilisateur.setEmail(request.getEmail());
-        utilisateur.setMdpsCompte(passwordEncoder.encode(request.getPassword()));
-        return utilisateurRepository.save(utilisateur);
+            utilisateur.setEmail(request.getEmail());
+            utilisateur.setMdpsCompte(passwordEncoder.encode(request.getPassword()));
+
+            int tokenInt = 100000 + new Random().nextInt(900000);
+            String token = String.valueOf(tokenInt);
+            utilisateur.setAccessToken(token);
+
+            utilisateurRepository.save(utilisateur);
+            return utilisateur;
         }
+
         return null;
     }
+
     public String deleteAllUsers(){
         utilisateurRepository.deleteAll();
         return "Tous les utilisateurs sont supprimés!";
