@@ -2,17 +2,26 @@
   <div class="navbar-container">
     <v-app-bar color="white" elevation="2" class="custom-navbar" height="80">
       <!-- Bouton hamburger (mobile) -->
-      <v-app-bar-nav-icon @click="drawer = !drawer" class="d-flex d-md-none"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon
+        @click="drawer = !drawer"
+        class="d-flex d-md-none"
+      ></v-app-bar-nav-icon>
 
       <!-- Logo mobile -->
       <v-toolbar-title class="d-flex d-md-none justify-center flex-grow-1">
-        <img :src="logo" alt="logo" class="logo-img" @click="$router.push('/')" style="cursor: pointer;" />
+        <img
+          :src="logo"
+          alt="logo"
+          class="logo-img"
+          @click="$router.push('/')"
+          style="cursor: pointer"
+        />
       </v-toolbar-title>
 
       <!-- Liens desktop -->
       <v-container class="nav-container d-none d-md-flex">
-        <v-btn text to="/agenda" class="nav-btn">أجندة</v-btn>
-        <v-btn text to="/time-management" class="nav-btn">إدارة الوقت</v-btn>
+        <v-btn text class="nav-btn" @click="handleAgendaClick">أجندة</v-btn>
+        <v-btn text class="nav-btn" @click="handleTimeManagementClick">إدارة الوقت</v-btn>
         <v-btn text to="/culture" class="nav-btn">الثقافة التونسية</v-btn>
         <v-btn text to="/islam" class="nav-btn">الدين الإسلامي</v-btn>
         <v-spacer></v-spacer>
@@ -64,33 +73,47 @@
         <v-divider></v-divider>
 
         <v-list-item to="/" link>
-          <v-list-item-title class="text-right nav-drawer-item">الصفحة الرئيسية</v-list-item-title>
+          <v-list-item-title class="text-right nav-drawer-item"
+            >الصفحة الرئيسية</v-list-item-title
+          >
         </v-list-item>
 
         <v-list-item to="/islam" link>
-          <v-list-item-title class="text-right nav-drawer-item">الدين الإسلامي</v-list-item-title>
+          <v-list-item-title class="text-right nav-drawer-item"
+            >الدين الإسلامي</v-list-item-title
+          >
         </v-list-item>
 
         <v-list-item to="/culture" link>
-          <v-list-item-title class="text-right nav-drawer-item">الثقافة التونسية</v-list-item-title>
+          <v-list-item-title class="text-right nav-drawer-item"
+            >الثقافة التونسية</v-list-item-title
+          >
         </v-list-item>
 
-        <v-list-item to="/time-management" link>
-          <v-list-item-title class="text-right nav-drawer-item">إدارة الوقت</v-list-item-title>
+        <v-list-item link @click.prevent="handleTimeManagementClick">
+          <v-list-item-title class="text-right nav-drawer-item">
+            إدارة الوقت
+          </v-list-item-title>
         </v-list-item>
 
-        <v-list-item to="/agenda" link>
-          <v-list-item-title class="text-right nav-drawer-item">أجندة</v-list-item-title>
+        <v-list-item link @click.prevent="handleAgendaClick">
+          <v-list-item-title class="text-right nav-drawer-item"
+            >أجندة</v-list-item-title
+          >
         </v-list-item>
 
         <v-divider></v-divider>
 
         <v-list-item to="/account" link>
-          <v-list-item-title class="text-right nav-drawer-item">إدارة الحساب</v-list-item-title>
+          <v-list-item-title class="text-right nav-drawer-item"
+            >إدارة الحساب</v-list-item-title
+          >
         </v-list-item>
 
         <v-list-item @click="logout">
-          <v-list-item-title class="text-right nav-drawer-item">تسجيل الخروج</v-list-item-title>
+          <v-list-item-title class="text-right nav-drawer-item"
+            >تسجيل الخروج</v-list-item-title
+          >
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -99,10 +122,14 @@
     <v-dialog v-model="logoutDialog" max-width="400">
       <v-card>
         <v-card-title class="text-right">تسجيل الخروج</v-card-title>
-        <v-card-text class="text-right">هل أنت متأكد أنك تريد تسجيل الخروج؟</v-card-text>
+        <v-card-text class="text-right"
+          >هل أنت متأكد أنك تريد تسجيل الخروج؟</v-card-text
+        >
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="grey darken-1" text @click="logoutDialog = false">إلغاء</v-btn>
+          <v-btn color="grey darken-1" text @click="logoutDialog = false"
+            >إلغاء</v-btn
+          >
           <v-btn color="red darken-1" text @click="confirmLogout">تأكيد</v-btn>
         </v-card-actions>
       </v-card>
@@ -121,19 +148,25 @@ export default {
       logo: logo,
       drawer: false,
       logoutDialog: false,
-
     };
   },
-  computed : {
-    showMenu(){
+  computed: {
+    showMenu() {
       const store = useUserStore();
-      if(store.accessToken){
+      if (store.accessToken) {
         return true;
-      }
-      else{
+      } else {
         return false;
       }
-    }
+    },
+    isLoggedIn() {
+      const store = useUserStore();
+      if (store.accessToken) {
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
   methods: {
     logout() {
@@ -142,10 +175,26 @@ export default {
     confirmLogout() {
       this.logoutDialog = false;
       const store = useUserStore();
-      store.logout(); 
+      store.logout();
       this.$router.push("/");
+    },
+    handleTimeManagementClick() {
+      if (this.isLoggedIn) {
+        console.log(this.isLoggedIn);
+        this.$router.push('/time-management');
+      } else {
+        this.$emit('openLogin');
+      }
+    },
+    handleAgendaClick() {
+      if (this.isLoggedIn) {
+        console.log(this.isLoggedIn);
+        this.$router.push('/agenda');
+      } else {
+        this.$emit('openLogin');
+      }
     }
-  }
+  },
 };
 </script>
 

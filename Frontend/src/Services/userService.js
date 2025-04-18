@@ -3,7 +3,7 @@ import {useUserStore} from '@/store/User/userStore';
 
 export default{
     async login(email, password){
-       try{
+        try{
             const store = useUserStore();
             const response = await Axios.post('Utilisateur/login', {
                 email: email,
@@ -21,5 +21,25 @@ export default{
             throw error;
         }
             
-       }
+        },
+        async signUp(nom,email,password){
+        try{
+            const store = useUserStore();
+            const response = await Axios.post('Utilisateur/signup', {
+                nom: nom,
+                email: email,
+                password: password,
+            });
+            const { email: mail, accessToken } = response.data;
+            const filteredUser = { nom, email: mail, accessToken };
+
+            store.SignUp(filteredUser);
+            
+            return response.data;
+        }
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
 };

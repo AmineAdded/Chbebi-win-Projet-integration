@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import userService from '@/Services/userService';
 export default {
     name: "SignUp",
     data() {
@@ -86,17 +86,11 @@ export default {
     },
     methods: {
         async register() {
-            console.log('Inscription avec:', {
-                fullName: this.fullName,
-                email: this.email,
-                password: this.password
-            })
             try{
-                await axios.post("Utilisateur/register",{
-                    nom: this.fullName,
+                userService.signUp({
+                    fullName: this.fullName,
                     email: this.email,
-                    password: this.password,
-                    confirmPassword: this.confirmPassword
+                    password: this.password
                 });
                 this.$router.push('/AvantTest');
             }catch(err){

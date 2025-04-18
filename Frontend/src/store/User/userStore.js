@@ -24,12 +24,19 @@ export const useUserStore = defineStore("user", () => {
         localStorage.removeItem("accessToken");
     }
 
+    function SignUp(token) {
+        accessToken.value = token;
+
+        localStorage.setItem("accessToken", token);
+    }
+
     return {
         accessToken,
         user,
         getToken,
         getUser,
         login,
-        logout
+        logout,
+        SignUp
     };
 });

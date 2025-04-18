@@ -9,7 +9,7 @@
       </div>
     </div>
   <div v-else class="main-container">
-    <Navbar />
+    <Navbar @openLogin="showLogin=true"/>
     
     <About @openSignUp="showSignUp = true" />
 
