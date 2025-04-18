@@ -5,9 +5,15 @@ import app.chbebiwin.backend.entities.Authentification.loginRequest;
 import app.chbebiwin.backend.entities.Authentification.signUpRequest;
 import app.chbebiwin.backend.entities.Utilisateur;
 import app.chbebiwin.backend.repositories.UtilisateurRepository;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +28,12 @@ public class UtilisateurService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private SpringTemplateEngine templateEngine;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
 
     public String deleteUtilisateur(Long id) {
@@ -77,8 +89,25 @@ public class UtilisateurService {
             int tokenInt = 100000 + new Random().nextInt(900000);
             String token = String.valueOf(tokenInt);
             utilisateur.setAccessToken(token);
-
             utilisateurRepository.save(utilisateur);
+
+            //Envoi d'un email lors du Sign Up
+            Context context = new Context();
+            context.setVariable("name", utilisateur.getNom());
+            String htmlContent = templateEngine.process("email/SignUp", context);
+
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+
+            try {
+                MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, "UTF-8");
+                helper.setTo(utilisateur.getEmail());
+                helper.setSubject("مرحبا بيك في Chbebi Win ");
+                helper.setText(htmlContent, true); // true = HTML
+
+                mailSender.send(mimeMessage);
+            } catch (MessagingException e) {
+                throw new RuntimeException("حدث خطأ أثناء إرسال البريد الإلكتروني", e);
+            }
             return utilisateur;
         }
 
