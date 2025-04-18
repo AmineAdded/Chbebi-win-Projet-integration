@@ -22,23 +22,23 @@ export default{
         }
             
         },
-        async signUp(nom,email,password){
+        async signUp(nom,email,password,confirmPassword){
         try{
             const store = useUserStore();
-            const response = await Axios.post('Utilisateur/signup', {
+            const response = await Axios.post('Utilisateur/register', {
                 nom: nom,
                 email: email,
                 password: password,
+                confirmPassword: confirmPassword
             });
-            const { email: mail, accessToken } = response.data;
-            const filteredUser = { nom, email: mail, accessToken };
+            const accessToken  = response.data.accessToken;
+            console.log("Token",nom);
 
-            store.SignUp(filteredUser);
-            
+            store.SignUp(accessToken,nom);
             return response.data;
         }
         catch (error) {
-            console.error(error);
+            console.error(error.response.data.message);
             throw error;
         }
     }

@@ -25,12 +25,14 @@
         <v-btn text to="/culture" class="nav-btn">الثقافة التونسية</v-btn>
         <v-btn text to="/islam" class="nav-btn">الدين الإسلامي</v-btn>
         <v-spacer></v-spacer>
-        <v-btn text to="/" class="nav-btn">الصفحة الرئيسية</v-btn>
+        <v-btn text class="nav-btn" @click="handleClick">الصفحة الرئيسية</v-btn>
         <img :src="logo" alt="logo" class="logo-img" />
 
         <!-- Menu avatar desktop -->
         <v-menu offset-y v-if="showMenu">
+          
           <template v-slot:activator="{ props }">
+            <span class="user-name">{{ userName }}</span>
             <v-btn icon class="avatar-btn ml-4" v-bind="props">
               <v-avatar color="#152538" size="40">
                 <v-icon color="white">mdi-account</v-icon>
@@ -58,6 +60,7 @@
             </v-list>
           </v-card>
         </v-menu>
+        
       </v-container>
     </v-app-bar>
 
@@ -159,6 +162,11 @@ export default {
         return false;
       }
     },
+    userName() {
+      const store = useUserStore();
+      return store.nom;
+     
+    },
     isLoggedIn() {
       const store = useUserStore();
       if (store.accessToken) {
@@ -195,10 +203,26 @@ export default {
       }
     }
   },
+  handleClick(){
+    if(this.isLoggedIn) {
+      this.$router.push('/privatehome');
+    } else {
+      this.$router.push('/');
+    }
+  }
 };
 </script>
 
 <style scoped>
+.user-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #152538;
+  font-family: "Segoe UI", sans-serif;
+  position: relative;
+  left: 60px;
+}
+
 .custom-navbar {
   position: fixed;
   top: 0;

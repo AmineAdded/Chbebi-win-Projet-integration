@@ -11,7 +11,8 @@
                 <v-container>
                     <v-sheet class="field-container" elevation="1">
                         <v-text-field v-model="fullName" placeholder="اسمك الكامل" variant="outlined"
-                            density="comfortable" hide-details dir="rtl" class="custom-input">
+                            density="comfortable" hide-details="auto" dir="rtl" :error-messages="errors.fullName"
+                            @input="errors.fullName = ''" class="custom-input">
                             <template v-slot:append-inner>
                                 <v-icon color="primary">mdi-account</v-icon>
                             </template>
@@ -20,7 +21,10 @@
 
                     <v-sheet class="field-container" elevation="1">
                         <v-text-field v-model="email" placeholder="بريدك الإلكتروني" variant="outlined"
-                            density="comfortable" hide-details dir="rtl" class="custom-input">
+                            density="comfortable" hide-details="auto" dir="rtl" :error-messages="errors.email"
+                            @input="errors.email = ''" 
+                            :rules="emailRules"
+                            class="custom-input">
                             <template v-slot:append-inner>
                                 <v-icon color="primary">mdi-email</v-icon>
                             </template>
@@ -28,8 +32,10 @@
                     </v-sheet>
 
                     <v-sheet class="field-container" elevation="1">
-                        <v-text-field v-model="password" placeholder="كلمة السر" :type="showPassword ? 'text' : 'password'"
-                            variant="outlined" density="comfortable" hide-details dir="rtl" class="custom-input">
+                        <v-text-field v-model="password" placeholder="كلمة السر"
+                            :type="showPassword ? 'text' : 'password'" variant="outlined" density="comfortable"
+                            hide-details="auto" dir="rtl" :error-messages="errors.password" :rules=passwordRules
+                            @input="errors.password = ''" class="custom-input">
                             <template v-slot:append-inner>
                                 <v-icon color="primary">mdi-lock</v-icon>
                             </template>
@@ -44,7 +50,10 @@
                     <v-sheet class="field-container" elevation="1">
                         <v-text-field v-model="confirmPassword" placeholder="إعادة كلمة السر"
                             :type="showConfirmPassword ? 'text' : 'password'" variant="outlined" density="comfortable"
-                            hide-details dir="rtl" class="custom-input">
+                            hide-details="auto" dir="rtl" :error-messages="errors.confirmPassword"
+                            @input="errors.confirmPassword = ''" 
+                            :rules="confirmPasswordRules"
+                            class="custom-input">
                             <template v-slot:append-inner>
                                 <v-icon color="primary">mdi-lock</v-icon>
                             </template>
@@ -58,7 +67,8 @@
                 </v-container>
 
                 <div class="d-flex justify-center">
-                    <v-btn class="me-2 buttonStyle" color="#2FE390" size="large" rounded="lg" @click.prevent="$emit('openLogin')">
+                    <v-btn class="me-2 buttonStyle" color="#2FE390" size="large" rounded="lg"
+                        @click.prevent="$emit('openLogin')">
                         عندي حساب
                     </v-btn>
                     <v-btn class="me-2 buttonStyle" color="#2D80D5" size="large" rounded="lg" @click.prevent="register">
@@ -68,6 +78,20 @@
             </v-form>
         </v-card>
     </v-container>
+
+    <v-snackbar v-model="showSnackBar" :color="snackbarColor" top timeout="3000">
+        <div class="d-flex align-center">
+            <v-icon class="mr-2" color="white">
+                {{ snackbarIcon }}
+            </v-icon>
+            {{ text }}
+        </div>
+        <template v-slot:actions>
+            <v-btn icon @click="showSnackBar = false">
+                <v-icon color="white">mdi-close</v-icon>
+            </v-btn>
+        </template>
+    </v-snackbar>
 </template>
 
 <script>
@@ -81,20 +105,61 @@ export default {
             password: '',
             confirmPassword: '',
             showPassword: false,
-            showConfirmPassword: false
+            showConfirmPassword: false,
+            showSnackBar: false,
+            snackbarColor: 'error',
+            snackbarIcon: 'mdi-alert-circle',
+            text: "",
+            errors: {
+                fullName: '',
+                email: '',
+                password: '',
+                confirmPassword: ''
+            },
+            passwordRules: [
+                v => /[A-Z]/.test(v) || 'يجب أن تحتوي على حرف كبير واحد على الأقل',
+                v => /[0-9]/.test(v) || 'يجب أن تحتوي على رقم واحد على الأقل',
+                v => (v && v.length >= 8) || 'الحد الأدنى 8 أحرف'
+            ],
+            emailRules: [     
+                (v) => /.+@.+\..+/.test(v) || "يجب أن يكون البريد الإلكتروني صالحًا",
+            ],
+            confirmPasswordRules: [
+                v => (v && v === this.password) || 'كلمات المرور غير متطابقة'
+            ]
         }
     },
     methods: {
         async register() {
-            try{
-                userService.signUp({
-                    fullName: this.fullName,
-                    email: this.email,
-                    password: this.password
-                });
-                this.$router.push('/AvantTest');
-            }catch(err){
-                console.log(err.response?.data?.message || "Message d'erreur");
+            if (this.fullName && this.email && this.password && this.confirmPassword) {
+
+                try {
+                    await userService.signUp(
+                        this.fullName,
+                        this.email,
+                        this.password,
+                        this.confirmPassword
+                    );
+                    this.$router.push('/AvantTest');
+                } catch (err) {
+                    this.showSnackBar = true;
+                    this.text = err.response.data.message;
+                    console.log(this.text);
+                }
+            }
+            else {
+                if (!this.fullName) {
+                    this.errors.fullName = 'الاسم مطلوب';
+                }
+                if (!this.email) {
+                    this.errors.email = 'البريد الإلكتروني مطلوب';
+                }
+                if (!this.password) {
+                    this.errors.password = 'كلمة المرور مطلوبة';
+                }
+                if (!this.confirmPassword) {
+                    this.errors.confirmPassword = 'تأكيد كلمة المرور مطلوب';
+                }
             }
         }
     }

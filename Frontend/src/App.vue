@@ -2,7 +2,7 @@
   <v-app>
     <v-main style="font-family: 'Segoe UI', sans-serif;">
       <router-view v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
+        <transition name="fade">
           <component :is="Component" />
         </transition>
       </router-view>
