@@ -16,12 +16,20 @@ export const useUserStore = defineStore("user", () => {
         localStorage.setItem("accessToken", u.accessToken);
         
     }
+    function logout(){
+        user.value = null;
+        accessToken.value = null;
+
+        localStorage.removeItem("user");
+        localStorage.removeItem("accessToken");
+    }
 
     return {
         accessToken,
         user,
         getToken,
         getUser,
-        login
+        login,
+        logout
     };
 });

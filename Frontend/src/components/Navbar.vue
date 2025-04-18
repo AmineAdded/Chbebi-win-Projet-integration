@@ -20,7 +20,7 @@
         <img :src="logo" alt="logo" class="logo-img" />
 
         <!-- Menu avatar desktop -->
-        <v-menu offset-y>
+        <v-menu offset-y v-if="showMenu">
           <template v-slot:activator="{ props }">
             <v-btn icon class="avatar-btn ml-4" v-bind="props">
               <v-avatar color="#152538" size="40">
@@ -112,6 +112,7 @@
 
 <script>
 import logo from "../assets/logo.png";
+import { useUserStore } from "@/store/User/userStore";
 
 export default {
   name: "Navbar",
@@ -119,8 +120,20 @@ export default {
     return {
       logo: logo,
       drawer: false,
-      logoutDialog: false
+      logoutDialog: false,
+
     };
+  },
+  computed : {
+    showMenu(){
+      const store = useUserStore();
+      if(store.accessToken){
+        return true;
+      }
+      else{
+        return false;
+      }
+    }
   },
   methods: {
     logout() {
@@ -128,7 +141,9 @@ export default {
     },
     confirmLogout() {
       this.logoutDialog = false;
-      this.$router.push("/login");
+      const store = useUserStore();
+      store.logout(); 
+      this.$router.push("/");
     }
   }
 };

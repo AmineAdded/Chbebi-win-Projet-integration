@@ -20,7 +20,9 @@ const routes = [
     path: "/privatehome",
     name: "privatehome",
     component: PrivateHomeView,
+    meta: { requiresAuth: true }
   },
+  
   {
     path: "/AvantTest",
     name: "avantTest",
@@ -57,5 +59,15 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
+router.beforeEach((to, from, next) => {
+  const accessToken = localStorage.getItem("accessToken");
+
+  if (to.meta.requiresAuth && !accessToken) {
+    next({ name: "publichome" });
+  } else {
+    next();
+  }
+});
+
 
 export default router;
