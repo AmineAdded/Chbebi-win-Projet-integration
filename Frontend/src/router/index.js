@@ -64,7 +64,6 @@ const routes = [
     component: () => import('@/views/TopicChaptersView.vue'),
     props: true,
   }
-  
 ];
 
 const router = createRouter({

@@ -42,12 +42,14 @@
 
           <v-card>
             <v-list>
-              <v-list-item :to="{ path: '/account' }" link>
+              <v-btn class="btn" @click.prevent="$emit('openUpdateAccount')">
+              <v-list-item>
                 <v-list-item-icon>
                   <v-icon>mdi-account-cog</v-icon>
                 </v-list-item-icon>
                 <v-list-item-title>إدارة الحساب</v-list-item-title>
               </v-list-item>
+              </v-btn>
 
               <v-divider></v-divider>
 
@@ -107,11 +109,13 @@
 
         <v-divider></v-divider>
 
-        <v-list-item to="/account" link>
+        <v-btn  @click.prevent="$emit('openUpdateAccount')">  
+        <v-list-item>
           <v-list-item-title class="text-right nav-drawer-item"
-            >إدارة الحساب</v-list-item-title
+            > إدارة الحساب</v-list-item-title
           >
         </v-list-item>
+        </v-btn>
 
         <v-list-item @click="logout">
           <v-list-item-title class="text-right nav-drawer-item"
