@@ -216,9 +216,19 @@ export default {
     };
   },
   created() {
-    // Initialize form with user data
-    this.fullName = this.userData.fullName;
-    this.email = this.userData.email;
+    // Si userData (prop) contient les données, on les utilise.
+    if (this.userData && this.userData.fullName && this.userData.email) {
+      this.fullName = this.userData.fullName;
+      this.email = this.userData.email;
+    } else {
+      // Sinon, on récupère à partir du localStorage
+      const userLocal = localStorage.getItem("user");
+      if (userLocal) {
+        const parsedUser = JSON.parse(userLocal);
+        this.fullName = parsedUser.nom || "";
+        this.email = parsedUser.email || "";
+      }
+    }
   },
   methods: {
     async update() {
@@ -284,6 +294,12 @@ export default {
 
         // Emit event to parent component
         this.$emit("profileUpdated", updateData);
+        // Mettre à jour les infos dans le localStorage
+        const userInStorage = JSON.parse(localStorage.getItem("user") || "{}");
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ ...userInStorage, ...updateData })
+        );
       } catch (err) {
         // Show error message
         this.snackbarColor = "error";
