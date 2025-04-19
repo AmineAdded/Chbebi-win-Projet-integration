@@ -145,7 +145,7 @@ public class UtilisateurService {
             }
         }
 
-        user.setNom(request.getFullName());
+        user.setNom(request.getNom());
         user.setEmail(request.getEmail());
 
         return utilisateurRepository.save(user);

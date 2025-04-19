@@ -1,17 +1,17 @@
 package app.chbebiwin.backend.entities.Authentification;
 
 public class UpdateProfileRequest {
-    private String fullName;
+    private String nom;
     private String email;
     private String currentPassword;
     private String newPassword;
 
-    public String getFullName() {
-        return fullName;
+    public String getNom() {
+        return nom;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setNom(String nom) {
+        this.nom = nom;
     }
 
     public String getEmail() {

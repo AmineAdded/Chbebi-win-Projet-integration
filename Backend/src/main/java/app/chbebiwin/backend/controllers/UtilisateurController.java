@@ -50,6 +50,7 @@ public class UtilisateurController {
 
     @PutMapping("/update-profile/{id}")
     public ResponseEntity<?> updateProfile(@PathVariable Long id, @RequestBody UpdateProfileRequest request) {
+        System.out.println("Nom reçu : " + request.getNom());
         try {
             Utilisateur updatedUser = utilisateurService.updateProfile(id, request);
             return ResponseEntity.ok(updatedUser);
