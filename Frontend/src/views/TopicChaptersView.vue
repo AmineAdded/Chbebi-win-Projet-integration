@@ -1,7 +1,11 @@
 <template>
     <div class="chapters-container">
-      <Navbar />
-  
+      <Navbar @openUpdateAccount="showUpdateAccount = true" />
+
+      <v-dialog v-model="showUpdateAccount" persistent width="auto">
+        <UpdateAccount @closeUpdateAccount="showUpdateAccount = false" />
+      </v-dialog>
+
       <v-container fluid>
         <h2 class="section-title">الفصول الخاصة بموضوع: {{ topicTitle }}</h2>
         <div class="cards-wrapper">
@@ -49,15 +53,17 @@
   <script>
   import Navbar from "@/components/Navbar.vue";
   import Footer from "@/components/Footer.vue";
+  import UpdateAccount from "@/components/UpdateAccount.vue";
   
   export default {
     name: "TopicChaptersView",
-    components: { Navbar, Footer },
+    components: { Navbar, Footer, UpdateAccount },
     data() {
       return {
         topicId: this.$route.params.topicId,
         topicTitle: "",
         showModal: false,
+        showUpdateAccount: false,
         selectedChapter: {},
         allChapters: {
           "arkan-islam": [

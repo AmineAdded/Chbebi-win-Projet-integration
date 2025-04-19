@@ -70,8 +70,8 @@ export default {
         navigateTo(route) {
             const routes = {
                 privatehome: '/privatehome',
-                learn: '/learn',
-                religion: '/religion',
+                learn: '/islamic/:topicId',
+                religion: '/islam',
                 personality: '/DetailsPersonnality',
             };
 

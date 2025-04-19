@@ -22,7 +22,7 @@
       <v-container class="nav-container d-none d-md-flex">
         <v-btn text class="nav-btn" @click="handleAgendaClick">أجندة</v-btn>
         <v-btn text class="nav-btn" @click="handleTimeManagementClick">إدارة الوقت</v-btn>
-        <v-btn text to="/culture" class="nav-btn">الثقافة التونسية</v-btn>
+        <v-btn text to="/islamic/:topicId" class="nav-btn">الثقافة التونسية</v-btn>
         <v-btn text to="/islam" class="nav-btn">الدين الإسلامي</v-btn>
         <v-spacer></v-spacer>
         <v-btn text class="nav-btn" @click="handleClick">الصفحة الرئيسية</v-btn>
@@ -42,14 +42,13 @@
 
           <v-card>
             <v-list>
-              <v-btn class="btn" @click.prevent="$emit('openUpdateAccount')">
-              <v-list-item>
+              <v-list-item @click="$emit('openUpdateAccount')">
                 <v-list-item-icon>
                   <v-icon>mdi-account-cog</v-icon>
                 </v-list-item-icon>
-                <v-list-item-title>إدارة الحساب</v-list-item-title>
+                <v-list-item-title >إدارة الحساب</v-list-item-title>
               </v-list-item>
-              </v-btn>
+              
 
               <v-divider></v-divider>
 
@@ -77,7 +76,7 @@
 
         <v-divider></v-divider>
 
-        <v-list-item to="/" link>
+        <v-list-item @click="handleClick" link>
           <v-list-item-title class="text-right nav-drawer-item"
             >الصفحة الرئيسية</v-list-item-title
           >
@@ -89,7 +88,7 @@
           >
         </v-list-item>
 
-        <v-list-item to="/culture" link>
+        <v-list-item to="/islamic/:topicId" link>
           <v-list-item-title class="text-right nav-drawer-item"
             >الثقافة التونسية</v-list-item-title
           >
@@ -109,13 +108,12 @@
 
         <v-divider></v-divider>
 
-        <v-btn  @click.prevent="$emit('openUpdateAccount')">  
-        <v-list-item>
+       
+        <v-list-item @click="$emit('openUpdateAccount')">
           <v-list-item-title class="text-right nav-drawer-item"
             > إدارة الحساب</v-list-item-title
           >
         </v-list-item>
-        </v-btn>
 
         <v-list-item @click="logout">
           <v-list-item-title class="text-right nav-drawer-item"

@@ -32,9 +32,8 @@ export default{
                 confirmPassword: confirmPassword
             });
             const accessToken  = response.data.accessToken;
-            console.log("Token",nom);
 
-            store.SignUp(accessToken,nom);
+            store.SignUp({nom:nom,email:email,accessToken:accessToken});
             return response.data;
         }
         catch (error) {
