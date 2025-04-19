@@ -46,6 +46,7 @@ export default{
         const userLocal = localStorage.getItem("user");
         const parsedUser = JSON.parse(userLocal);
         const userId = parsedUser.id;        
+        console.log("Data envoyée :", data);
         return axios.put(`/Utilisateur/update-profile/${userId}`, data);
     }
 };
