@@ -1,9 +1,11 @@
 package app.chbebiwin.backend.controllers;
 
+import app.chbebiwin.backend.entities.Authentification.UpdateProfileRequest;
 import app.chbebiwin.backend.entities.Authentification.loginRequest;
 import app.chbebiwin.backend.entities.Authentification.signUpRequest;
 import app.chbebiwin.backend.entities.Utilisateur;
 import app.chbebiwin.backend.services.UtilisateurService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,4 +47,15 @@ public class UtilisateurController {
     public String deleteAll(){
         return utilisateurService.deleteAllUsers();
     }
+
+    @PutMapping("/update-profile/{id}")
+    public ResponseEntity<?> updateProfile(@PathVariable Long id, @RequestBody UpdateProfileRequest request) {
+        try {
+            Utilisateur updatedUser = utilisateurService.updateProfile(id, request);
+            return ResponseEntity.ok(updatedUser);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

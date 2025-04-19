@@ -1,6 +1,7 @@
 package app.chbebiwin.backend.services;
 
 import app.chbebiwin.backend.Exceptions.EmailAlreadyExistsException;
+import app.chbebiwin.backend.entities.Authentification.UpdateProfileRequest;
 import app.chbebiwin.backend.entities.Authentification.loginRequest;
 import app.chbebiwin.backend.entities.Authentification.signUpRequest;
 import app.chbebiwin.backend.entities.Utilisateur;
@@ -117,5 +118,36 @@ public class UtilisateurService {
     public String deleteAllUsers(){
         utilisateurRepository.deleteAll();
         return "Tous les utilisateurs sont supprimés!";
+    }
+
+    public Utilisateur updateProfile(Long id, UpdateProfileRequest request) {
+        Optional<Utilisateur> optionalUser = utilisateurRepository.findById(id);
+        if (optionalUser.isEmpty()) {
+            throw new RuntimeException("Utilisateur introuvable");
+        }
+
+        Utilisateur user = optionalUser.get();
+
+        // Vérifier email en double s’il est modifié
+        if (!user.getEmail().equals(request.getEmail()) &&
+                utilisateurRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("البريد الإلكتروني مُستخدم بالفعل");
+        }
+
+        // Si mot de passe doit être changé
+        if (request.getCurrentPassword() != null && !request.getCurrentPassword().isEmpty()) {
+            if (!passwordEncoder.matches(request.getCurrentPassword(), user.getMdpsCompte())) {
+                throw new RuntimeException("كلمة المرور الحالية غير صحيحة");
+            }
+
+            if (request.getNewPassword() != null && !request.getNewPassword().isEmpty()) {
+                user.setMdpsCompte(passwordEncoder.encode(request.getNewPassword()));
+            }
+        }
+
+        user.setNom(request.getFullName());
+        user.setEmail(request.getEmail());
+
+        return utilisateurRepository.save(user);
     }
 }
