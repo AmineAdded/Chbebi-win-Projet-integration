@@ -21,8 +21,12 @@
       <!-- Liens desktop -->
       <v-container class="nav-container d-none d-md-flex">
         <v-btn text class="nav-btn" @click="handleAgendaClick">أجندة</v-btn>
-        <v-btn text class="nav-btn" @click="handleTimeManagementClick">إدارة الوقت</v-btn>
-        <v-btn text to="/islamic/:topicId" class="nav-btn">الثقافة التونسية</v-btn>
+        <v-btn text class="nav-btn" @click="handleTimeManagementClick"
+          >إدارة الوقت</v-btn
+        >
+        <v-btn text to="/islamic/:topicId" class="nav-btn"
+          >الثقافة التونسية</v-btn
+        >
         <v-btn text to="/islam" class="nav-btn">الدين الإسلامي</v-btn>
         <v-spacer></v-spacer>
         <v-btn text class="nav-btn" @click="handleClick">الصفحة الرئيسية</v-btn>
@@ -30,7 +34,6 @@
 
         <!-- Menu avatar desktop -->
         <v-menu offset-y v-if="showMenu">
-          
           <template v-slot:activator="{ props }">
             <span class="user-name">{{ userName }}</span>
             <v-btn icon class="avatar-btn ml-4" v-bind="props">
@@ -46,9 +49,8 @@
                 <v-list-item-icon>
                   <v-icon>mdi-account-cog</v-icon>
                 </v-list-item-icon>
-                <v-list-item-title >إدارة الحساب</v-list-item-title>
+                <v-list-item-title>إدارة الحساب</v-list-item-title>
               </v-list-item>
-              
 
               <v-divider></v-divider>
 
@@ -61,7 +63,6 @@
             </v-list>
           </v-card>
         </v-menu>
-        
       </v-container>
     </v-app-bar>
 
@@ -108,10 +109,9 @@
 
         <v-divider></v-divider>
 
-       
         <v-list-item @click="$emit('openUpdateAccount')">
-          <v-list-item-title class="text-right nav-drawer-item"
-            > إدارة الحساب</v-list-item-title
+          <v-list-item-title class="text-right nav-drawer-item">
+            إدارة الحساب</v-list-item-title
           >
         </v-list-item>
 
@@ -190,27 +190,27 @@ export default {
     handleTimeManagementClick() {
       if (this.isLoggedIn) {
         console.log(this.isLoggedIn);
-        this.$router.push('/time-management');
+        this.$router.push("/time-management");
       } else {
-        this.$emit('openLogin');
+        this.$emit("openLogin");
       }
     },
     handleAgendaClick() {
       if (this.isLoggedIn) {
         console.log(this.isLoggedIn);
-        this.$router.push('/agenda');
+        this.$router.push("/agenda");
       } else {
-        this.$emit('openLogin');
+        this.$emit("openLogin");
       }
-    }
+    },
+    handleClick() {
+      if (this.isLoggedIn) {
+        this.$router.push("/privatehome");
+      } else {
+        this.$router.push("/");
+      }
+    },
   },
-  handleClick(){
-    if(this.isLoggedIn) {
-      this.$router.push('/privatehome');
-    } else {
-      this.$router.push('/');
-    }
-  }
 };
 </script>
 
