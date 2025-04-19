@@ -301,11 +301,20 @@ export default {
           JSON.stringify({ ...userInStorage, ...updateData })
         );
       } catch (err) {
-        // Show error message
+        console.error("Erreur API :", err);
+        console.error("Contenu complet :", err.response);
+
         this.snackbarColor = "error";
         this.snackbarIcon = "mdi-alert-circle";
-        this.text =
-          err.response?.data?.message || "حدث خطأ أثناء تحديث المعلومات";
+
+        // Vérifie si le backend retourne directement un string (comme ici)
+        if (typeof err.response?.data === "string") {
+          this.text = err.response.data;
+        } else {
+          this.text =
+            err.response?.data?.message || "حدث خطأ أثناء تحديث المعلومات";
+        }
+
         this.showSnackBar = true;
       }
     },
