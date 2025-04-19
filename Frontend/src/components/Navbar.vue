@@ -166,8 +166,7 @@ export default {
     },
     userName() {
       const store = useUserStore();
-      return store.nom;
-     
+      return store.user.nom;
     },
     isLoggedIn() {
       const store = useUserStore();

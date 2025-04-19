@@ -1,4 +1,5 @@
 import Axios from 'axios';
+import axios from "axios";
 import {useUserStore} from '@/store/User/userStore';
 
 export default{
@@ -40,5 +41,11 @@ export default{
             console.error(error.response.data.message);
             throw error;
         }
+    },
+    updateUserProfile(data) {
+        const userLocal = localStorage.getItem("user");
+        const parsedUser = JSON.parse(userLocal);
+        const userId = parsedUser.id;        
+        return axios.put(`/Utilisateur/update-profile/${userId}`, data);
     }
 };

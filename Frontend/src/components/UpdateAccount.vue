@@ -14,14 +14,14 @@
         <v-container>
           <v-sheet class="field-container" elevation="1">
             <v-text-field
-              v-model="fullName"
+              v-model="nom"
               placeholder="اسمك الكامل"
               variant="outlined"
               density="comfortable"
               hide-details="auto"
               dir="rtl"
-              :error-messages="errors.fullName"
-              @input="errors.fullName = ''"
+              :error-messages="errors.nom"
+              @input="errors.nom = ''"
               class="custom-input"
             >
               <template v-slot:append-inner>
@@ -173,14 +173,14 @@ export default {
     userData: {
       type: Object,
       default: () => ({
-        fullName: "",
+        nom: "",
         email: "",
       }),
     },
   },
   data() {
     return {
-      fullName: "",
+      nom: "",
       email: "",
       currentPassword: "",
       newPassword: "",
@@ -193,7 +193,7 @@ export default {
       snackbarIcon: "mdi-alert-circle",
       text: "",
       errors: {
-        fullName: "",
+        nom: "",
         email: "",
         currentPassword: "",
         newPassword: "",
@@ -217,15 +217,15 @@ export default {
   },
   created() {
     // Si userData (prop) contient les données, on les utilise.
-    if (this.userData && this.userData.fullName && this.userData.email) {
-      this.fullName = this.userData.fullName;
+    if (this.userData && this.userData.nom && this.userData.email) {
+      this.nom = this.userData.nom;
       this.email = this.userData.email;
     } else {
       // Sinon, on récupère à partir du localStorage
       const userLocal = localStorage.getItem("user");
       if (userLocal) {
         const parsedUser = JSON.parse(userLocal);
-        this.fullName = parsedUser.nom || "";
+        this.nom = parsedUser.nom || "";
         this.email = parsedUser.email || "";
       }
     }
@@ -238,8 +238,8 @@ export default {
       });
 
       // Validate required fields
-      if (!this.fullName) {
-        this.errors.fullName = "الاسم مطلوب";
+      if (!this.nom) {
+        this.errors.nom = "الاسم مطلوب";
       }
       if (!this.email) {
         this.errors.email = "البريد الإلكتروني مطلوب";
@@ -273,7 +273,7 @@ export default {
       try {
         // Prepare data for update
         const updateData = {
-          fullName: this.fullName,
+          nom: this.nom,
           email: this.email,
         };
 
