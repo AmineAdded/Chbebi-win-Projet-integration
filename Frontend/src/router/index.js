@@ -59,6 +59,11 @@ const routes = [
     component: () => import('@/views/IslamicView.vue')
   }  ,
   {
+    path: '/agenda',
+    name: 'AgendaView',
+    component: () => import('@/views/AgendaView.vue')
+  }  ,
+  {
     path: '/islamic/:topicId',
     name: 'TopicChaptersView',
     component: () => import('@/views/TopicChaptersView.vue'),
