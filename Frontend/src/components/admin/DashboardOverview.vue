@@ -1,68 +1,205 @@
 <template>
   <section class="overview">
-    <h2>لوحة القيادة</h2><br>
+    <div class="welcome-section">
+      <h1>مرحباً بك في لوحة القيادة</h1>
+      <p class="date-display">{{ currentDate }}</p>
+    </div>
+    
     <div class="cards-container">
-      <div class="card">👥 المستخدمين <p>250 نشط</p>
+      <div class="stat-card users-card">
+        <div class="card-icon">👥</div>
+        <div class="card-content">
+          <h3>المستخدمين</h3>
+          <div class="stat-number">250</div>
+          <div class="stat-label">نشط</div>
+          <div class="progress-bar">
+            <div class="progress-value" style="width: 75%"></div>
+          </div>
+        </div>
       </div>
-      <div class="card">📖 الفصول <p>12 منشورة</p>
+      
+      <div class="stat-card chapters-card">
+        <div class="card-icon">📖</div>
+        <div class="card-content">
+          <h3>الفصول</h3>
+          <div class="stat-number">12</div>
+          <div class="stat-label">منشورة</div>
+          <div class="progress-bar">
+            <div class="progress-value" style="width: 60%"></div>
+          </div>
+        </div>
       </div>
-      <div class="card">📝 الاختبارات <p>45 متاحة</p>
+      
+      <div class="stat-card quizzes-card">
+        <div class="card-icon">📝</div>
+        <div class="card-content">
+          <h3>الاختبارات</h3>
+          <div class="stat-number">45</div>
+          <div class="stat-label">متاحة</div>
+          <div class="progress-bar">
+            <div class="progress-value" style="width: 65%"></div>
+          </div>
+        </div>
       </div>
-      <div class="card">🧪 الاختبارات النهائية <p>30 مكتملة</p>
+      
+      <div class="stat-card final-tests-card">
+        <div class="card-icon">🧪</div>
+        <div class="card-content">
+          <h3>الاختبارات النهائية</h3>
+          <div class="stat-number">30</div>
+          <div class="stat-label">مكتملة</div>
+          <div class="progress-bar">
+            <div class="progress-value" style="width: 80%"></div>
+          </div>
+        </div>
       </div>
-      <div class="card">💬 الاقتباسات <p>100 مشاركة</p>
+      
+      <div class="stat-card quotes-card">
+        <div class="card-icon">💬</div>
+        <div class="card-content">
+          <h3>الاقتباسات</h3>
+          <div class="stat-number">100</div>
+          <div class="stat-label">مشاركة</div>
+          <div class="progress-bar">
+            <div class="progress-value" style="width: 40%"></div>
+          </div>
+        </div>
       </div>
     </div>
-  </section><br>
+  </section>
 </template>
 
 <style scoped>
-h2 {
-  text-align: center;
-  font-size: 2em;
-  color: #333;
-  margin-bottom: 20px;
-}
 .overview {
-  background-color: #91b5c9;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-bottom: 32px;
+  border-radius: 16px;
+  background-color: #f6f8fa;
 }
+
+.welcome-section {
+  margin-bottom: 24px;
+  text-align: right;
+}
+
+h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.date-display {
+  color: #666;
+  font-size: 1rem;
+}
+
 .cards-container {
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
 }
-.card {
+
+.stat-card {
   background-color: #ffffff;
-  border-radius: 10px;
-  border: 3px solid black;
+  border-radius: 16px;
   padding: 20px;
-  margin: 10px;
-  width: calc(33% - 40px);
-  text-align: center;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
-.card p {
-  margin: 0;
-  font-size: 1.2em;
-  color: #555;
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
-.card:hover {
-  transform: scale(1.05);
-  transition: transform 0.2s;
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 6px;
+  height: 100%;
 }
-.card h2 {
-  font-size: 1.5em;
-  margin-bottom: 10px;
+
+.users-card::after { background-color: #4361ee; }
+.chapters-card::after { background-color: #3a0ca3; }
+.quizzes-card::after { background-color: #7209b7; }
+.final-tests-card::after { background-color: #f72585; }
+.quotes-card::after { background-color: #4cc9f0; }
+
+.card-icon {
+  font-size: 2.5rem;
+  margin-left: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.card:hover p {
-  color: #007bff;
+
+.card-content {
+  flex: 1;
 }
-@media (max-width: 700px) {
-  .card {
-    width: calc(100% - 40px);
+
+h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #666;
+  margin: 0 0 8px 0;
+}
+
+.stat-number {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background-color: #eaeef2;
+  border-radius: 3px;
+}
+
+.progress-value {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s ease-in-out;
+}
+
+.users-card .progress-value { background-color: #4361ee; }
+.chapters-card .progress-value { background-color: #3a0ca3; }
+.quizzes-card .progress-value { background-color: #7209b7; }
+.final-tests-card .progress-value { background-color: #f72585; }
+.quotes-card .progress-value { background-color: #4cc9f0; }
+
+@media (max-width: 768px) {
+  .cards-container {
+    grid-template-columns: 1fr;
   }
 }
 </style>
+
+<script>
+export default {
+  data() {
+    return {
+      currentDate: new Date().toLocaleDateString('ar-SA', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
+    };
+  }
+};
+</script>
