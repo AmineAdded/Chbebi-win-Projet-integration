@@ -10,7 +10,10 @@
     </div>
     
     <div v-else class="page-wrapper main-container">
-      <Navbar />
+      <Navbar @openUpdateAccount="showUpdateAccount = true"/>
+      <v-dialog v-model="showUpdateAccount" persistent width="auto">
+        <UpdateAccount @closeUpdateAccount="showUpdateAccount = false" />
+      </v-dialog>
       
       <div class="page-header">
         <v-container>
@@ -113,20 +116,26 @@
         </v-row>
       </v-container>
     </div>
+    <Footer/>
   </template>
     
   <script>
   import { defineComponent } from "vue";
   import Navbar from "../components/Navbar.vue";
+  import Footer from "../components/Footer.vue";
+import UpdateAccount from "@/components/UpdateAccount.vue";
     
   export default defineComponent({
     name: "DetailsPersonnality",
     components: {
       Navbar,
+      Footer,
+      UpdateAccount
     },
     data() {
       return {
         isLoading: true,
+        showUpdateAccount: false,
         traits: [
           {
             title: "التحليل المنطقي",

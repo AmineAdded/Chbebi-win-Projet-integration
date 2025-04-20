@@ -14,7 +14,7 @@
             المفكر هو شخص يعتمد على المنطق والتحليل في اتخاذ القرارات، ما يتأثر بالعواطف. يجب أن يكون دقيق
             ويحل المشاكل بطريقة منظمة، لكن في المواقف العاطفية أو مع الناس الحساسين، يلقى صعوبة في التفاعل.
           </p>
-          <a href="DetailsPersonnality.vue" class="more-link">أعرف أكثر</a>
+          <a href="DetailsPersonnality" class="more-link">أعرف أكثر</a>
         </div>
         <div class="image-section">
           <img :src="require('@/assets/thinker-icon.png')" alt="Thinker Icon" class="thinker-icon" />        </div>
