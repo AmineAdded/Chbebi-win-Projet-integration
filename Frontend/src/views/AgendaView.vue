@@ -22,8 +22,8 @@
             </div>
             <div class="buttons">
 
-                <button class="btn btn-circle btn-next" @click="nextPage">⬅</button>
-                <button class="btn btn-circle btn-prev" @click="prevPage">➡</button>
+                <button class="btn btn-circle btn-next" @click="prevPage">⬅</button>
+                <button class="btn btn-circle btn-prev" @click="nextPage">➡</button>
                 <button class="btn btn-circle btn-delete" @click="deleteNote">✕</button>
                 <button class="btn btn-circle btn-save" @click="saveNotes">💾</button>
             </div>
@@ -32,50 +32,61 @@
     </div>
 </template>
 
-<script setup>
-import { ref, onMounted, watch } from 'vue';
-
+<script>
 import Navbar from "../components/Navbar.vue";
 import Footer from "../components/Footer.vue";
 import UpdateAccount from "@/components/UpdateAccount.vue";
 
-const pages = ref([{ left: '', right: '' }]);
-const currentPage = ref(0);
+export default {
+  name: "AgendaView",
+  components: { Navbar, Footer, UpdateAccount },
 
-// Load from localStorage
-onMounted(() => {
+  data() {
+    return {
+      showUpdateAccount: false,
+      pages: [{ left: '', right: '' }],
+      currentPage: 0,
+    };
+  },
+
+  mounted() {
     const saved = localStorage.getItem('journalPages');
     if (saved) {
-        pages.value = JSON.parse(saved);
+      this.pages = JSON.parse(saved);
     }
-});
+  },
 
-// Save to localStorage on update
-watch(pages, (newVal) => {
-    localStorage.setItem('journalPages', JSON.stringify(newVal));
-}, { deep: true });
+  watch: {
+    pages: {
+      handler(newVal) {
+        localStorage.setItem('journalPages', JSON.stringify(newVal));
+      },
+      deep: true,
+    },
+  },
 
-const saveNotes = () => {
-    alert("تم الحفظ بنجاح!");
-};
-
-const nextPage = () => {
-    currentPage.value++;
-    if (!pages.value[currentPage.value]) {
-        pages.value.push({ left: '', right: '' });
-    }
-};
-
-const prevPage = () => {
-    if (currentPage.value > 0) {
-        currentPage.value--;
-    }
-};
-
-const deleteNote = () => {
-    pages.value[currentPage.value] = { left: '', right: '' };
+  methods: {
+    saveNotes() {
+      alert("تم الحفظ بنجاح!");
+    },
+    nextPage() {
+      this.currentPage++;
+      if (!this.pages[this.currentPage]) {
+        this.pages.push({ left: '', right: '' });
+      }
+    },
+    prevPage() {
+      if (this.currentPage > 0) {
+        this.currentPage--;
+      }
+    },
+    deleteNote() {
+      this.pages[this.currentPage] = { left: '', right: '' };
+    },
+  },
 };
 </script>
+
 
 <style scoped>
 body {
