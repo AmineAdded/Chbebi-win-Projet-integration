@@ -23,11 +23,11 @@
           <v-divider class="divider"></v-divider>
   
           <!-- Liste des avis -->
-          <v-card v-for="(review, index) in reviews" :key="index" class="review-card">
+          <v-card v-for="(feedback, index) in feedbacks.slice(-2)" :key="index" class="review-card">
             <v-list-item>
               <v-list-item-content class="review-content">
-                <v-list-item-title class="review-author">{{ review.author }}</v-list-item-title>
-                <v-list-item-subtitle class="review-text">{{ review.text }}</v-list-item-subtitle>
+                <v-list-item-title class="review-author">{{ feedback.nom }}</v-list-item-title>
+                <v-list-item-subtitle class="review-text">{{ feedback.message }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
           </v-card>
@@ -41,16 +41,28 @@
   </template>
   
   <script>
+  import feedBackService from '@/Services/feedBackService';
   export default {
     name: "Contact",
     data() {
       return {
-        reviews: [
-          { author: "مريم", text: "🔥 الصراحة؟ التطبيق تاااااايرا 🔥" },
-          { author: "مجهول", text: "📢كبير potentiel مشروع عندو"},
-        ],
+        feedbacks: [], 
       };
     },
+    methods:{
+      async getFeedbacks() {
+      try {
+        const response = await feedBackService.getAllFeedback();
+        this.feedbacks = response; 
+         console.log("Feedbacks récupérés :", this.feedbacks);
+      } catch (err) {
+       console.log(err?.response?.data?.message || "حدث خطأ غير متوقع");
+      }
+    },
+    },
+    mounted() {
+    this.getFeedbacks();
+  },
   };
   </script>
   
