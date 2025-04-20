@@ -43,6 +43,8 @@ export default{
         }
     },
     updateUserProfile(data) {
+        const store = useUserStore();
+        store.udpate(data.nom);
         const userLocal = localStorage.getItem("user");
         const parsedUser = JSON.parse(userLocal);
         const userId = parsedUser.id;        

@@ -69,6 +69,7 @@
 </template>
 
 <script>
+import { useUserStore } from '../store/User/userStore.js';
 import userService from '../Services/userService.js';
 export default {
     name: "Login",
@@ -91,8 +92,14 @@ export default {
         async login(){
             if(this.email!="" && this.password!=""){
                 try{
+                    const store = useUserStore();
                     await userService.login(this.email,this.password);
-                    this.$router.push('/privatehome');
+                    if(store.role==0){
+                        this.$router.push('/privatehome');
+                    }else if(store.role==1){
+                        this.$router.push('/admin');
+                    }
+                    
                 }
                 catch(err){
                     this.showSnackBar = true;

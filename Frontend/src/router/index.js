@@ -9,7 +9,7 @@ import DetailsPersonnality from "@/views/DetailsPersonnality.vue";
 import AdminDashboard from "@/views/AdminDashboard.vue";
 
 const routes = [
-  { path: "/admin", component: AdminDashboard },
+  { path: "/admin", component: AdminDashboard ,name:"admin", meta: { requiresAuthentication: true }},
 
   {
     path: "/",
@@ -82,13 +82,37 @@ const router = createRouter({
 });
 router.beforeEach((to, from, next) => {
   const accessToken = localStorage.getItem("accessToken");
+  const role = localStorage.getItem("role"); 
 
-  if (to.meta.requiresAuth && !accessToken) {
-    next({ name: "publichome" });
-  } else {
-    next();
+  // Route Admin
+  if (to.path === "/admin") {
+    if (accessToken && role ==1) {
+      next(); // admin autorisé
+    } else if (accessToken && role ==0) {
+      next({ name: "privatehome" }); // utilisateur redirigé vers sa page
+    } else {
+      next({ name: "publichome" }); // non connecté
+    }
+  }
+
+  // Route PrivateUser
+  else if (to.path === "/privatehome") {
+    if (accessToken && role ==0) {
+      next(); // utilisateur autorisé
+    } else if (accessToken && role ==1) {
+      next({ name: "admin" }); // admin redirigé vers dashboard
+    } else {
+      next({ name: "publichome" }); // non connecté
+    }
+  }
+
+  // Autres routes
+  else {
+    next(); // accès libre
   }
 });
+
+
 
 
 export default router;
