@@ -28,8 +28,9 @@
                 <button class="btn btn-circle btn-save" @click="saveNotes">💾</button>
             </div>
         </div>
-        <Footer />
+        
     </div>
+    <Footer />
 </template>
 
 <script>
