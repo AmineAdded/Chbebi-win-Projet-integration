@@ -2,10 +2,10 @@
     <div class="agenda-container">
 
         <Navbar @openUpdateAccount="showUpdateAccount = true" />
-    
-    <v-dialog v-model="showUpdateAccount" persistent width="auto">
-      <UpdateAccount @closeUpdateAccount="showUpdateAccount = false" />
-    </v-dialog>
+
+        <v-dialog v-model="showUpdateAccount" persistent width="auto">
+            <UpdateAccount @closeUpdateAccount="showUpdateAccount = false" />
+        </v-dialog>
 
         <h2>أجندة</h2>
         <div class="journal">
@@ -21,7 +21,7 @@
                 <div class="page-divider"></div>
             </div>
             <div class="buttons">
-                
+
                 <button class="btn btn-circle btn-next" @click="nextPage">⬅</button>
                 <button class="btn btn-circle btn-prev" @click="prevPage">➡</button>
                 <button class="btn btn-circle btn-delete" @click="deleteNote">✕</button>
@@ -84,13 +84,15 @@ body {
     direction: rtl;
     text-align: center;
 }
-h2{
+
+h2 {
     text-align: center;
     font-size: 30px;
-    color: #217CA3; 
+    color: #0d47a1;
     font-family: "Segoe UI", sans-serif;
     margin-bottom: 10px;
 }
+
 .agenda-container {
     max-width: 1200px;
     margin: 40px auto;
@@ -198,9 +200,10 @@ h2{
     background-color: #0ea5e9;
 }
 
-textarea{
+textarea {
     text-align: right;
 }
+
 @media (max-width: 768px) {
     .buttons {
         position: relative;
