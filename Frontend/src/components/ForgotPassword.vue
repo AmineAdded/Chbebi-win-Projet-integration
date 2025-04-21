@@ -1,59 +1,92 @@
 <template>
-  <v-container
-    class="d-flex justify-center align-center cont"
-  >
-    <v-card class="mx-auto pa-6 card" elevation="3">
-      <div class="text-center mb-4">
-        <v-btn class="close" @click.prevent="$emit('closeForgotPassword')"> العودة </v-btn>
+  <div >
+    <v-card class="forgot-password-card" elevation="3" rounded="xl">
+      <!-- Header plus compact -->
+      <div class="card-header-wrapper">
+        <div class="card-header">
+          <h2 class="text-center primary--text mb-2">استعادة كلمة المرور</h2>
+          <v-btn
+            class="back-button"
+            @click.prevent="$emit('closeForgotPassword')"
+            variant="text"
+            color="primary"
+            prepend-icon="mdi-arrow-right"
+            size="small"
+            rounded="xl"
+          >
+            العودة
+          </v-btn>
+        </div>
       </div>
 
-      <v-form class="form-container" @submit.prevent="sendResetLink">
-        <v-container>
-          <v-sheet class="field-container" elevation="1">
-            <v-text-field
-              v-model="email"
-              placeholder="بريدك الإلكتروني"
-              variant="outlined"
-              density="comfortable"
-              hide-details
-              dir="rtl"
-              class="custom-input"
-              :rules="emailRules"
-              type="email"
-              required
-            >
-              <template v-slot:append-inner>
-                <v-icon color="primary">mdi-email</v-icon>
-              </template>
-            </v-text-field>
-          </v-sheet>
+      <div class="content-wrapper">
+        <!-- Image plus petite -->
+        <div class="card-image text-center">
+          <v-avatar size="70" color="primary" class="password-avatar mb-3">
+            <v-icon size="36" color="white">mdi-lock-reset</v-icon>
+          </v-avatar>
+        </div>
 
-          <v-alert
-            v-if="message"
-            class="mt-4"
-            :type="alertType"
-            variant="tonal"
+        <v-divider class="mb-4"></v-divider>
+
+        <!-- Formulaire avec espacements réduits -->
+        <v-form class="forgot-form" @submit.prevent="sendResetLink">
+          <p class="text-body-2 text-right mb-3 text-medium-emphasis">
+            يرجى إدخال بريدك الإلكتروني لإرسال رابط إعادة تعيين كلمة المرور
+          </p>
+
+          <v-text-field
+            v-model="email"
+            placeholder="بريدك الإلكتروني"
+            variant="outlined"
+            color="primary"
+            bg-color="surface"
+            density="compact"
             dir="rtl"
+            class="email-field mb-3"
+            :rules="emailRules"
+            type="email"
+            required
+            hide-details="auto"
           >
-            {{ arabicMessage }}
-          </v-alert>
-        </v-container>
+            <template v-slot:append-inner>
+              <v-icon size="small" color="primary">mdi-email-outline</v-icon>
+            </template>
+          </v-text-field>
 
-        <div class="d-flex justify-center">
+          <v-expand-transition>
+            <v-alert
+              v-if="message"
+              :type="alertType"
+              variant="tonal"
+              dir="rtl"
+              border="start"
+              closable
+              density="compact"
+              class="my-3 alert-message"
+            >
+              {{ arabicMessage }}
+            </v-alert>
+          </v-expand-transition>
+
           <v-btn
-            class="me-2 buttonStyle"
-            color="#2D80D5"
-            size="large"
+            class="submit-button mt-4"
+            color="primary"
+            size="small"
+            block
             rounded="lg"
             type="submit"
             :loading="loading"
+            :disabled="!isEmailValid"
+            elevation="1"
           >
+            <v-icon start size="small">mdi-send</v-icon>
             إرسال رابط إعادة التعيين
           </v-btn>
-        </div>
-      </v-form>
+        </v-form>
+      </div>
     </v-card>
-  </v-container>
+  </div>
 </template>
 
 <script>
@@ -84,10 +117,13 @@ export default {
       }
       return this.message;
     },
+    isEmailValid() {
+      return this.email && /.+@.+\..+/.test(this.email);
+    }
   },
   methods: {
     async sendResetLink() {
-      if (!this.email) return;
+      if (!this.email || !this.isEmailValid) return;
 
       this.loading = true;
       this.message = "";
@@ -98,9 +134,9 @@ export default {
           { email: this.email }
         );
         this.message =
-          res.data || "Lien de réinitialisation envoyé avec succès";
+          res.data || "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني بنجاح";
       } catch (err) {
-        this.message = err.response?.data?.message || "Email introuvable";
+        this.message = err.response?.data?.message || "البريد الإلكتروني غير مسجل في نظامنا";
       } finally {
         this.loading = false;
       }
@@ -110,55 +146,154 @@ export default {
 </script>
 
 <style scoped>
-.cont {
-    min-height: 100vh; 
-    font-family: 'Segoe UI';
-}
-.card {
-  max-width: 500px;
-  border-radius: 30px;
-}
 
-.close {
-  background-color: #01f3f3;
-  color: aliceblue;
-  font-weight: bold;
-  font-size: 1.3rem;
-  border-radius: 30px;
-  width: 35%;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.form-container {
-  /* max-width: 420px; */
+.forgot-password-card {
   width: 400px;
-  margin: auto;
+  max-width: 90%;
+  background: white;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-radius: 16px;
+  border: 1px solid rgba(230, 235, 245, 0.8);
+  margin: 20px auto;
 }
 
-.field-container {
-  border-radius: 10px;
-  padding: 5px;
-  margin-bottom: 15px;
-  transition: all 0.3s ease-in-out;
+.forgot-password-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.07), 0 6px 12px rgba(0, 0, 0, 0.04);
 }
 
-.field-container:hover {
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+.card-header-wrapper {
+  background: linear-gradient(120deg, #f8faff 0%, #f0f4fa 100%);
+  border-bottom: 1px solid rgba(230, 240, 255, 0.5);
+  padding: 16px 24px 12px;
+  margin-bottom: 16px;
 }
 
-.custom-input :deep(input) {
-  text-align: right;
+.card-header {
+  position: relative;
 }
 
-.buttonStyle {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  transition: box-shadow 0.3s ease;
-  color: aliceblue;
-  font-weight: bold;
-  font-size: 1.1rem;
+.back-button {
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute;
+  top: -2px;
+  right: 0;
 }
 
-.buttonStyle:hover {
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+.back-button:hover {
+  transform: translateX(-3px);
+  opacity: 0.9;
+}
+
+.content-wrapper {
+  padding: 0 24px 24px;
+}
+
+.password-avatar {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.password-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.forgot-form {
+  padding: 0;
+}
+
+.email-field {
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.email-field:deep(.v-field) {
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transition: all 0.25s ease;
+}
+
+.email-field:deep(.v-field--focused) {
+  transform: scale(1.01);
+  border-color: var(--v-primary-base);
+  box-shadow: 0 0 0 2px rgba(var(--v-primary-base), 0.2);
+}
+
+.email-field:deep(.v-field__input) {
+  font-size: 14px;
+  padding: 10px 12px;
+}
+
+.submit-button {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: none;
+  height: 40px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.submit-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: all 0.6s ease;
+}
+
+.submit-button:hover::after {
+  left: 100%;
+}
+
+.submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(45, 128, 213, 0.25);
+}
+
+.alert-message {
+  border-radius: 8px;
+  animation: fadeIn 0.3s ease-in-out;
+  font-size: 13px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  .forgot-password-card {
+    width: 92%;
+    max-width: 92%;
+    margin: 16px auto;
+    border-radius: 16px;
+  }
+  
+  .forgot-password-wrapper {
+    padding: 0;
+  }
+  
+  .card-header-wrapper {
+    padding: 16px 20px 12px;
+  }
+  
+  .content-wrapper {
+    padding: 0 16px 20px;
+  }
+  
+  .submit-button {
+    height: 38px;
+  }
 }
 </style>
