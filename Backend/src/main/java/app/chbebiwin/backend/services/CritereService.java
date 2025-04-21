@@ -2,7 +2,7 @@ package app.chbebiwin.backend.services;
 
 import app.chbebiwin.backend.entities.Critere.Critere;
 import app.chbebiwin.backend.entities.Critere.CritereRequest;
-import app.chbebiwin.backend.entities.Personnalite;
+import app.chbebiwin.backend.entities.Personnalite.Personnalite;
 import app.chbebiwin.backend.repositories.CritereRepository;
 import app.chbebiwin.backend.repositories.PersonnaliteRepository;
 import org.springframework.beans.factory.annotation.Autowired;

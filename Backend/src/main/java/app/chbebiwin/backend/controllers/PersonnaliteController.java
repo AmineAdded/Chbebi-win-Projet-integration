@@ -1,6 +1,6 @@
 package app.chbebiwin.backend.controllers;
 
-import app.chbebiwin.backend.entities.Personnalite;
+import app.chbebiwin.backend.entities.Personnalite.Personnalite;
 import app.chbebiwin.backend.services.FeedbackService;
 import app.chbebiwin.backend.services.PersonnaliteService;
 import org.springframework.web.bind.annotation.*;

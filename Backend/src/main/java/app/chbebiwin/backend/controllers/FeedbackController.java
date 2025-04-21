@@ -30,7 +30,7 @@ public class FeedbackController {
         return feedbackService.getFeedbackById(id);
     }
     @GetMapping("/getAll")
-    public List<Feedback> getAll() {
+    public List<FeedbackRequest> getAll() {
         return feedbackService.getAllFeedback();
     }
     @PutMapping("/update/{id}")

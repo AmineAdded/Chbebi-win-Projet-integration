@@ -4,7 +4,10 @@ import app.chbebiwin.backend.Exceptions.EmailAlreadyExistsException;
 import app.chbebiwin.backend.entities.Authentification.UpdateProfileRequest;
 import app.chbebiwin.backend.entities.Authentification.loginRequest;
 import app.chbebiwin.backend.entities.Authentification.signUpRequest;
+import app.chbebiwin.backend.entities.Personnalite.Personnalite;
+import app.chbebiwin.backend.entities.Personnalite.PersonnaliteRequest;
 import app.chbebiwin.backend.entities.Utilisateur;
+import app.chbebiwin.backend.repositories.PersonnaliteRepository;
 import app.chbebiwin.backend.repositories.UtilisateurRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -16,11 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 
 @Service
 public class UtilisateurService {
@@ -35,6 +36,8 @@ public class UtilisateurService {
 
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
+    private PersonnaliteRepository personnaliteRepository;
 
 
     public String deleteUtilisateur(Long id) {
@@ -149,5 +152,12 @@ public class UtilisateurService {
         user.setEmail(request.getEmail());
 
         return utilisateurRepository.save(user);
+    }
+    public Utilisateur setPersonnalite(PersonnaliteRequest request){
+        Utilisateur u = utilisateurRepository.findById(request.getId()).get();
+        Personnalite p = personnaliteRepository.findById(request.getType()).get();
+        u.setPersonnalite(p);
+        utilisateurRepository.save(u);
+        return u;
     }
 }

@@ -1,12 +1,12 @@
 package app.chbebiwin.backend.entities;
 
 import app.chbebiwin.backend.entities.Feedback.Feedback;
+import app.chbebiwin.backend.entities.Personnalite.Personnalite;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.OnDelete;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +25,6 @@ public class Utilisateur {
     @Column(nullable = false)
     private String  mdpsCompte;
     private String mdpsSuperAdmin;
-    private String typePersonnalite;
     private int role =0;
     private String resetToken;
     private LocalDateTime tokenExpiry;

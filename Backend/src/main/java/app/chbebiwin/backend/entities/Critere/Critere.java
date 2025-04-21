@@ -1,6 +1,6 @@
 package app.chbebiwin.backend.entities.Critere;
 
-import app.chbebiwin.backend.entities.Personnalite;
+import app.chbebiwin.backend.entities.Personnalite.Personnalite;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,6 +17,7 @@ public class Critere {
     private Long id;
     private String nom;
     private String contenu;
+    private String icon;
 
     @ManyToOne
     @JoinColumn(name = "Personnalite_id")

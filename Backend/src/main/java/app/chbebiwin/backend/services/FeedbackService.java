@@ -8,6 +8,7 @@ import app.chbebiwin.backend.repositories.UtilisateurRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,15 +25,23 @@ public class FeedbackService {
 
     // Méthode avec DTO pour la création
     public Feedback createFeedback(FeedbackRequest request) {
-        Utilisateur utilisateur = utilisateurRepository.findById(request.getUtilisateurId())
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable avec ID: " + request.getUtilisateurId()));
+        if (request.getMessage() == null || request.getMessage().trim().isEmpty()) {
+            throw new RuntimeException("التعليق لا يجب أن يكون فارغًا");
+        }
 
         Feedback feedback = new Feedback();
         feedback.setMessage(request.getMessage());
-        feedback.setUtilisateur(utilisateur);
+
+        // Vérifie si un utilisateur est associé
+        if (request.getUtilisateurId() != null) {
+            Utilisateur utilisateur = utilisateurRepository.findById(request.getUtilisateurId())
+                    .orElseThrow(() -> new RuntimeException("Utilisateur introuvable avec ID: " + request.getUtilisateurId()));
+            feedback.setUtilisateur(utilisateur);
+        }
 
         return feedbackRepository.save(feedback);
     }
+
 
     public String deleteFeedback(long id) {
         if (feedbackRepository.existsById(id)) {
@@ -46,9 +55,31 @@ public class FeedbackService {
         return feedbackRepository.findById(id).orElse(null);
     }
 
-    public List<Feedback> getAllFeedback() {
-        return feedbackRepository.findAll();
+//    public List<Feedback> getAllFeedback() {
+//        return feedbackRepository.findAll();
+//    }
+public List<FeedbackRequest> getAllFeedback() {
+    List<Feedback> feedbackList = feedbackRepository.findAll();
+    List<FeedbackRequest> feedbackDTOList = new ArrayList<>();
+
+    for (Feedback feedback : feedbackList) {
+        Utilisateur utilisateur = feedback.getUtilisateur();
+
+        Long utilisateurId = null;
+        String userName = "مجهول";
+
+        if (utilisateur != null) {
+            utilisateurId = utilisateur.getId();
+            userName = utilisateur.getNom();
+        }
+
+        feedbackDTOList.add(new FeedbackRequest(feedback.getMessage(), utilisateurId, userName));
     }
+
+    return feedbackDTOList;
+}
+
+
 
     public Feedback updateFeedback(long id, FeedbackRequest request) {
         return feedbackRepository.findById(id)

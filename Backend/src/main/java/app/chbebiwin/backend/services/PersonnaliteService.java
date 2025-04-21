@@ -1,6 +1,6 @@
 package app.chbebiwin.backend.services;
 
-import app.chbebiwin.backend.entities.Personnalite;
+import app.chbebiwin.backend.entities.Personnalite.Personnalite;
 import app.chbebiwin.backend.repositories.PersonnaliteRepository;
 import org.springframework.stereotype.Service;
 

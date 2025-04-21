@@ -3,6 +3,7 @@ package app.chbebiwin.backend.controllers;
 import app.chbebiwin.backend.entities.Authentification.UpdateProfileRequest;
 import app.chbebiwin.backend.entities.Authentification.loginRequest;
 import app.chbebiwin.backend.entities.Authentification.signUpRequest;
+import app.chbebiwin.backend.entities.Personnalite.PersonnaliteRequest;
 import app.chbebiwin.backend.entities.Utilisateur;
 import app.chbebiwin.backend.services.UtilisateurService;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +58,10 @@ public class UtilisateurController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+    @PostMapping("/setPersonnalite")
+    public Utilisateur setPersonnalite(@RequestBody PersonnaliteRequest request){
+        return utilisateurService.setPersonnalite(request);
     }
 
 }
