@@ -107,7 +107,7 @@
     </v-card>
   </v-container>
 
-  <v-snackbar v-model="showSnackBar" :color="snackbarColor" location="top" timeout="3000" rounded="xl">
+  <v-snackbar v-model="showSnackBar" :color="snackbarColor" location="top" timeout="1000" rounded="xl">
     <div class="d-flex align-center">
       <v-icon class="mr-2" color="white">
         {{ snackbarIcon }}
@@ -215,9 +215,7 @@ export default {
           this.showSnackBar = true;
 
           // Rediriger après un court délai
-          setTimeout(() => {
-            this.$router.push('/AvantTest');
-          }, 1000);
+          this.$router.push('/AvantTest');
         } catch (err) {
           this.snackbarColor = 'error';
           this.snackbarIcon = 'mdi-alert-circle';
