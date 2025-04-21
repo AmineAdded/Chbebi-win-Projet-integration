@@ -1,15 +1,15 @@
 <template>
-    <!-- Loading Screen -->
-    <div v-if="isLoading" class="loader-container">
-      <div class="loader-content">
-        <div class="custom-loader">
-          <div class="pulse-ring"></div>
-          <div class="pulse-dot"></div>
-        </div>
-        <div class="mt-4 text-center loading-text">...جاري تحميل الاختبار</div>
+  <!-- Loading Screen -->
+  <div v-if="isLoading" class="loader-container">
+    <div class="loader-content">
+      <div class="custom-loader">
+        <div class="pulse-ring"></div>
+        <div class="pulse-dot"></div>
       </div>
+      <div class="mt-4 text-center loading-text">...جاري تحميل الاختبار</div>
     </div>
-  <div v-else  class="main-container">
+  </div>
+  <div v-else class="main-container">
     <!-- Quiz Content -->
     <v-container fluid class="quiz-container">
       <v-sheet class="quiz-wrapper rounded-lg" color="transparent">
@@ -28,25 +28,21 @@
         </v-sheet>
 
         <!-- Question Card -->
-        <v-card class="question-card mx-auto mb-8" max-width="700px" elevation="3" rounded="xl">
-          <!-- Question Header -->
+        <v-card v-for="(question, index1) in questions" :key="index1" class="question-card mx-auto mb-8"
+          max-width="700px" elevation="3" rounded="xl" v-show="currentTab === index1">
+
           <v-card-title class="text-center py-4 text-white question-header" dir="rtl">
-            كيفاش تتعامل مع المشاكل ؟
+            {{ question.contenu }}
           </v-card-title>
 
-          <!-- Answer Options -->
           <v-card-text class="answer-options pt-4">
-            <v-sheet v-for="(option, index) in options" :key="index"
-              class="answer-option mb-3 pa-3 d-flex align-center rounded-lg" elevation="1" @click="selectOption(index)"
-              :class="{ 'selected-option': selectedOption === index }">
-              <span class="option-text" style="padding-right:15px">{{ option }}</span>
-              <span class="option-letter me-2" dir="rtl">{{ optionLetters[index] }}.</span>
-
+            <v-sheet v-for="(reponse, index2) in question.reponses" :key="index2"
+              class="answer-option mb-3 pa-3 d-flex align-center rounded-lg" elevation="1" @click="selectOption(index2)"
+              :class="{ 'selected-option': selectedOption === index2 }">
+              <span class="option-text" style="padding-right:15px">{{ reponse.contenu }}</span>
+              <span class="option-letter me-2" dir="rtl">{{ optionLetters[index2] }}.</span>
             </v-sheet>
           </v-card-text>
-
-          <!-- Bottom Part (Rounded) -->
-          <v-sheet class="card-bottom-curve"></v-sheet>
         </v-card>
 
         <!-- Next Button -->
@@ -61,22 +57,43 @@
       </v-sheet>
     </v-container>
   </div>
+
+  <v-snackbar v-model="showSnackBar" :color="snackbarColor" location="top" timeout="3000" rounded="xl">
+    <div class="d-flex align-center">
+      <v-icon class="mr-2" color="white">
+        {{ snackbarIcon }}
+      </v-icon>
+      {{ text }}
+    </div>
+    <template v-slot:actions>
+      <v-btn icon @click="showSnackBar = false">
+        <v-icon color="white">mdi-close</v-icon>
+      </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <script>
+import QuestionService from '@/Services/QuestionService.js';
+import { useUserStore } from '@/store/User/userStore';
 export default {
   data() {
     return {
+      showSnackBar: false,
+      sumA: 0,
+      sumB: 0,
+      sumC: 0,
+      sumD: 0,
+      max: 0,
+      type: 0,
+      snackbarColor: 'error',
+      snackbarIcon: 'mdi-alert-circle',
+      text: "",
+      questions: [],
       isLoading: true,
       currentTab: 0,
       selectedOption: null,
       optionLetters: ['أ', 'ب', 'ج', 'د'],
-      options: [
-        'التشجيع من الناس',
-        'تحقيق اهدافي الشخصية',
-        'الابداع و التحديات الجديدة',
-        'تنظيم الأشياء و قيادة الفريق'
-      ]
     }
   },
   created() {
@@ -88,14 +105,55 @@ export default {
     selectOption(index) {
       this.selectedOption = index;
     },
-    nextQuestion() {
+    async nextQuestion() {
+      if (this.selectedOption === 0) {
+        this.sumA++;
+      } else if (this.selectedOption === 1) {
+        this.sumB++;
+      } else if (this.selectedOption === 2) {
+        this.sumC++;
+      } else if (this.selectedOption === 3) {
+        this.sumD++;
+      }
       if (this.currentTab < 4) {
         this.currentTab++;
         this.selectedOption = null;
       } else {
+        this.max = Math.max(this.sumA, this.sumB, this.sumC, this.sumD);
+        if (this.max === this.sumA) {
+          this.type = 1;
+        } else if (this.max === this.sumB) {
+          this.type = 2;
+        } else if (this.max === this.sumC) {
+          this.type = 3;
+        } else if (this.max === this.sumD) {
+          this.type = 4;
+        }
+        try {
+          const store = useUserStore();
+          const id = store.user.id;
+          console.log("Type",this.type," id:",id);
+          await QuestionService.setPersonnalite(this.type,id);
+        } catch (err) {
+          console.error(err);
+          this.showSnackBar = true;
+          this.text = "حدث خطأ أثناء تحديث نوع الشخصية";
+        }
         this.$router.push({ name: 'Entrance' });
       }
+    },
+    async getQuestions() {
+      try {
+        this.questions = await QuestionService.getAllQuestions();
+      } catch (err) {
+        this.showSnackBar = false;
+        this.text = "حدث خطأ أثناء تحميل الأسئلة";
+        console.error(err);
+      }
     }
+  },
+  mounted() {
+    this.getQuestions();
   }
 }
 </script>
@@ -119,57 +177,70 @@ export default {
 }
 
 .loader-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-    z-index: 1001;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  z-index: 1001;
+}
+
+.loading-text {
+  color: #1565c0;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.custom-loader {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+@keyframes pulsee {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.3;
   }
-  
-  .loading-text {
-    color: #1565c0;
-    font-size: 1.25rem;
-    font-weight: 500;
+
+  50% {
+    transform: scale(1.2);
+    opacity: 0.6;
   }
-  .custom-loader {
-    position: relative;
-    width: 100px;
-    height: 100px;
+
+  100% {
+    transform: scale(0.8);
+    opacity: 0.3;
   }
-  @keyframes pulsee {
-    0% { transform: scale(0.8); opacity: 0.3; }
-    50% { transform: scale(1.2); opacity: 0.6; }
-    100% { transform: scale(0.8); opacity: 0.3; }
-  }
-  
-  .pulse-ring {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background-color: rgba(25, 118, 210, 0.2);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    animation: pulsee 2s ease-out infinite;
-  }
-  
-  .pulse-dot {
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background-color: #1976d2;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
+}
+
+.pulse-ring {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: rgba(25, 118, 210, 0.2);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulsee 2s ease-out infinite;
+}
+
+.pulse-dot {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #1976d2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 
 .question-header {
   background-color: #1e2a38;

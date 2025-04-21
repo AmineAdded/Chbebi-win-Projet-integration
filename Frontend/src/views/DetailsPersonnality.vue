@@ -27,13 +27,13 @@
             <v-col cols="12" md="4" class="personality-image-col">
               <div class="personality-image-wrapper">
                 <v-img
-                  :src="require('@/assets/387.jpg')"
+                  :src="require('@/assets/'+this.Personnalite.image)"
                   alt="Thinker Personality"
                   class="personality-image"
                   cover
                 ></v-img>
                 <div class="personality-badge">
-                  <span class="personality-type-badge">Thinker</span>
+                  <span class="personality-type-badge">{{this.Personnalite.nomEnglish}}</span>
                 </div>
               </div>
             </v-col>
@@ -41,14 +41,14 @@
             <v-col cols="12" md="8" class="personality-content-col">
               <v-card-item>
                 <v-card-title class="personality-type text-primary text-right d-flex align-center">
-                  <v-icon icon="mdi-brain" class="me-2" color="primary" size="large"></v-icon>
-                  <span class="personality-name me-2">Thinker:</span>
+                  <v-icon :icon=this.Personnalite.icon class="me-2" color="primary" size="large"></v-icon>
+                  <span class="personality-name me-2">{{ this.Personnalite.nom}}: </span>
                   <span>النوع الشخصي</span>
                 </v-card-title>
                 
                 <v-card-text class="personality-description text-right mt-4">
                   <p class="description-text">
-                    المفكر هو شخص يعتمد على المنطق والتحليل في اتخاذ القرارات، لا يتأثر بالعواطف. يحب يكون دقيق وحل المشاكل بطريقة منطقية. لكن في المواقف العاطفية أو مع الناس الحساسين، يلقى صعوبة في التفاعل
+                    {{ this.Personnalite.contenu }}
                   </p>
                 </v-card-text>
               </v-card-item>
@@ -83,7 +83,7 @@
         </div>
     
         <v-row>
-          <v-col cols="12" md="4" v-for="(trait, index) in traits" :key="index">
+          <v-col cols="12" md="4" v-for="(critere, index) in this.criteres" :key="index">
             <v-card 
               class="trait-card" 
               elevation="3" 
@@ -91,13 +91,13 @@
               :class="`trait-card-${index}`"
             >
               <div class="trait-icon-wrapper">
-                <v-icon :icon="trait.icon" size="36" color="white"></v-icon>
+                <v-icon :icon="critere.icon" size="36" color="white"></v-icon>
               </div>
               
-              <v-card-title class="trait-title text-center">{{ trait.title }}</v-card-title>
+              <v-card-title class="trait-title text-center">{{ critere.nom }}</v-card-title>
               
               <v-card-text class="trait-description text-right">
-                {{ trait.description }}
+                {{ critere.contenu }}
               </v-card-text>
               
               <v-card-actions class="justify-center pb-4">
@@ -105,7 +105,7 @@
                   rounded="pill"
                   variant="tonal" 
                   color="primary" 
-                  :prepend-icon="trait.icon"
+                  :prepend-icon="critere.icon"
                   class="details-button"
                 >
                   التفاصيل
@@ -117,13 +117,29 @@
       </v-container>
     </div>
     <Footer/>
+
+    <v-snackbar v-model="showSnackBar" :color="snackbarColor" location="top" timeout="3000" rounded="xl">
+    <div class="d-flex align-center">
+      <v-icon class="mr-2" color="white">
+        {{ snackbarIcon }}
+      </v-icon>
+      {{ text }}
+    </div>
+    <template v-slot:actions>
+      <v-btn icon @click="showSnackBar = false">
+        <v-icon color="white">mdi-close</v-icon>
+      </v-btn>
+    </template>
+  </v-snackbar>
   </template>
     
   <script>
   import { defineComponent } from "vue";
+  import PersonnaliteService from "@/Services/PersonnaliteService";
+  import { useUserStore } from '../store/User/userStore.js';
   import Navbar from "../components/Navbar.vue";
   import Footer from "../components/Footer.vue";
-import UpdateAccount from "@/components/UpdateAccount.vue";
+  import UpdateAccount from "@/components/UpdateAccount.vue";
     
   export default defineComponent({
     name: "DetailsPersonnality",
@@ -134,8 +150,14 @@ import UpdateAccount from "@/components/UpdateAccount.vue";
     },
     data() {
       return {
+        Personnalite :{},
         isLoading: true,
         showUpdateAccount: false,
+        showSnackBar: false,
+        snackbarColor: 'error',
+        snackbarIcon: 'mdi-alert-circle',
+        text: "",
+        criters:[],
         traits: [
           {
             title: "التحليل المنطقي",
@@ -160,6 +182,25 @@ import UpdateAccount from "@/components/UpdateAccount.vue";
         this.isLoading = false;
       }, 1500);
     },
+    mounted() {
+      this.getAllCriteres();
+    },
+    methods:{
+      async getAllCriteres(){
+        try{
+          const store = useUserStore();
+          const personnalite_id = store.user.personnalite_id;
+          this.Personnalite = await PersonnaliteService.getAllCriteres(personnalite_id);
+          this.criteres = this.Personnalite.criteres;
+          console.log(this.Personnalite.image);
+        }
+        catch(err){
+          console.log(err);
+          this.showSnackBar=true;
+          this.text=err.reponse.data || "حدث خطأ أثناء تحميل البيانات";
+        }
+      }
+    }
   });
   </script>
     

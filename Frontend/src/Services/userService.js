@@ -10,8 +10,9 @@ export default{
                 email: email,
                 password: password
             });
+            const personnalite_id = response.data.personnalite_id || null;
             const { id, nom, email: mail, accessToken, role } = response.data;
-            const filteredUser = { id, nom, email: mail, accessToken, role };
+            const filteredUser = { id, nom, email: mail, accessToken, role,personnalite_id };
 
             store.login(filteredUser);
             
@@ -34,8 +35,11 @@ export default{
             });
             const accessToken  = response.data.accessToken;
             const role = response.data.role;
+            const id = response.data.id;
+            const personnalite_id = response.data.personnalite_id || null;
+            
 
-            store.SignUp({nom:nom,email:email,accessToken:accessToken,role:role});
+            store.SignUp({id:id,nom:nom,email:email,accessToken:accessToken,role:role,personnalite_id:personnalite_id});
             return response.data;
         }
         catch (error) {

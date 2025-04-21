@@ -51,6 +51,10 @@ export const useUserStore = defineStore("user", () => {
     function udpate(name){
         nom.value = name;
     }
+    function setPersonnalite(type){
+        user.value.personnalite_id = type;
+        localStorage.setItem("user", JSON.stringify(user.value));
+    }
 
     return {
         accessToken,
@@ -64,6 +68,7 @@ export const useUserStore = defineStore("user", () => {
         login,
         logout,
         SignUp,
-        udpate
+        udpate,
+        setPersonnalite
     };
 });
