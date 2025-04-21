@@ -10,11 +10,11 @@ export default{
                 email: email,
                 password: password
             });
-            const personnalite_id = response.data.personnalite_id || null;
-            const { id, nom, email: mail, accessToken, role } = response.data;
+            const { id, nom, email: mail, accessToken, role,personnalite_id } = response.data;
             const filteredUser = { id, nom, email: mail, accessToken, role,personnalite_id };
 
             store.login(filteredUser);
+            store.setPersonnalite(personnalite_id);
             
             return response.data;
         }
