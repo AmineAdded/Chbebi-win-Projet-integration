@@ -3,14 +3,18 @@
     class="d-flex justify-center align-center"
     style="min-height: 100vh; font-family: 'Tajawal', 'Segoe UI', sans-serif"
   >
-    <v-card class="account-card mx-auto" elevation="4">
-      <div class="text-center mb-4">
-        <h2 class="text-h5 mb-3 primary--text font-weight-medium">تحديث الحساب</h2>
+    <v-card class="account-card mx-auto" elevation="8" rounded="xl">
+      <div class="account-header pa-4">
+        <v-avatar class="profile-avatar mb-2" color="primary" size="68">
+          <v-icon size="36" color="white">mdi-account-edit</v-icon>
+        </v-avatar>
+        <h2 class="text-h5 font-weight-bold gradient-text mb-2">تحديث الحساب</h2>
+        <div class="subtitle text-body-2 text-medium-emphasis mb-2">يمكنك تحديث معلومات حسابك بسهولة</div>
         <v-btn
           class="return-btn"
-          elevation="2"
+          variant="tonal"
           @click.prevent="$emit('closeUpdateAccount')"
-          rounded
+          rounded="pill"
           color="info"
           prepend-icon="mdi-arrow-right"
           size="small"
@@ -19,18 +23,20 @@
         </v-btn>
       </div>
 
-      <v-form class="form-container">
+      <v-divider class="mx-4 my-1"></v-divider>
+
+      <v-form class="form-container pa-4">
         <v-row dense>
           <v-col cols="12">
             <v-slide-y-transition>
-              <v-sheet class="field-wrapper" rounded="lg">
+              <v-sheet class="field-wrapper" rounded="lg" elevation="0">
                 <v-text-field
                   v-model="nom"
                   placeholder="اسمك الكامل"
                   variant="outlined"
-                  bg-color="surface"
+                  bg-color="surface-variant"
                   color="primary"
-                  density="compact"
+                  density="comfortable"
                   hide-details="auto"
                   dir="rtl"
                   :error-messages="errors.nom"
@@ -38,7 +44,7 @@
                   class="custom-input rounded-lg"
                 >
                   <template v-slot:append-inner>
-                    <v-icon color="primary" size="small">mdi-account</v-icon>
+                    <v-icon color="primary">mdi-account</v-icon>
                   </template>
                 </v-text-field>
               </v-sheet>
@@ -47,14 +53,14 @@
 
           <v-col cols="12">
             <v-slide-y-transition>
-              <v-sheet class="field-wrapper" rounded="lg">
+              <v-sheet class="field-wrapper" rounded="lg" elevation="0">
                 <v-text-field
                   v-model="email"
                   placeholder="بريدك الإلكتروني"
                   variant="outlined"
-                  bg-color="surface"
+                  bg-color="surface-variant"
                   color="primary"
-                  density="compact"
+                  density="comfortable"
                   hide-details="auto"
                   dir="rtl"
                   :error-messages="errors.email"
@@ -63,103 +69,7 @@
                   class="custom-input rounded-lg"
                 >
                   <template v-slot:append-inner>
-                    <v-icon color="primary" size="small">mdi-email</v-icon>
-                  </template>
-                </v-text-field>
-              </v-sheet>
-            </v-slide-y-transition>
-          </v-col>
-
-          <v-col cols="12">
-            <v-slide-y-transition>
-              <v-sheet class="field-wrapper" rounded="lg">
-                <v-text-field
-                  v-model="currentPassword"
-                  placeholder="كلمة السر الحالية"
-                  :type="showCurrentPassword ? 'text' : 'password'"
-                  variant="outlined"
-                  bg-color="surface"
-                  color="primary"
-                  density="compact"
-                  hide-details="auto"
-                  dir="rtl"
-                  :error-messages="errors.currentPassword"
-                  @input="errors.currentPassword = ''"
-                  class="custom-input rounded-lg"
-                >
-                  <template v-slot:append-inner>
-                    <v-icon color="primary" size="small">mdi-lock</v-icon>
-                  </template>
-                  <template v-slot:prepend-inner>
-                    <v-icon @click="showCurrentPassword = !showCurrentPassword" class="eye-icon" size="small">
-                      {{ showCurrentPassword ? "mdi-eye-off" : "mdi-eye" }}
-                    </v-icon>
-                  </template>
-                </v-text-field>
-              </v-sheet>
-            </v-slide-y-transition>
-          </v-col>
-
-          <v-col cols="12">
-            <v-slide-y-transition>
-              <v-sheet class="field-wrapper" rounded="lg">
-                <v-text-field
-                  v-model="newPassword"
-                  placeholder="كلمة السر الجديدة"
-                  :type="showNewPassword ? 'text' : 'password'"
-                  variant="outlined"
-                  bg-color="surface"
-                  color="primary"
-                  density="compact"
-                  hide-details="auto"
-                  dir="rtl"
-                  :error-messages="errors.newPassword"
-                  :rules="passwordRules"
-                  @input="errors.newPassword = ''"
-                  class="custom-input rounded-lg"
-                >
-                  <template v-slot:append-inner>
-                    <v-icon color="primary" size="small">mdi-lock-reset</v-icon>
-                  </template>
-                  <template v-slot:prepend-inner>
-                    <v-icon @click="showNewPassword = !showNewPassword" class="eye-icon" size="small">
-                      {{ showNewPassword ? "mdi-eye-off" : "mdi-eye" }}
-                    </v-icon>
-                  </template>
-                </v-text-field>
-              </v-sheet>
-            </v-slide-y-transition>
-          </v-col>
-
-          <v-col cols="12">
-            <v-slide-y-transition>
-              <v-sheet class="field-wrapper" rounded="lg">
-                <v-text-field
-                  v-model="confirmNewPassword"
-                  placeholder="تأكيد كلمة السر الجديدة"
-                  :type="showConfirmNewPassword ? 'text' : 'password'"
-                  variant="outlined"
-                  bg-color="surface"
-                  color="primary"
-                  density="compact"
-                  hide-details="auto"
-                  dir="rtl"
-                  :error-messages="errors.confirmNewPassword"
-                  @input="errors.confirmNewPassword = ''"
-                  :rules="confirmPasswordRules"
-                  class="custom-input rounded-lg"
-                >
-                  <template v-slot:append-inner>
-                    <v-icon color="primary" size="small">mdi-lock-check</v-icon>
-                  </template>
-                  <template v-slot:prepend-inner>
-                    <v-icon
-                      @click="showConfirmNewPassword = !showConfirmNewPassword"
-                      class="eye-icon"
-                      size="small"
-                    >
-                      {{ showConfirmNewPassword ? "mdi-eye-off" : "mdi-eye" }}
-                    </v-icon>
+                    <v-icon color="primary">mdi-email-outline</v-icon>
                   </template>
                 </v-text-field>
               </v-sheet>
@@ -167,59 +77,177 @@
           </v-col>
 
           <v-col cols="12" class="mt-2">
-            <v-expand-transition>
-              <div v-if="showPasswordRequirements && newPassword" class="password-requirements mb-2">
-                <h3 class="text-caption font-weight-medium mb-1">متطلبات كلمة المرور:</h3>
-                <div class="requirements-list">
-                  <div class="requirement-item">
-                    <v-icon size="x-small" :color="hasUpperCase ? 'success' : 'grey'">
-                      {{ hasUpperCase ? 'mdi-check-circle' : 'mdi-circle-outline' }}
-                    </v-icon>
-                    <span :class="hasUpperCase ? 'text-success text-caption' : 'text-grey text-caption'">حرف كبير (A-Z)</span>
+            <v-expansion-panels variant="accordion" class="password-panels" flat>
+              <v-expansion-panel title="تغيير كلمة المرور">
+                <template v-slot:title>
+                  <div class="d-flex align-center">
+                    <v-icon color="primary" class="mr-2">mdi-lock-reset</v-icon>
+                    <span class="font-weight-medium">تغيير كلمة المرور</span>
                   </div>
-                 
-                  <div class="requirement-item">
-                    <v-icon size="x-small" :color="hasNumber ? 'success' : 'grey'">
-                      {{ hasNumber ? 'mdi-check-circle' : 'mdi-circle-outline' }}
-                    </v-icon>
-                    <span :class="hasNumber ? 'text-success text-caption' : 'text-grey text-caption'">رقم (0-9)</span>
-                  </div>
-                 
-                  <div class="requirement-item">
-                    <v-icon size="x-small" :color="hasMinLength ? 'success' : 'grey'">
-                      {{ hasMinLength ? 'mdi-check-circle' : 'mdi-circle-outline' }}
-                    </v-icon>
-                    <span :class="hasMinLength ? 'text-success text-caption' : 'text-grey text-caption'">الحد الأدنى 8 أحرف</span>
-                  </div>
-                </div>
-              </div>
-            </v-expand-transition>
+                </template>
+                <v-expansion-panel-text>
+                  <v-row dense>
+                    <v-col cols="12">
+                      <v-slide-y-transition>
+                        <v-sheet class="field-wrapper" rounded="lg" elevation="0">
+                          <v-text-field
+                            v-model="currentPassword"
+                            placeholder="كلمة السر الحالية"
+                            :type="showCurrentPassword ? 'text' : 'password'"
+                            variant="outlined"
+                            bg-color="surface-variant"
+                            color="primary"
+                            density="comfortable"
+                            hide-details="auto"
+                            dir="rtl"
+                            :error-messages="errors.currentPassword"
+                            @input="errors.currentPassword = ''"
+                            class="custom-input rounded-lg"
+                          >
+                            <template v-slot:append-inner>
+                              <v-icon color="primary">mdi-lock</v-icon>
+                            </template>
+                            <template v-slot:prepend-inner>
+                              <v-icon @click="showCurrentPassword = !showCurrentPassword" class="eye-icon">
+                                {{ showCurrentPassword ? "mdi-eye-off" : "mdi-eye" }}
+                              </v-icon>
+                            </template>
+                          </v-text-field>
+                        </v-sheet>
+                      </v-slide-y-transition>
+                    </v-col>
+
+                    <v-col cols="12">
+                      <v-slide-y-transition>
+                        <v-sheet class="field-wrapper" rounded="lg" elevation="0">
+                          <v-text-field
+                            v-model="newPassword"
+                            placeholder="كلمة السر الجديدة"
+                            :type="showNewPassword ? 'text' : 'password'"
+                            variant="outlined"
+                            bg-color="surface-variant"
+                            color="primary"
+                            density="comfortable"
+                            hide-details="auto"
+                            dir="rtl"
+                            :error-messages="errors.newPassword"
+                            :rules="passwordRules"
+                            @input="errors.newPassword = ''"
+                            @focus="showPasswordRequirements = true"
+                            class="custom-input rounded-lg"
+                          >
+                            <template v-slot:append-inner>
+                              <v-icon color="primary">mdi-shield-key</v-icon>
+                            </template>
+                            <template v-slot:prepend-inner>
+                              <v-icon @click="showNewPassword = !showNewPassword" class="eye-icon">
+                                {{ showNewPassword ? "mdi-eye-off" : "mdi-eye" }}
+                              </v-icon>
+                            </template>
+                          </v-text-field>
+                        </v-sheet>
+                      </v-slide-y-transition>
+                    </v-col>
+
+                    <v-col cols="12">
+                      <v-slide-y-transition>
+                        <v-sheet class="field-wrapper" rounded="lg" elevation="0">
+                          <v-text-field
+                            v-model="confirmNewPassword"
+                            placeholder="تأكيد كلمة السر الجديدة"
+                            :type="showConfirmNewPassword ? 'text' : 'password'"
+                            variant="outlined"
+                            bg-color="surface-variant"
+                            color="primary"
+                            density="comfortable"
+                            hide-details="auto"
+                            dir="rtl"
+                            :error-messages="errors.confirmNewPassword"
+                            @input="errors.confirmNewPassword = ''"
+                            :rules="confirmPasswordRules"
+                            class="custom-input rounded-lg"
+                          >
+                            <template v-slot:append-inner>
+                              <v-icon color="primary">mdi-shield-check</v-icon>
+                            </template>
+                            <template v-slot:prepend-inner>
+                              <v-icon
+                                @click="showConfirmNewPassword = !showConfirmNewPassword"
+                                class="eye-icon"
+                              >
+                                {{ showConfirmNewPassword ? "mdi-eye-off" : "mdi-eye" }}
+                              </v-icon>
+                            </template>
+                          </v-text-field>
+                        </v-sheet>
+                      </v-slide-y-transition>
+                    </v-col>
+
+                    <v-col cols="12" class="mt-2">
+                      <v-expand-transition>
+                        <div v-if="showPasswordRequirements && newPassword" class="password-requirements mb-2">
+                          <h3 class="text-body-2 font-weight-medium mb-2">متطلبات كلمة المرور:</h3>
+                          <div class="requirements-list">
+                            <div class="requirement-item">
+                              <v-icon size="small" :color="hasUpperCase ? 'success' : 'grey-darken-1'">
+                                {{ hasUpperCase ? 'mdi-check-circle' : 'mdi-circle-outline' }}
+                              </v-icon>
+                              <span :class="hasUpperCase ? 'text-success text-caption' : 'text-medium-emphasis text-caption'">
+                                حرف كبير (A-Z)
+                              </span>
+                            </div>
+                           
+                            <div class="requirement-item">
+                              <v-icon size="small" :color="hasNumber ? 'success' : 'grey-darken-1'">
+                                {{ hasNumber ? 'mdi-check-circle' : 'mdi-circle-outline' }}
+                              </v-icon>
+                              <span :class="hasNumber ? 'text-success text-caption' : 'text-medium-emphasis text-caption'">
+                                رقم (0-9)
+                              </span>
+                            </div>
+                           
+                            <div class="requirement-item">
+                              <v-icon size="small" :color="hasMinLength ? 'success' : 'grey-darken-1'">
+                                {{ hasMinLength ? 'mdi-check-circle' : 'mdi-circle-outline' }}
+                              </v-icon>
+                              <span :class="hasMinLength ? 'text-success text-caption' : 'text-medium-emphasis text-caption'">
+                                الحد الأدنى 8 أحرف
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </v-expand-transition>
+                    </v-col>
+                  </v-row>
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+            </v-expansion-panels>
           </v-col>
 
-          <v-col cols="12" class="mt-2">
+          <v-col cols="12" class="mt-4">
             <v-scale-transition>
-              <div class="d-flex justify-center gap-2">
+              <div class="d-flex justify-center">
                 <v-btn
-                  class="action-btn"
+                  class="action-btn mr-2"
                   color="error"
-                  size="small"
+                  variant="outlined"
+                  size="large"
                   rounded="pill"
-                  elevation="1"
+                  prepend-icon="mdi-close"
+                  elevation="0"
                   @click.prevent="$emit('cancelUpdate')"
                 >
-                  <v-icon start size="small">mdi-close</v-icon>
                   إلغاء
                 </v-btn>
                 <v-btn
-                
                   class="action-btn"
                   color="primary"
-                  size="small"
+                  size="large"
                   rounded="pill"
-                  elevation="1"
+                  elevation="3"
                   @click.prevent="update"
                 >
-                  <v-icon start size="small">mdi-check</v-icon>
+                  <v-icon start>mdi-content-save</v-icon>
                   تحديث المعلومات
                 </v-btn>
               </div>
@@ -234,18 +262,18 @@
     v-model="showSnackBar"
     :color="snackbarColor"
     location="top"
-    elevation="4"
+    elevation="6"
     rounded="pill"
     timeout="4000"
   >
     <div class="d-flex align-center">
-      <v-icon class="mr-2" color="white" size="small">
+      <v-icon class="mr-2" color="white">
         {{ snackbarIcon }}
       </v-icon>
       {{ text }}
     </div>
     <template v-slot:actions>
-      <v-btn icon size="x-small" @click="showSnackBar = false">
+      <v-btn icon variant="text" size="small" @click="showSnackBar = false">
         <v-icon color="white">mdi-close</v-icon>
       </v-btn>
     </template>
@@ -427,22 +455,48 @@ export default {
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
 
 .account-card {
-  max-width: 420px;
+  max-width: 460px;
   width: 100%;
-  border-radius: 16px;
+  border-radius: 24px !important;
   background: linear-gradient(145deg, #ffffff, #f8f9fa);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.07);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
   overflow: visible;
-  padding: 1.25rem !important;
-  margin-top: -20px; /* Aide à centrer verticalement tout en laissant de l'espace en bas */
+  margin-top: -20px;
   max-height: 90vh;
   overflow-y: auto;
+  position: relative;
+  border: 1px solid rgba(228, 233, 240, 0.7);
 }
 
 .account-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12) !important;
+}
+
+.account-header {
+  text-align: center;
+  position: relative;
+}
+
+.profile-avatar {
+  margin: 0 auto;
+  border: 3px solid rgba(var(--v-theme-primary), 0.2);
+  box-shadow: 0 5px 15px rgba(var(--v-theme-primary), 0.15);
+  transition: all 0.3s ease;
+}
+
+.profile-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(var(--v-theme-primary), 0.2);
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, #2196f3, #6610f2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
 }
 
 .return-btn {
@@ -450,112 +504,144 @@ export default {
   letter-spacing: 0.5px;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   text-transform: none;
-  padding: 4px 16px;
+  padding: 5px 20px;
   font-size: 0.8rem;
 }
 
 .return-btn:hover {
   transform: translateX(-3px);
+  background-color: rgba(var(--v-theme-info), 0.1);
 }
 
 .form-container {
-  max-width: 380px;
+  max-width: 400px;
   margin: auto;
 }
 
 .field-wrapper {
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  margin-bottom: 6px;
-  background-color: rgba(241, 245, 249, 0.6);
+  margin-bottom: 12px;
+  background-color: white !important;
   border: 1px solid rgba(226, 232, 240, 0.8);
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
 }
 
 .field-wrapper:hover {
-  background-color: rgba(248, 250, 252, 0.9);
+  background-color: white !important;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
   transform: translateY(-1px);
 }
 
 .field-wrapper:focus-within {
-  border-color: var(--v-primary-base, #2196f3);
-  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+  border-color: rgba(var(--v-theme-primary), 1);
+  box-shadow: 0 0 0 2px rgba(var(--v-theme-primary), 0.1);
 }
 
 .eye-icon {
   opacity: 0.7;
   transition: opacity 0.2s ease;
+  cursor: pointer;
 }
 
 .eye-icon:hover {
   opacity: 1;
+  color: rgba(var(--v-theme-primary), 1);
 }
 
 .custom-input :deep(input) {
   text-align: right;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-family: 'Tajawal', sans-serif;
-  color: #333;
+  color: rgba(0, 0, 0, 0.87);
   transition: color 0.3s ease;
+  background-color: white !important;
 }
 
 .custom-input :deep(.v-field__outline) {
-  border-radius: 10px !important;
+  border-radius: 12px !important;
+}
+
+.custom-input :deep(.v-field__field) {
+  background-color: white !important;
+}
+
+.custom-input :deep(.v-field) {
+  background-color: white !important;
+  border-color: rgba(226, 232, 240, 0.8);
+}
+
+.custom-input :deep(.v-field__input) {
+  background-color: white !important;
 }
 
 .action-btn {
-  min-width: 100px;
-  margin-left: 20px;
+  min-width: 120px;
   font-weight: 500;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   letter-spacing: 0.25px;
   text-transform: none;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  padding: 0 24px;
 }
 
 .action-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 6px 12px rgba(var(--v-theme-primary), 0.15) !important;
 }
 
 .password-requirements {
   background-color: rgba(241, 245, 249, 0.7);
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px dashed rgba(203, 213, 225, 0.8);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
-  padding: 8px 12px;
+  padding: 12px 16px;
   font-size: 0.75rem;
 }
 
 .requirements-list {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .requirement-item {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 0.7rem;
+  gap: 6px;
+  font-size: 0.8rem;
 }
 
-/* Pour éviter le débordement vertical */
+.password-panels {
+  background-color: rgba(241, 245, 249, 0.5);
+  border-radius: 12px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.password-panels:hover {
+  background-color: rgba(241, 245, 249, 0.9);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+}
+
 v-container {
   min-height: calc(100vh - 20px);
   padding-bottom: 20px;
   overflow-y: auto;
 }
 
-/* Assurer que le scrolling est possible si nécessaire */
-@media (max-height: 650px) {
+.subtitle {
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 400;
+}
+
+@media (max-height: 700px) {
   .account-card {
     max-height: 85vh;
     overflow-y: auto;
-    padding: 1rem !important;
+    padding-top: 0.75rem !important;
+    padding-bottom: 1rem !important;
   }
  
   .text-center.mb-4 {
