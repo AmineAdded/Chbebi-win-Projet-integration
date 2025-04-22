@@ -10,7 +10,7 @@
   </div>
   <div v-else class="dashboard-container">
     <!-- Sidebar -->
-     <div class="nav"><Sidebar /></div>
+     <div class="nav"><Sidebar @showUpdateAccount="show = true" /></div>
     
 
     <!-- Main Content -->
@@ -23,6 +23,10 @@
       <TestsTable /><br><br>
       <QuotesTable /><br><br>
       <AnalyticsChart /><br>
+
+      <v-dialog v-model="show" persistent width="auto">
+        <UpdateAccount @closeUpdateAccount="show = false" />
+      </v-dialog>
     </div>
   </div>
 </template>
@@ -36,6 +40,7 @@ import QuizzesTable from "@/components/admin/QuizzesTable.vue";
 import TestsTable from "@/components/admin/TestsTable.vue";
 import QuotesTable from "@/components/admin/QuotesTable.vue";
 import AnalyticsChart from "@/components/admin/AnalyticsChart.vue";
+import UpdateAccount from "@/components/UpdateAccount.vue";
 
 export default {
   components: {
@@ -47,11 +52,14 @@ export default {
     TestsTable,
     QuotesTable,
     AnalyticsChart,
+    UpdateAccount
+
   },
   name: "AdminView",
   data(){
     return{
       isLoading: true,
+      show: false,
     };
   },
   created() {

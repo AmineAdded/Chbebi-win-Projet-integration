@@ -74,7 +74,7 @@
       
       <ul class="menu-items bottom-menu">
         <li class="menu-item" :class="{ active: activeMenu === 'settings' }">
-          <a href="#" class="menu-link" @click.prevent="setActiveMenu('settings')">
+          <a href="#" class="menu-link" @click.prevent="updateInfos">
             <span class="menu-icon">⚙️</span>
             <span class="menu-text">الإعدادات</span>
           </a>
@@ -101,10 +101,8 @@ export default {
     };
   },
   methods: {
-    setActiveMenu(menu) {
-      this.activeMenu = menu;
-      // Vous pouvez émettre un événement pour informer le composant parent
-      this.$emit('menu-changed', menu);
+    updateInfos() {
+      this.$emit('showUpdateAccount');
     },
     logout(){
       const store =useUserStore();
