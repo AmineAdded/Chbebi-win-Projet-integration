@@ -1,22 +1,35 @@
 <template>
   <v-card class="events-card pa-6">
     <h2 class="section-title mb-4">الفعاليات وورش العمل القراب</h2>
-    
+
     <div class="event-list">
       <div v-for="(event, index) in events" :key="index" class="event-item">
         <div class="event-card">
           <div class="event-content-wrapper">
             <div class="event-image mt-2">
-              <img :src="event.image" alt="Event image" class="rounded-lg" />
+              <img
+                :src="require('@/assets/' + event.image)"
+                alt="Event image"
+                class="rounded-lg"
+              />
             </div>
             <div class="event-info">
               <div class="d-flex justify-space-between align-center">
-                <div class="event-title font-weight-bold">{{ event.title }}</div>
-                <div class="event-date primary--text">{{ event.date }}</div>
+                <div class="event-title font-weight-bold">{{ event.nom }}</div>
+                <div class="event-date primary--text">
+                  {{ formatDate(event.date) }}
+                </div>
               </div>
-              <div class="event-description mt-2 text-right">{{ event.description }}</div>
+              <div class="event-description mt-2 text-right">
+                {{ event.description }}
+              </div>
               <div class="mt-3 text-left">
-                <v-btn color="success" class="learn-more white--text px-2">
+                <v-btn
+                  color="success"
+                  class="learn-more white--text px-2"
+                  :href="event.lien"
+                  target="_blank"
+                >
                   تعرف أكثر <v-icon small class="mr-1">mdi-chevron-left</v-icon>
                 </v-btn>
               </div>
@@ -29,38 +42,58 @@
 </template>
 
 <script>
+import { getAllEvents } from "@/Services/eventService";
+import { deleteExpiredEvents } from "@/Services/eventService";
+
 export default {
-  name: 'EventsWorkshops',
+  name: "EventsWorkshops",
   data() {
     return {
-      events: [
-        {
-          title: '🔥 Code It Up 5.0 – Naruto Edition 🔥',
-          date: '26-27 أبريل 2025',
-          image: require('@/assets/481352016_627745519986335_674803419184381753_n.jpg'),
-          description: 'كل ماهو متعلق بهذا ال event هو أنه يكون 24 hour hackathon من تنظيم IEEE CS Chapter ISET Bizerte hackathon يجمع كل فرق من الطلبة و ‫#‏الشباب‬ المشاركين يتحداون في حل مشاكل برمجية وذلك خلال تقنية في وقت محدود.'
-        },
-        {
-          title: 'Bizerte Tcodi',
-          date: '06 أبريل 2025',
-          image: require('@/assets/434396316_1769285730240893_6600856576318328781_n.jpg'),
-          description: 'أول دورة لحدث hackathon كان Bizerte Tcodi من تنظيم IEEE CS Chapter ISET Bizerte بالشراكة مع IEEE CS ISSATM و IEEE CS ENIB. حدث 6-hour problem-solving hackathon 17 ال النسخة الأولى كانت 🔥 مشاركين من مختلف المؤسسات. الهدف منها كان تمرين مهارات problem-solving و algorithmic thinking للطلبة وتحضيرهم لمسابقات عالمية كيف.'
-        }
-      ]
+      events: [],
     };
   },
+  mounted() {
+    this.loadEvents();
+  },
   methods: {
-    showDetails(event) {
-      console.log('Show details for:', event.title);
-    }
-  }
-}
+    async loadEvents() {
+      try {
+        // Supprimer les événements expirés d'abord
+        await deleteExpiredEvents();
+
+        // Puis charger les événements restants
+        const res = await getAllEvents();
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const validEvents = res.data.filter(event => {
+          const eventDate = new Date(event.date);
+          eventDate.setHours(0, 0, 0, 0);
+          return eventDate >= today;
+        });
+
+        const sortedEvents = validEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+        this.events = sortedEvents.slice(0, 2);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des événements :", error);
+      }
+    },
+    formatDate(date) {
+      const d = new Date(date);
+      return d.toLocaleDateString("ar-TN", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    },
+  },
+};
 </script>
 
 <style scoped>
 .events-card {
   background: white !important;
-
 }
 
 .section-title {
@@ -117,7 +150,7 @@ export default {
 }
 
 .event-date {
-  color: #4F46E5;
+  color: #4f46e5;
   font-weight: bold;
   font-size: 0.9rem;
 }
@@ -144,13 +177,13 @@ export default {
   .event-content-wrapper {
     flex-direction: column;
   }
-  
- .event-info {
+
+  .event-info {
     width: 100%;
     padding: 20px;
   }
- 
-  .event-image{
+
+  .event-image {
     display: none;
   }
 }
