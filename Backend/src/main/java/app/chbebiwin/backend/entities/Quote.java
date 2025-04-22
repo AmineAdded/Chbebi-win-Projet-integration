@@ -17,6 +17,4 @@ public class Quote {
     private Long id;
     private String nomAuteur;
     private String contenu;
-    @OneToMany(mappedBy = "quote",cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<Utilisateur> utilisateurs;
 }
