@@ -2,6 +2,7 @@ package app.chbebiwin.backend.controllers;
 
 import app.chbebiwin.backend.entities.Question.Question;
 import app.chbebiwin.backend.entities.Question.QuestionRequest;
+import app.chbebiwin.backend.entities.Test;
 import app.chbebiwin.backend.services.QuestionService;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,10 +30,10 @@ public class QuestionController {
     public Question get(@PathVariable Long id) {
         return questionService.getQuestionById(id);
     }
-    @GetMapping("/getAll")
-    public List<Question> getAll() {
-        return questionService.getAllQuestions();
-    }
+//    @GetMapping("/getAll")
+//    public List<Question> getAll() {
+//        return questionService.getAllQuestions();
+//    }
     @PutMapping("/update/{id}")
     public Question update(@PathVariable Long id, @RequestBody QuestionRequest request) {
         return questionService.updateQuestion(id,request);
@@ -40,5 +41,10 @@ public class QuestionController {
     @DeleteMapping("/deleteAll")
     public String deleteAll(){
         return questionService.deleteAllQuestions();
+    }
+
+    @PostMapping("/getQuestionsTest")
+    public List<Question> getQuestionsTest(@RequestBody Test test){
+        return questionService.getAllQuestions(test);
     }
 }

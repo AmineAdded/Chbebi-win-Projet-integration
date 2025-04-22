@@ -48,5 +48,15 @@ public class TestService {
         testRepository.deleteAll();
         return "Tous les tests sont supprimés!";
     }
+    public Test getTestUtilisable() {
+        List<Test> tests = testRepository.findAll();
+        for (Test test : tests) {
+            if ("personnalite".equals(test.getTypeTest()) && test.getUtilisable() == 1) {
+                return test;
+            }
+        }
+        throw new RuntimeException("لا يوجد أي اختبار متاح");
+    }
+
 
 }

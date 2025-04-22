@@ -8,6 +8,7 @@ import app.chbebiwin.backend.repositories.TestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -42,8 +43,14 @@ public class QuestionService {
         }
         return null;
     }
-    public List<Question> getAllQuestions(){
-        return questionRepository.findAll();
+    public List<Question> getAllQuestions(Test test){
+        List<Question> questions = new ArrayList<>();
+        for(Question question : questionRepository.findAll()){
+            if(question.getTest().getId().equals(test.getId())){
+                questions.add(question);
+            }
+        }
+        return questions;
     }
     public Question updateQuestion(Long id, QuestionRequest request) {
         return questionRepository.findById(id)

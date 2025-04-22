@@ -9,14 +9,16 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 public class Test {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nomTest;
+    private String typeTest;
+    private int utilisable;
     @OneToMany(mappedBy = "test",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Question> questions;
 }

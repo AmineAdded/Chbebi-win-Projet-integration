@@ -28,6 +28,11 @@ public class TestController {
     public Test getTestById(@PathVariable Long id) {
         return testService.getTestById(id);
     }
+
+    @GetMapping("/getTestUtilisable")
+    public Test getTestUtilisable() {
+        return testService.getTestUtilisable();
+    }
     @GetMapping("/getAll")
     public List<Test> getAll() {
         return testService.getAllTests();
