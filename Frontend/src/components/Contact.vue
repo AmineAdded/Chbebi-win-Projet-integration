@@ -23,7 +23,7 @@
           <v-divider class="divider"></v-divider>
   
           <!-- Liste des avis -->
-          <v-card v-for="(feedback, index) in feedbacks.slice(-2)" :key="index" class="review-card">
+          <v-card v-for="(feedback, index) in feedbackList.slice(-2)" :key="index" class="review-card">
             <v-list-item>
               <v-list-item-content class="review-content">
                 <v-list-item-title class="review-author">{{ feedback.nom }}</v-list-item-title>
@@ -41,30 +41,45 @@
   </template>
   
   <script>
-  import feedBackService from '@/Services/feedBackService';
-  export default {
-    name: "Contact",
-    data() {
-      return {
-        feedbacks: [], 
-      };
+import feedBackService from '@/Services/feedBackService';
+
+export default {
+  props: {
+    data: {
+      type: Object,
+      default: () => ({}),
     },
-    methods:{
-      async getFeedbacks() {
+  },
+  name: "Contact",
+  data() {
+    return {
+      feedbacks: [],
+    };
+  },
+  computed: {
+    feedbackList() {
+      return this.data.type ? this.data.feedbacks || [] : this.feedbacks;
+    }
+  },
+  methods: {
+    async getFeedbacks() {
       try {
         const response = await feedBackService.getAllFeedback();
-        this.feedbacks = response; 
-         console.log("Feedbacks récupérés :", this.feedbacks);
+        this.feedbacks = response;
+        console.log("Feedbacks récupérés :", this.feedbacks);
       } catch (err) {
-       console.log(err?.response?.data?.message || "حدث خطأ غير متوقع");
+        console.log(err?.response?.data?.message || "حدث خطأ غير متوقع");
       }
     },
-    },
-    mounted() {
-    this.getFeedbacks();
   },
-  };
-  </script>
+  mounted() {
+    if (!this.data.type) {
+      this.getFeedbacks(); // Ne fais le fetch que si ce n'est pas en mode "data.type = true"
+    }
+  },
+};
+</script>
+
   
   <style scoped>
   /* Conteneur principal */

@@ -61,7 +61,7 @@ import Rate from "@/components/Rate.vue";
 import UpdateAccount from "@/components/UpdateAccount.vue";
 
 export default defineComponent({
-  name: "HomeView",
+  name: "PrivateHomeView",
   components: {
     EventsWorkshops,
     Quote,
@@ -95,6 +95,7 @@ export default defineComponent({
 .main-container {
   padding: 0;
 }
+
 .loader-container {
   position: fixed;
   top: 0;
@@ -114,20 +115,24 @@ export default defineComponent({
   font-size: 1.25rem;
   font-weight: 500;
 }
+
 .custom-loader {
   position: relative;
   width: 100px;
   height: 100px;
 }
+
 @keyframes pulse {
   0% {
     transform: scale(0.8);
     opacity: 0.3;
   }
+
   50% {
     transform: scale(1.2);
     opacity: 0.6;
   }
+
   100% {
     transform: scale(0.8);
     opacity: 0.3;
@@ -156,6 +161,7 @@ export default defineComponent({
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
 .content-wrapper {
   display: flex;
   background-color: #b2cfe0;

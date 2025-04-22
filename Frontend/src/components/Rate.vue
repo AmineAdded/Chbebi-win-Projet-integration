@@ -72,7 +72,7 @@ export default {
       snackbarColor: 'error',
       snackbarIcon: 'mdi-alert-circle',
       text: "",
-      feedbacks: [], // <- variable pour stocker les feedbacks récupérés
+      feedbacks: [],
     };
   },
   methods: {
@@ -85,12 +85,15 @@ export default {
           message: this.feedback,
           utilisateurId: utilisateurId,
         });
-
+        
+        await this.getFeedbacks();
+        console.log("Feedback submitted successfully",this.feedbacks);
+        this.$emit('showFeedbacks', { feedbacks: this.feedbacks, type: true });
         this.showSnackBar = true;
         this.snackbarColor = 'success';
         this.snackbarIcon = 'mdi-check-circle';
         this.text = "تم إرسال التعليق بنجاح!";
-
+        
 
       } catch (err) {
         this.showSnackBar = true;
@@ -107,7 +110,6 @@ export default {
       try {
         const response = await feedBackService.getAllFeedback();
         this.feedbacks = response; 
-         console.log("Feedbacks récupérés :", this.feedbacks);
       } catch (err) {
         this.showSnackBar = true;
         this.snackbarColor = 'error';

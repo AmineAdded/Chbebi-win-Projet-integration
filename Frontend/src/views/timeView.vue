@@ -22,17 +22,21 @@
             </button>
             
             <div class="date-display">{{ formattedDate }}</div>
+
+           
             
             <button @click="nextDay" class="nav-button">
               <i class="mdi mdi-chevron-left"></i>
             </button>
-          </div>
-          
-          <div class="text-center mt-3">
+
+            <div class="text-center mt-3">
             <button @click="loadToday" class="today-button">
               <i class="mdi mdi-calendar-today me-1"></i> اليوم
             </button>
           </div>
+          </div>
+          
+         
         </div>
         
         <!-- Task List -->
@@ -59,10 +63,6 @@
           </div>
           <p class="empty-state-title">لا توجد مهام لهذا اليوم</p>
           <p class="empty-state-subtitle">أضف مهمة جديدة لبدء تنظيم يومك</p>
-          <button class="empty-state-button" @click="focusTaskInput">
-            <i class="mdi mdi-plus-circle me-2"></i>
-            إضافة مهمة جديدة
-          </button>
         </div>
         
         <!-- Add Task -->
@@ -344,9 +344,12 @@ export default defineComponent({
 .today-button {
   background: linear-gradient(145deg, var(--secondary-color), var(--accent-color));
   color: white;
+  position: relative;
+  bottom: 10px;
+  margin-right: 140px;
   border: none;
   border-radius: 14px;
-  padding: 14px 36px;
+  /* padding: 14px 36px; */
   font-weight: 600;
   font-size: 1.2rem;
   letter-spacing: 0.5px;
