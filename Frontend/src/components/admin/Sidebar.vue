@@ -1,36 +1,34 @@
 <template>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <nav class="sidebar" :class="{ expanded: isExpanded }">
     <div class="sidebar-header">
       <div class="logo-container">
         <span class="logo-icon">📌</span>
         <h2 class="logo-text">شبابي وين</h2>
       </div>
-      <button class="toggle-btn" @click="toggleSidebar">
-        <span class="toggle-icon">{{ isExpanded ? '⟪' : '⟫' }}</span>
-      </button>
     </div>
     
     <div class="user-profile">
       <div class="avatar">
-        <img src="/api/placeholder/40/40" alt="صورة المستخدم" />
+        <i class="fas fa-user-circle fa-2x"></i>
       </div>
       <div class="user-info">
-        <p class="user-name">مرحبًا، أحمد</p>
+        <p class="user-name">مرحبًا، {{userName}}</p>
         <span class="user-role">مدير النظام</span>
       </div>
     </div>
     
     <div class="menu-container">
       <ul class="menu-items">
-        <li class="menu-item" :class="{ active: activeMenu === 'home' }">
+        <!-- <li class="menu-item" :class="{ active: activeMenu === 'home' }">
           <a href="#" class="menu-link" @click.prevent="setActiveMenu('home')">
             <span class="menu-icon">🏠</span>
             <span class="menu-text">الرئيسية</span>
           </a>
-        </li>
+        </li> -->
         
         <li class="menu-item" :class="{ active: activeMenu === 'users' }">
-          <a href="#" class="menu-link" @click.prevent="setActiveMenu('users')">
+          <a href="/" class="menu-link" @click.prevent="setActiveMenu('users')">
             <span class="menu-icon">👥</span>
             <span class="menu-text">المستخدمين</span>
           </a>
@@ -83,7 +81,7 @@
         </li>
         
         <li class="menu-item logout">
-          <a href="#" class="menu-link">
+          <a href="#" class="menu-link" @click.prevent="logout">
             <span class="menu-icon">🔒</span>
             <span class="menu-text">تسجيل الخروج</span>
           </a>
@@ -92,6 +90,53 @@
     </div>
   </nav>
 </template>
+
+<script>
+import { useUserStore } from '@/store/User/userStore';
+export default {
+  data() {
+    return {
+      isExpanded: true,
+      activeMenu: 'SideBar'
+    };
+  },
+  methods: {
+    setActiveMenu(menu) {
+      this.activeMenu = menu;
+      // Vous pouvez émettre un événement pour informer le composant parent
+      this.$emit('menu-changed', menu);
+    },
+    logout(){
+      const store =useUserStore();
+      store.logout();
+      this.$router.push('/');
+    }
+  },
+  computed:{
+    userName(){
+      const store = useUserStore();
+      return store.nom;
+    }
+  },
+  mounted() {
+    // Initialize sidebar state based on screen size
+    if (window.innerWidth <= 768) {
+      this.isExpanded = false;
+    } else {
+      this.isExpanded = true;
+    }
+    
+    // Add resize listener
+    window.addEventListener('resize', () => {
+      if (window.innerWidth <= 768) {
+        this.isExpanded = false;
+      } else {
+        this.isExpanded = true;
+      }
+    });
+  }
+};
+</script>
 
 <style scoped>
 .sidebar {
@@ -140,25 +185,6 @@
   letter-spacing: -0.5px;
 }
 
-.toggle-btn {
-  background: #f1f3f5;
-  border: none;
-  color: #495057;
-  cursor: pointer;
-  font-size: 1.2rem;
-  padding: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  border-radius: 50%;
-}
-
-.toggle-btn:hover {
-  background: #e9ecef;
-  transform: scale(1.05);
-}
-
 .user-profile {
   display: flex;
   align-items: center;
@@ -177,8 +203,8 @@
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   background-color: #4263eb;
   overflow: hidden;
@@ -355,41 +381,3 @@
   }
 }
 </style>
-
-<script>
-export default {
-  data() {
-    return {
-      isExpanded: true,
-      activeMenu: 'home'
-    };
-  },
-  methods: {
-    toggleSidebar() {
-      this.isExpanded = !this.isExpanded;
-    },
-    setActiveMenu(menu) {
-      this.activeMenu = menu;
-      // Vous pouvez émettre un événement pour informer le composant parent
-      this.$emit('menu-changed', menu);
-    }
-  },
-  mounted() {
-    // Initialize sidebar state based on screen size
-    if (window.innerWidth <= 768) {
-      this.isExpanded = false;
-    } else {
-      this.isExpanded = true;
-    }
-    
-    // Add resize listener
-    window.addEventListener('resize', () => {
-      if (window.innerWidth <= 768) {
-        this.isExpanded = false;
-      } else {
-        this.isExpanded = true;
-      }
-    });
-  }
-};
-</script>
