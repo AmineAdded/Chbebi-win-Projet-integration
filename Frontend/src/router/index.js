@@ -7,6 +7,7 @@ import EntranceView from "@/views/EntranceView.vue";
 import DetailsPersonnality from "@/views/DetailsPersonnality.vue";
 
 import AdminDashboard from "@/views/AdminDashboard.vue";
+import SuperAdminVerify from "@/views/SuperAdminVerify.vue";
 
 const routes = [
   { path: "/admin", component: AdminDashboard ,name:"admin", meta: { requiresAuthentication: true }},
@@ -73,7 +74,20 @@ const routes = [
     name: 'TopicChaptersView',
     component: () => import('@/views/TopicChaptersView.vue'),
     props: true,
-  }
+  },
+  {
+    path: '/super-admin-verify',
+    component: SuperAdminVerify,
+    meta: { requiresAuthentication: true }
+  },
+  {
+    path: '/super-admin',
+    component: () => import('@/views/SuperAdminView.vue'),
+    meta: { 
+      requiresAuth: true,
+      requiresSuperAdmin: true
+    }
+  },
 ];
 
 const router = createRouter({
@@ -86,9 +100,9 @@ router.beforeEach((to, from, next) => {
 
   // Route Admin
   if (to.path === "/admin") {
-    if (accessToken && role ==1) {
+    if (accessToken && (role ==1|| role ==2)) {
       next(); // admin autorisé
-    } else if (accessToken && role ==0) {
+    } else if (accessToken && (role ==0 )) {
       next({ name: "privatehome" }); // utilisateur redirigé vers sa page
     } else {
       next({ name: "publichome" }); // non connecté
@@ -99,7 +113,7 @@ router.beforeEach((to, from, next) => {
   else if (to.path === "/privatehome") {
     if (accessToken && role ==0) {
       next(); // utilisateur autorisé
-    } else if (accessToken && role ==1) {
+    } else if (accessToken && (role ==1 || role ==2)) {
       next({ name: "admin" }); // admin redirigé vers dashboard
     } else {
       next({ name: "publichome" }); // non connecté
