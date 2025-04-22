@@ -2,6 +2,7 @@ package app.chbebiwin.backend.controllers;
 
 import app.chbebiwin.backend.entities.Quote;
 import app.chbebiwin.backend.services.QuoteService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,5 +41,13 @@ public class QuoteController {
     public String deleteAll(){
         return quoteService.deleteAllQuote();
     }
-
+    @GetMapping("/random")
+    public ResponseEntity<Quote> getRandomQuote() {
+        Quote randomQuote = quoteService.getRandomQuote();
+        if (randomQuote != null) {
+            return ResponseEntity.ok(randomQuote);
+        } else {
+            return ResponseEntity.noContent().build();
+        }
+    }
 }

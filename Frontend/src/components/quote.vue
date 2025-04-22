@@ -1,15 +1,38 @@
 <template>
-      <v-card class="quote-card" elevation="2">
-        <h3 class="quote-title">إقتباسات</h3>
-        <p class="quote-text">"اللي يحب يصنع التغيير، يبدأ من نفسه."</p>
-      </v-card>
-  </template>
-  
-  <script>
-  export default {
-    name: "Quote",
-  };
-  </script>
+  <v-card class="quote-card" elevation="2">
+    <h3 class="quote-title">إقتباسات</h3>
+    <p class="quote-text" v-if="quote">"{{ quote.contenu }}"</p>
+    <small v-if="quote" class="quote-author">— {{ quote.nomAuteur }} —</small>
+    <v-btn @click="loadRandomQuote" class="mt-3" color="primary">إقتباس آخر</v-btn>
+  </v-card>
+</template>
+
+<script>
+import quoteService from '@/Services/QuoteService';
+
+export default {
+  name: "Quote",
+  data() {
+    return {
+      quote: null,
+    };
+  },
+  mounted() {
+    this.loadRandomQuote();
+  },
+  methods: {
+    loadRandomQuote() {
+      quoteService.getRandomQuote()
+        .then(response => {
+          this.quote = response.data;
+        })
+        .catch(error => {
+          console.error("Erreur lors de la récupération de la citation :", error);
+        });
+    }
+  }
+};
+</script>
   
   <style scoped>
   .quote-container {
@@ -44,5 +67,10 @@
     color: #000;
     margin-top: 10px;
   }
+  .quote-author {
+    display: block;
+    margin-top: 10px;
+    color: #555;
+    font-size: 1.0rem;
+  }
   </style>
-  

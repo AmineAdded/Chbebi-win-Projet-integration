@@ -29,6 +29,7 @@ public class QuoteService {
     public List<Quote> getAllQuote(){
         return quoteRepository.findAll();
     }
+
     public Quote getQuoteById(Long id) {
         if(quoteRepository.existsById(id)){
             return quoteRepository.findById(id).get();
@@ -49,5 +50,13 @@ public class QuoteService {
         return "Tous les quotes sont supprimés!";
     }
 
+    public Quote getRandomQuote() {
+        List<Quote> allQuotes = quoteRepository.findAll();
+        if (allQuotes.isEmpty()) {
+            return null;
+        }
+        int randomIndex = (int) (Math.random() * allQuotes.size());
+        return allQuotes.get(randomIndex);
+    }
 
 }
