@@ -4,6 +4,7 @@ import app.chbebiwin.backend.entities.WorkshopEvents;
 import app.chbebiwin.backend.repositories.WorkshopEventsRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -29,9 +30,11 @@ public class WorkshopEventsService {
         }
         return null;
     }
+
     public List<WorkshopEvents> getAllWorkshopEvents() {
         return workshopEventsRepository.findAll();
     }
+
     public WorkshopEvents updateWorkshopEvents(Long id, WorkshopEvents workshopEvents) {
         return workshopEventsRepository.findById(id).map(
                 existingWorkshopEvents -> {existingWorkshopEvents.setNom(workshopEvents.getNom());
@@ -46,4 +49,17 @@ public class WorkshopEventsService {
         workshopEventsRepository.deleteAll();
         return "Tous les workshops et events sont supprimés!";
     }
+
+    public String deletePastWorkshopEvents() {
+        List<WorkshopEvents> all = workshopEventsRepository.findAll();
+        Date now = new Date();
+
+        List<WorkshopEvents> expired = all.stream()
+                .filter(e -> e.getDate().before(now))
+                .toList();
+
+        workshopEventsRepository.deleteAll(expired);
+        return expired.size() + " événements expirés supprimés";
+    }
+
 }
