@@ -69,7 +69,7 @@
           "arkan-islam": [
             {
               title: "الشهادة",
-              video: "https://www.youtube.com/embed/VIDEO_ID_1",
+              video: "https://youtu.be/7fAhrATLr-U?si=QdnshVr-KsGUfvp_",
               description: "شرح مفصل عن الشهادة وأهميتها في الإسلام.",
               pdf: "/pdfs/shahada.pdf",
               image: "https://cdn.pixabay.com/photo/2017/01/20/00/30/mosque-1998433_1280.jpg",

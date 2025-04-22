@@ -7,37 +7,32 @@
     </v-dialog>
     
     <!-- Main Content -->
-    <div class="container app-container py-5">
+    <div class="container app-container py-3">
       <div class="title-container text-center">
-        <h1 class="app-title mb-2">نظم وقتك</h1>
+        <h1 class="app-title mb-1">نظم وقتك</h1>
         <div class="title-underline"></div>
       </div>
       
       <div class="todo-card">
         <!-- Date Navigation -->
-        <div class="date-navigator">
-          <div class="d-flex justify-content-between align-items-center">
-            <button @click="prevDay" class="nav-button">
-              <i class="mdi mdi-chevron-right"></i>
-            </button>
-            
-            <div class="date-display">{{ formattedDate }}</div>
-
-           
-            
-            <button @click="nextDay" class="nav-button">
-              <i class="mdi mdi-chevron-left"></i>
-            </button>
-
-            <div class="text-center mt-3">
-            <button @click="loadToday" class="today-button">
-              <i class="mdi mdi-calendar-today me-1"></i> اليوم
-            </button>
-          </div>
-          </div>
-          
-         
-        </div>
+        <!-- Date Navigation -->
+<div class="date-navigator">
+  <div class="d-flex justify-content-between align-items-center">
+    <button @click="prevDay" class="nav-button">
+      <i class="mdi mdi-chevron-right"></i>
+    </button>
+    
+    <div class="date-display">{{ formattedDate }}</div>
+    
+    <button @click="nextDay" class="nav-button">
+      <i class="mdi mdi-chevron-left"></i>
+    </button>
+    
+    <button @click="loadToday" class="today-button">
+      <i class="mdi mdi-calendar-today me-1"></i> اليوم
+    </button>
+  </div>
+</div>
         
         <!-- Task List -->
         <div class="task-list" v-if="currentTasks.length > 0">
@@ -84,7 +79,6 @@
     
     <!-- Footer -->
     <Footer/>
-    
   </div>
 </template>
 
@@ -206,51 +200,41 @@ export default defineComponent({
   background: linear-gradient(45deg, #7c3aed, #4f46e5);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  font-size: 48px;
+  font-size: 36px;
 }
 
 .time-manager {
   font-family: 'Cairo', 'Tajawal', sans-serif;
-  background: #f0f7ff; /* Bleu très clair, presque blanc */
+  background: #f0f7ff;
   min-height: 100vh;
   color: var(--text-dark);
   direction: rtl;
 }
+
 .container.app-container {
-  max-width: 800px;
+  max-width: 600px;
   margin: 0 auto;
-  padding-top: 2rem;
-  padding-bottom: 2rem;
-}
-
-
-.app-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding-top: 2.5rem;
-  padding-bottom: 2.5rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .title-container {
   position: relative;
-  padding: 25px 0;
-  margin-bottom: 40px;
+  padding: 15px 0;
+  margin-bottom: 20px;
   background: rgba(255, 255, 255, 0.8);
-  border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
   border: 1px solid #e6edf5;
 }
 
 .app-title {
-  color: #2c5282; /* Bleu foncé solide */
+  color: #2c5282;
   font-weight: 700;
-  font-size: 2.5rem; /* Taille réduite */
+  font-size: 2rem;
   position: relative;
   display: inline-block;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-  letter-spacing: 0.5px;
-}
-.app-title {
   background-color: #2c5282;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -258,136 +242,148 @@ export default defineComponent({
 }
 
 .title-underline {
-  width: 160px;
-  height: 5px;
-  background: #3182ce; /* Bleu uni au lieu du dégradé */
-  border-radius: 3px;
+  width: 120px;
+  height: 3px;
+  background: #3182ce;
+  border-radius: 2px;
   margin: 0 auto;
-  margin-top: 10px;
+  margin-top: 5px;
 }
+
 .title-container::before {
   content: "";
   position: absolute;
   top: -5px;
   left: 50%;
   transform: translateX(-50%);
-  width: 50px;
-  height: 50px;
+  width: 30px;
+  height: 30px;
   background: linear-gradient(135deg, #a78bfa, #4f46e5);
   border-radius: 50%;
   opacity: 0.1;
   z-index: -1;
-  filter: blur(15px);
+  filter: blur(10px);
   animation: pulse 3s infinite ease-in-out;
 }
+
 @keyframes pulse {
   0% { transform: translateX(-50%) scale(1); opacity: 0.1; }
-  50% { transform: translateX(-50%) scale(1.5); opacity: 0.15; }
+  50% { transform: translateX(-50%) scale(1.3); opacity: 0.15; }
   100% { transform: translateX(-50%) scale(1); opacity: 0.1; }
 }
 
 .todo-card {
   background: var(--card-bg);
-  border-radius: 24px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); /* Ombre plus prononcée */
-  padding: 40px;
-  margin-bottom: 40px;
-  border: 1px solid #e2e8f0; /* Bordure plus visible */
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #e2e8f0;
 }
 
 .date-navigator {
-  background: #f8fafc; /* Couleur de fond plus claire et nette */
-  border-radius: 16px;
-  padding: 28px;
-  margin-bottom: 35px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Ombre plus prononcée */
-  border: 1px solid #e2e8f0; /* Ajout d'une bordure subtile */
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
 }
 
 .date-display {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  color: var(--primary-color);
+  color: #1e293b;
   text-align: center;
-  margin-left: 20px;
-  margin-right: 20px;
+  margin-left: 5px;
+  margin-right: 5px;
   letter-spacing: 0.5px;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.08);
 }
 
 .nav-button {
-  background: #4f46e5; /* Couleur solide au lieu d'un dégradé pour une meilleure visibilité */
+  background: #4f46e5;
   color: white;
   border: none;
-  border-radius: 14px;
-  width: 56px;
-  height: 56px;
+  border-radius: 10px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Ombre plus prononcée */
-  font-size: 1.8rem; /* Icône plus grande */
-  transition: all 0.3s ease;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  font-size: 1.3rem;
+  transition: all 0.2s ease;
 }
+
 .nav-button i {
   color: white;
-  font-size: 2rem; /* Icône plus grande */
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); /* Ombre de texte pour meilleure visibilité */
+  font-size: 1.5rem;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
 }
 
 .nav-button:hover {
-  background: #3730a3; /* Plus foncé au survol */
-  transform: translateY(-3px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+  background: #3730a3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .today-button {
-  background: linear-gradient(145deg, var(--secondary-color), var(--accent-color));
+  background: #4f46e5;
   color: white;
-  position: relative;
-  bottom: 10px;
-  margin-right: 140px;
   border: none;
-  border-radius: 14px;
-  /* padding: 14px 36px; */
+  border-radius: 10px;
+  padding: 8px 12px;
   font-weight: 600;
-  font-size: 1.2rem;
+  font-size: 0.9rem;
   letter-spacing: 0.5px;
-  box-shadow: 0 6px 12px rgba(124, 58, 237, 0.3);
-  transition: all 0.3s ease;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 5px;
+}
+
+.today-button i {
+  margin-right: 4px;
+  font-size: 1rem;
+  color: white;
 }
 
 .today-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 16px rgba(124, 58, 237, 0.4);
+  background: #3730a3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .task-list {
-  max-height: 450px;
+  max-height: 300px;
   overflow-y: auto;
-  margin: 30px 0;
-  padding: 15px;
-  border-radius: 16px;
+  margin: 15px 0;
+  padding: 10px;
+  border-radius: 12px;
   background: #f8f7ff;
-  box-shadow: inset 0 3px 6px rgba(0,0,0,0.05);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
 .task-item {
   background: white;
-  border-radius: 14px;
-  padding: 22px 26px;
-  margin-bottom: 16px;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-right: 5px solid var(--primary-color);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.04);
-  transition: all 0.3s ease;
+  border-right: 3px solid var(--primary-color);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
 }
 
 .task-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
 }
 
 .task-item.completed {
@@ -397,33 +393,33 @@ export default defineComponent({
 
 .task-content {
   flex-grow: 1;
-  margin-left: 20px;
+  margin-left: 15px;
 }
 
 .task-text {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   color: var(--text-dark);
-  transition: color 0.3s ease;
+  transition: color 0.2s ease;
 }
 
 .task-status {
-  font-size: 0.9rem;
+  font-size: 0.75rem;
   font-weight: 600;
   display: inline-block;
-  padding: 6px 16px;
-  border-radius: 30px;
+  padding: 4px 12px;
+  border-radius: 20px;
   color: var(--pending-color);
   background-color: #fef3c7;
-  box-shadow: 0 2px 5px rgba(245, 158, 11, 0.2);
-  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(245, 158, 11, 0.15);
+  transition: all 0.2s ease;
 }
 
 .status-completed {
   color: var(--success-color);
   background-color: #d1fae5;
-  box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 1px 3px rgba(16, 185, 129, 0.15);
 }
 
 .task-item.completed .task-text {
@@ -431,12 +427,11 @@ export default defineComponent({
   color: var(--text-muted);
 }
 
-/* Significantly improved checkbox styling */
 .checkbox-container {
   display: block;
   position: relative;
-  min-width: 38px;
-  height: 38px;
+  min-width: 30px;
+  height: 30px;
   margin: 0;
   cursor: pointer;
 }
@@ -453,55 +448,54 @@ export default defineComponent({
   position: absolute;
   top: 0;
   left: 0;
-  height: 38px;
-  width: 38px;
+  height: 30px;
+  width: 30px;
   background-color: #fff;
-  border: 3px solid #333; /* Darker border for better visibility */
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Stronger shadow */
-  transition: all 0.3s ease;
+  border: 2px solid #333;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
 }
 
 .checkbox-container:hover .checkmark {
   background-color: #f0f0f0;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-  transform: scale(1.05);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  transform: scale(1.03);
 }
 
 .task-checkbox:checked ~ .checkmark {
-  background: #10b981; /* Solid color instead of gradient for better visibility */
-  border-color: #0d9668; /* Darker border for the checked state */
-  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.5); /* More pronounced shadow */
+  background: #10b981;
+  border-color: #0d9668;
+  box-shadow: 0 2px 5px rgba(16, 185, 129, 0.4);
 }
 
 .checkmark:after {
   content: "";
   position: absolute;
   display: none;
-  left: 13px;
-  top: 6px;
-  width: 8px;
-  height: 16px;
+  left: 10px;
+  top: 5px;
+  width: 6px;
+  height: 12px;
   border: solid white;
-  border-width: 0 4px 4px 0; /* Thicker checkmark */
+  border-width: 0 3px 3px 0;
   transform: rotate(45deg);
 }
 
 .task-checkbox:checked ~ .checkmark:after {
   display: block;
-  animation: checkmark 0.3s ease-in-out;
+  animation: checkmark 0.2s ease-in-out;
 }
 
 @keyframes checkmark {
   0% { opacity: 0; transform: rotate(45deg) scale(0.5); }
-  50% { opacity: 1; transform: rotate(45deg) scale(1.2); }
+  50% { opacity: 1; transform: rotate(45deg) scale(1.1); }
   100% { opacity: 1; transform: rotate(45deg) scale(1); }
 }
 
-/* Enhanced empty state */
 .empty-state {
   text-align: center;
-  padding: 50px 20px;
+  padding: 30px 15px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -510,102 +504,53 @@ export default defineComponent({
 
 .empty-state-icon {
   background: linear-gradient(145deg, rgba(124, 58, 237, 0.1), rgba(79, 70, 229, 0.15));
-  width: 120px;
-  height: 120px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 30px;
-  box-shadow: 0 12px 24px rgba(124, 58, 237, 0.2);
+  margin: 0 auto 20px;
+  box-shadow: 0 6px 12px rgba(124, 58, 237, 0.15);
 }
 
 .empty-state i {
-  font-size: 60px;
+  font-size: 40px;
 }
-.date-display {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1e293b; /* Couleur plus foncée pour le texte */
-  text-align: center;
-  margin-left: 20px;
-  margin-right: 20px;
-  letter-spacing: 0.5px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-}
-.today-button {
-  background: #4f46e5; /* Couleur solide */
-  color: white;
-  border: none;
-  border-radius: 14px;
-  padding: 14px 36px;
-  font-weight: 700; /* Texte plus gras */
-  font-size: 1.2rem;
-  letter-spacing: 0.5px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
-  transition: all 0.3s ease;
-}
-.today-button i {
-  margin-right: 8px;
-  font-size: 1.3rem; /* Icône légèrement plus grande */
-  color: white;
-}
-.today-button:hover {
-  background: #3730a3; /* Plus foncé au survol */
-  transform: translateY(-3px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
-}
+
 .empty-state-title {
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   font-weight: 700;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   color: var(--primary-color);
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.04);
 }
 
 .empty-state-subtitle {
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: var(--text-muted);
-  margin-bottom: 30px;
-}
-
-.empty-state-button {
-  background: linear-gradient(145deg, var(--secondary-color), var(--accent-color));
-  color: white;
-  border: none;
-  border-radius: 14px;
-  padding: 16px 36px;
-  font-weight: 600;
-  font-size: 1.2rem;
-  margin-top: 10px;
-  box-shadow: 0 6px 12px rgba(124, 58, 237, 0.3);
-  transition: all 0.3s ease;
-}
-
-.empty-state-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 16px rgba(124, 58, 237, 0.4);
+  margin-bottom: 20px;
 }
 
 .add-task-container {
   display: flex;
-  margin-top: 30px;
+  margin-top: 15px;
   background: linear-gradient(145deg, #f8f7ff, #f5f3ff);
-  border-radius: 16px;
-  padding: 8px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
   border: 1px solid var(--border-light);
 }
 
 .task-input {
   flex-grow: 1;
   border: none;
-  padding: 18px 24px;
-  font-size: 1.2rem;
+  padding: 12px 16px;
+  font-size: 1rem;
   background: transparent;
-  border-radius: 12px;
+  border-radius: 10px;
   color: var(--text-dark);
-  transition: background 0.3s ease;
+  transition: background 0.2s ease;
 }
 
 .task-input:focus {
@@ -614,88 +559,93 @@ export default defineComponent({
 }
 
 .add-button {
-  background: #6d28d9; /* Solid color for better text visibility */
+  background: #6d28d9;
   color: white;
   border: none;
-  border-radius: 12px;
-  padding: 14px 32px;
-  font-weight: 700; /* Bolder text */
-  font-size: 1.2rem;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-size: 1rem;
   letter-spacing: 0.5px;
-  box-shadow: 0 6px 12px rgba(99, 102, 241, 0.25);
-  transition: all 0.3s ease;
+  box-shadow: 0 3px 6px rgba(99, 102, 241, 0.2);
+  transition: all 0.2s ease;
 }
 
 .add-button:hover {
-  background: #5b21b6; /* Slightly darker on hover */
-  color: white; /* Explicitly set color on hover */
-  transform: translateY(-3px);
-  box-shadow: 0 8px 16px rgba(99, 102, 241, 0.35);
+  background: #5b21b6;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
 }
+
 .add-button i {
   color: white;
   font-weight: bold;
-  margin-right: 8px;
+  margin-right: 6px;
 }
-/* Scrollbar styling */
+
 .task-list::-webkit-scrollbar {
-  width: 12px;
+  width: 8px;
 }
 
 .task-list::-webkit-scrollbar-track {
   background: #f5f3ff;
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 .task-list::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, var(--primary-color), var(--accent-color));
-  border-radius: 10px;
-  border: 3px solid #f5f3ff;
+  border-radius: 8px;
+  border: 2px solid #f5f3ff;
 }
 
 @media (max-width: 768px) {
   .todo-card {
-    padding: 30px 20px;
+    padding: 15px 12px;
   }
   
   .date-navigator {
-    padding: 20px;
+    padding: 12px;
   }
   
   .date-display {
-    font-size: 1.6rem;
-  }
-  
-  .task-text {
     font-size: 1.2rem;
   }
   
+  .task-text {
+    font-size: 1rem;
+  }
+  
   .empty-state-icon {
-    width: 100px;
-    height: 100px;
+    width: 70px;
+    height: 70px;
   }
   
   .empty-state i {
-    font-size: 50px;
+    font-size: 35px;
   }
   
   .empty-state-title {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
   }
-  @media (max-width: 768px) {
+  
   .app-title {
-    font-size: 2.5rem;
+    font-size: 1.8rem;
   }
   
   .title-underline {
-    width: 150px;
-    height: 6px;
+    width: 100px;
+    height: 3px;
   }
   
   .title-container {
-    padding: 25px 0;
-    margin-bottom: 40px;
+    padding: 15px 0;
+    margin-bottom: 20px;
   }
-}
+  
+  .today-button {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
 }
 </style>

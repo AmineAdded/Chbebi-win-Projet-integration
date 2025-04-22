@@ -107,7 +107,9 @@ export default {
           await userService.login(this.email, this.password);
           if (store.role == 0) {
             this.$router.push('/privatehome');
-          } else if (store.role == 1) {
+          } else if (store.role == 1 ) {
+            this.$router.push('/admin');
+          }else if (store.role == 2) {
             this.$router.push('/admin');
           }
         }

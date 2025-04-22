@@ -7,7 +7,7 @@
         <h2 class="logo-text">شبابي وين</h2>
       </div>
     </div>
-    
+
     <div class="user-profile">
       <div class="avatar">
         <i class="fas fa-user-circle fa-2x"></i>
@@ -17,7 +17,7 @@
         <span class="user-role">مدير النظام</span>
       </div>
     </div>
-    
+
     <div class="menu-container">
       <ul class="menu-items">
         <!-- <li class="menu-item" :class="{ active: activeMenu === 'home' }">
@@ -27,51 +27,59 @@
           </a>
         </li> -->
         
-        <li class="menu-item" :class="{ active: activeMenu === 'users' }">
+        <!-- <li class="menu-item" :class="{ active: activeMenu === 'users' }">
           <a href="/" class="menu-link" @click.prevent="setActiveMenu('users')">
             <span class="menu-icon">👥</span>
             <span class="menu-text">المستخدمين</span>
           </a>
-        </li>
+        </li> -->
+
         
+
         <li class="menu-item" :class="{ active: activeMenu === 'classes' }">
           <a href="#" class="menu-link" @click.prevent="setActiveMenu('classes')">
             <span class="menu-icon">📖</span>
             <span class="menu-text">الفصول</span>
           </a>
         </li>
-        
+
         <li class="menu-item" :class="{ active: activeMenu === 'surveys' }">
           <a href="#" class="menu-link" @click.prevent="setActiveMenu('surveys')">
             <span class="menu-icon">📝</span>
             <span class="menu-text">الاستبيانات</span>
           </a>
         </li>
-        
+
         <li class="menu-item" :class="{ active: activeMenu === 'tests' }">
           <a href="#" class="menu-link" @click.prevent="setActiveMenu('tests')">
             <span class="menu-icon">🧪</span>
             <span class="menu-text">الاختبارات</span>
           </a>
         </li>
-        
+
         <li class="menu-item" :class="{ active: activeMenu === 'quotes' }">
           <a href="#" class="menu-link" @click.prevent="setActiveMenu('quotes')">
             <span class="menu-icon">💬</span>
             <span class="menu-text">الاقتباسات</span>
           </a>
         </li>
-        
+
         <li class="menu-item" :class="{ active: activeMenu === 'analytics' }">
           <a href="#" class="menu-link" @click.prevent="setActiveMenu('analytics')">
             <span class="menu-icon">📊</span>
             <span class="menu-text">التحليلات</span>
           </a>
         </li>
+        <li v-if="userRole == 2" class="menu-item" :class="{ active: activeMenu === 'super-admin' }">
+          <a href="#" class="menu-link" @click.prevent="goToSuperAdmin">
+            <span class="menu-icon">🛡️</span>
+            <span class="menu-text">الإدارة العليا</span>
+          </a>
+        </li>
       </ul>
-      
+
       <div class="menu-divider"></div>
-      
+
       <ul class="menu-items bottom-menu">
         <li class="menu-item" :class="{ active: activeMenu === 'settings' }">
           <a href="#" class="menu-link" @click.prevent="updateInfos">
@@ -79,7 +87,7 @@
             <span class="menu-text">الإعدادات</span>
           </a>
         </li>
-        
+
         <li class="menu-item logout">
           <a href="#" class="menu-link" @click.prevent="logout">
             <span class="menu-icon">🔒</span>
@@ -97,7 +105,8 @@ export default {
   data() {
     return {
       isExpanded: true,
-      activeMenu: 'SideBar'
+      activeMenu: 'SideBar',
+      userRole: localStorage.getItem('role')
     };
   },
   methods: {
@@ -108,6 +117,11 @@ export default {
       const store =useUserStore();
       store.logout();
       this.$router.push('/');
+    },
+    goToSuperAdmin() {
+      if (this.userRole == 2) {
+        this.$router.push('/super-admin-verify');
+      }
     }
   },
   computed:{
@@ -238,6 +252,7 @@ export default {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  max-height: calc(100vh - 200px);
   padding: 0 0.75rem;
 }
 
@@ -316,7 +331,16 @@ export default {
 
 .bottom-menu {
   margin-top: auto;
-  padding-bottom: 1.5rem;
+  padding: 1rem 0;
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(to bottom, 
+    rgba(248, 249, 250, 0.9) 0%,
+    rgba(233, 236, 239, 0.9) 100%
+  );
+  backdrop-filter: blur(5px);
+  z-index: 2;
+  border-top: 1px solid #dee2e6;
 }
 
 .menu-item.logout .menu-link {
@@ -335,47 +359,99 @@ export default {
   .sidebar.expanded {
     width: 280px;
   }
-  
-  .logo-text, 
-  .user-info, 
+
+  .logo-text,
+  .user-info,
   .menu-text {
     display: none;
     opacity: 0;
     transition: opacity 0.2s ease;
   }
-  
-  .sidebar.expanded .logo-text, 
-  .sidebar.expanded .user-info, 
+
+  .sidebar.expanded .logo-text,
+  .sidebar.expanded .user-info,
   .sidebar.expanded .menu-text {
     display: block;
     opacity: 1;
   }
-  
+
   .menu-icon {
     margin-left: 0;
   }
-  
+
   .sidebar.expanded .menu-icon {
     margin-left: 0.75rem;
   }
-  
+
   .user-profile {
     justify-content: center;
     padding: 1rem 0;
   }
-  
+
   .sidebar.expanded .user-profile {
     justify-content: flex-start;
     padding: 1rem 1.5rem;
   }
-  
+
   .toggle-icon {
     transform: rotate(180deg);
     transition: transform 0.3s ease;
   }
-  
+
   .sidebar.expanded .toggle-icon {
     transform: rotate(0);
   }
+  .menu-container {
+    max-height: calc(100vh - 200px);
+  }
+  
+  .bottom-menu {
+    padding: 0.5rem 0;
+  }
 }
 </style>
+<!-- </style>
+
+<script>
+export default {
+  data() {
+    return {
+      isExpanded: true,
+      activeMenu: 'home',
+      userRole: localStorage.getItem('role')
+    };
+  },
+  methods: {
+    toggleSidebar() {
+      this.isExpanded = !this.isExpanded;
+    },
+    setActiveMenu(menu) {
+      this.activeMenu = menu;
+      // Vous pouvez émettre un événement pour informer le composant parent
+      this.$emit('menu-changed', menu);
+    },
+    goToSuperAdmin() {
+      if (this.userRole == 2) {
+        this.$router.push('/super-admin-verify');
+      }
+    }
+  },
+  mounted() {
+    // Initialize sidebar state based on screen size
+    if (window.innerWidth <= 768) {
+      this.isExpanded = false;
+    } else {
+      this.isExpanded = true;
+    }
+
+    // Add resize listener
+    window.addEventListener('resize', () => {
+      if (window.innerWidth <= 768) {
+        this.isExpanded = false;
+      } else {
+        this.isExpanded = true;
+      }
+    });
+  }
+};
+</script> -->

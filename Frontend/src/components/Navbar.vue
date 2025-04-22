@@ -24,10 +24,48 @@
         <v-btn text class="nav-btn" @click="handleTimeManagementClick"
           >إدارة الوقت</v-btn
         >
-        <v-btn text to="/islamic/:topicId" class="nav-btn"
-          >الثقافة التونسية</v-btn
+
+        <!-- Menu déroulant desktop amélioré -->
+        <v-menu
+          offset-y
+          transition="slide-y-transition"
+          :close-on-content-click="false"
         >
-        <v-btn text to="/islam" class="nav-btn">الدين الإسلامي</v-btn>
+          <template v-slot:activator="{ props }">
+            <v-btn
+              text
+              class="nav-btn theme-menu-btn"
+              v-bind="props"
+              @mouseenter="hoverTheme = true"
+              @mouseleave="hoverTheme = false"
+            >
+              المواضيع
+              <v-icon :color="hoverTheme ? 'primary' : ''">
+                {{ hoverTheme ? "mdi-chevron-up" : "mdi-chevron-down" }}
+              </v-icon>
+            </v-btn>
+          </template>
+
+          <v-card class="theme-menu-card" elevation="8">
+            <v-list class="theme-menu-list">
+              <v-list-item
+                to="/islam"
+                link
+                active-class="theme-menu-item-active"
+                class="theme-menu-item"
+                v-for="(thematic, index) in thematics" :key="index"
+              >
+                <v-list-item-title class="text-right"
+                  >{{thematic.nom}}</v-list-item-title
+                >
+              </v-list-item>
+
+              <v-divider class="my-1"></v-divider>
+
+            </v-list>
+          </v-card>
+        </v-menu>
+
         <v-spacer></v-spacer>
         <v-btn text class="nav-btn" @click="handleClick">الصفحة الرئيسية</v-btn>
         <img :src="logo" alt="logo" class="logo-img" />
@@ -78,22 +116,27 @@
         <v-divider></v-divider>
 
         <v-list-item @click="handleClick" link>
-          <v-list-item-title class="text-right nav-drawer-item"
-            >الصفحة الرئيسية</v-list-item-title
-          >
+          <v-list-item-title class="text-right nav-drawer-item">
+            الصفحة الرئيسية
+          </v-list-item-title>
         </v-list-item>
 
-        <v-list-item to="/islam" link>
-          <v-list-item-title class="text-right nav-drawer-item"
-            >الدين الإسلامي</v-list-item-title
-          >
-        </v-list-item>
+        <!-- Menu déroulant mobile pour المواضيع - CORRIGÉ -->
+        <v-list-group prepend-icon="mdi-book-open-variant">
+          <template v-slot:activator="{ props }">
+            <v-list-item v-bind="props" class="text-right">
+              <v-list-item-title class="nav-drawer-item"
+                >المواضيع</v-list-item-title
+              >
+            </v-list-item>
+          </template>
 
-        <v-list-item to="/islamic/:topicId" link>
-          <v-list-item-title class="text-right nav-drawer-item"
-            >الثقافة التونسية</v-list-item-title
-          >
-        </v-list-item>
+          <v-list-item to="/islam" link v-for="(thematic, index) in thematics" :key="index">
+            <v-list-item-title class="text-right nav-drawer-item pr-4">
+              {{ thematic.nom }}
+            </v-list-item-title>
+          </v-list-item>
+        </v-list-group>
 
         <v-list-item link @click.prevent="handleTimeManagementClick">
           <v-list-item-title class="text-right nav-drawer-item">
@@ -102,9 +145,9 @@
         </v-list-item>
 
         <v-list-item link @click.prevent="handleAgendaClick">
-          <v-list-item-title class="text-right nav-drawer-item"
-            >أجندة</v-list-item-title
-          >
+          <v-list-item-title class="text-right nav-drawer-item">
+            أجندة
+          </v-list-item-title>
         </v-list-item>
 
         <v-divider></v-divider>
@@ -143,6 +186,7 @@
 </template>
 
 <script>
+import thematicService from "@/Services/thematicService";
 import logo from "../assets/logo.png";
 import { useUserStore } from "@/store/User/userStore";
 
@@ -153,7 +197,12 @@ export default {
       logo: logo,
       drawer: false,
       logoutDialog: false,
+      hoverTheme: false,
+      thematics : [],
     };
+  },
+  mounted() {
+    this.getAllThematics();
   },
   computed: {
     showMenu() {
@@ -178,6 +227,14 @@ export default {
     },
   },
   methods: {
+    async getAllThematics() {
+      try {
+        const response = await thematicService.getAllThematics();
+        this.thematics = response.data;
+      } catch (error) {
+        console.error("Erreur lors de la récupération des thématiques:", error);
+      }
+    },
     logout() {
       this.logoutDialog = true;
     },
@@ -215,6 +272,68 @@ export default {
 </script>
 
 <style scoped>
+/* Styles améliorés pour le dropdown desktop */
+.theme-menu-btn {
+  position: relative;
+  transition: all 0.3s ease;
+  font-family: 'Segoe UI';
+}
+
+.theme-menu-btn:hover {
+  color: #2d80d5 !important;
+}
+
+.theme-menu-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: #2d80d5;
+  transition: width 0.3s ease;
+}
+
+.theme-menu-btn:hover::after {
+  width: 70%;
+}
+
+.theme-menu-card {
+  border-radius: 8px !important;
+  overflow: hidden;
+  min-width: 220px;
+  margin-top: 8px;
+  border: 1px solid #eee;
+}
+
+.theme-menu-list {
+  padding: 8px 0;
+}
+
+.theme-menu-item {
+  transition: all 0.2s ease;
+  padding: 8px 16px;
+}
+
+.theme-menu-item:hover {
+  background-color: #f5f9ff !important;
+}
+
+.theme-menu-item-active {
+  background-color: #e3f2fd !important;
+  color: #2d80d5 !important;
+}
+
+.theme-menu-item .v-icon {
+  transition: all 0.2s ease;
+}
+
+.theme-menu-item:hover .v-icon {
+  transform: translateX(-3px);
+  color: #2d80d5;
+}
+
 .user-name {
   font-size: 16px;
   font-weight: bold;
