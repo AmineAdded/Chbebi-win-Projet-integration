@@ -76,6 +76,7 @@
 <script>
 import QuestionService from '@/Services/QuestionService.js';
 import { useUserStore } from '@/store/User/userStore';
+import Axios from 'axios';
 export default {
   data() {
     return {
@@ -142,9 +143,10 @@ export default {
         this.$router.push({ name: 'Entrance' });
       }
     },
-    async getQuestions() {
+    async getTest() {
       try {
-        this.questions = await QuestionService.getAllQuestions();
+        const res = await Axios.get("http://localhost:9090/api/Test/getTestUtilisable");
+        this.questions = await QuestionService.getAllQuestions({id:res.data.id,utilisable:res.data.utilisable});
       } catch (err) {
         this.showSnackBar = false;
         this.text = "حدث خطأ أثناء تحميل الأسئلة";
@@ -153,7 +155,7 @@ export default {
     }
   },
   mounted() {
-    this.getQuestions();
+    this.getTest();
   }
 }
 </script>

@@ -1,9 +1,9 @@
 import Axios from 'axios';
 import {useUserStore} from '@/store/User/userStore';
 export default{
-    async getAllQuestions(){
+    async getAllQuestions(data){
         try{
-            const response = await Axios.get('Question/getAll');
+            const response = await Axios.post('Question/getQuestionsTest',data);
             return response.data;
         }
         catch(err){
