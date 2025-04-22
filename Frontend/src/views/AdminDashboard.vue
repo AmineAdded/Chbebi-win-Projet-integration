@@ -17,7 +17,6 @@
     <div class="main-content">
       <DashboardOverview />
 
-      <UsersTable /><br><br>
       <ChaptersTable /><br><br>
       <QuizzesTable /><br><br>
       <TestsTable /><br><br>
@@ -30,7 +29,6 @@
 <script>
 import Sidebar from "@/components/admin/Sidebar.vue";
 import DashboardOverview from "@/components/admin/DashboardOverview.vue";
-import UsersTable from "@/components/admin/UsersTable.vue";
 import ChaptersTable from "@/components/admin/ChaptersTable.vue";
 import QuizzesTable from "@/components/admin/QuizzesTable.vue";
 import TestsTable from "@/components/admin/TestsTable.vue";
@@ -41,7 +39,6 @@ export default {
   components: {
     Sidebar,
     DashboardOverview,
-    UsersTable,
     ChaptersTable,
     QuizzesTable,
     TestsTable,

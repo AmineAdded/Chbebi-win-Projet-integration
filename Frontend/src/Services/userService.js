@@ -13,6 +13,8 @@ export default{
             const { id, nom, email: mail, accessToken, role,personnalite_id } = response.data;
             const filteredUser = { id, nom, email: mail, accessToken, role,personnalite_id };
 
+            localStorage.setItem('email', mail);
+            
             store.login(filteredUser);
             store.setPersonnalite(personnalite_id);
             
@@ -24,6 +26,26 @@ export default{
         }
             
         },
+        async logSuperAdmin(email, password) {
+            try {
+              const response = await axios.post('Utilisateur/login', {
+                email: email,
+                password: password
+              });
+          
+              return response.data;
+          
+            } catch (error) {
+              let errorMessage = "حدث خطأ أثناء التحقق";
+              if (error.response?.data?.message) {
+                const serverMessage = error.response.data.message.toLowerCase();
+                if (serverMessage.includes("password")) {
+                  errorMessage = "كلمة المرور غير صحيحة";
+                }
+              }
+              throw new Error(errorMessage);
+            }
+          },
         async signUp(nom,email,password,confirmPassword){
         try{
             const store = useUserStore();
