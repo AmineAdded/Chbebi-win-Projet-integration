@@ -34,6 +34,7 @@
 import Navbar from "../components/Navbar.vue";
 import Footer from "../components/Footer.vue";
 import UpdateAccount from "@/components/UpdateAccount.vue";
+import { useUserStore } from "@/store/User/userStore";
 
 export default {
   name: "AgendaView",
@@ -48,16 +49,17 @@ export default {
   },
 
   mounted() {
-    const id = "user1";
-    fetch(`http://localhost:3306/chbebiWin/${id}`)
+    const store = useUserStore();
+    const id = store.user.id;
+    fetch(`http://localhost:9090/api/agenda/${id}`)
       .then(res => res.json())
       .then(data => {
         if (data.length > 0) {
           this.pages = data.map(p => ({
             id: p.id,
             pageNumber: p.pageNumber,
-            left: p.leftContent,
-            right: p.rightContent,
+            left: p.rightContent,
+            right: p.leftContent,
           }));
           this.currentPage = 0;
         }
@@ -69,16 +71,18 @@ export default {
 
   methods: {
     saveNotes() {
+      const store = useUserStore();
+      const id = store.user.id;
       const current = this.pages[this.currentPage];
       const payload = {
         id: current.id || null,
         pageNumber: this.currentPage,
-        leftContent: current.left,
-        rightContent: current.right,
-        userId: "user1",
+        leftContent: current.right,
+        rightContent: current.left,
+        utilisateurId: id,
       };
 
-      fetch("http://localhost:3306/chbebiWin/save", {
+      fetch("http://localhost:9090/api/agenda/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
