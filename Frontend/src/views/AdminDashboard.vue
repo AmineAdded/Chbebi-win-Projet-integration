@@ -10,7 +10,7 @@
   </div>
   <div v-else class="dashboard-container">
     <!-- Sidebar -->
-     <div class="nav"><Sidebar @showUpdateAccount="show = true" /></div>
+    <div class="nav"><Sidebar @showUpdateAccount="show = true" /></div>
     
 
     <!-- Main Content -->

@@ -1,24 +1,21 @@
 <template>
-  <div class="islamic-container">
+  <div class="Chapitre-container">
     <Navbar @openUpdateAccount="showUpdateAccount = true" />
     
     <v-dialog v-model="showUpdateAccount" persistent width="auto">
       <UpdateAccount @closeUpdateAccount="showUpdateAccount = false" />
     </v-dialog>
 
-
     <v-container fluid>
-      <h2 class="section-title">مواضيع دينية</h2>
+      <h2 class="section-title">{{ thematicTitle }}</h2>
       <div class="cards-wrapper">
         
-        <div v-for="(topic, index) in topics" :key="index" class="card ">
-          <router-link
-  :to="{ name: 'TopicChaptersView', params: { topicId: topic.id } }"
-  class="card">
-          <img :src="topic.image" alt="Islamic Topic" class="card-img" />
+        <div v-for="(chapitre, index) in chapitres" :key="index" class="card ">
+          <router-link :to="{ name: 'SousChapitre', params: { chapitreId: chapitre.id, chapitreTitle: chapitre.title } }" class="card">
+          <img :src="require('@/assets/' + chapitre.image)" alt="Chapitre chapitre" class="card-img" />
           <div class="card-body">
-            <h3 class="card-title">{{ topic.title }}</h3>
-            <p class="card-desc">{{ topic.description }}</p>
+            <h3 class="card-title">{{ chapitre.title }}</h3>
+            <p class="card-desc">{{ chapitre.description }}</p>
           </div>
         </router-link>
         </div>
@@ -33,9 +30,10 @@
 import Navbar from "../components/Navbar.vue";
 import Footer from "../components/Footer.vue";
 import UpdateAccount from "@/components/UpdateAccount.vue";
+import SuperChapitre from "@/Services/chapitreService.js";
 
 export default {
-  name: "IslamicView",
+  name: "ChapitreView",
   components: {
     Navbar,
     Footer,
@@ -44,40 +42,42 @@ export default {
   data() {
     return {
       showUpdateAccount: false,
-      topics: [
-        {
-          id:"arkan-islam",
-          title: "أركان الإسلام",
-          description: "تعرف على الركائز الخمسة التي يقوم عليها دين الإسلام.",
-          image: "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg",
-        },
-        {
-          id:"kisas-anbiya",
-          title: "قصص الأنبياء",
-          description: "قصص ممتعة ومؤثرة من حياة أنبياء الله عليهم السلام.",
-          image: "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg",
-        },
-        {
-          id:"akhlaq-muslim",
-          title: "أخلاق المسلم",
-          description: "تعرّف على الأخلاق الحميدة التي يجب أن يتحلى بها المسلم.",
-          image: "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg",
-        },
-        {
-          id:"koran-karim",
-          title: "القرآن الكريم",
-          description: "اكتشف إعجاز القرآن وأهمية تلاوته وفهمه.",
-          image: "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg",
-        },
-        
-      ],
+      chapitres: [],
     };
   },
+  computed: {
+    thematicId() {
+      return this.$route.params.thematicId;
+    },
+    thematicTitle() {
+      return this.$route.params.thematicTitle;
+    },
+  },
+  methods: {
+    loadAllSuperChapitre(thematicId) {
+      SuperChapitre.getAllSuperChapitre(thematicId)
+        .then(response => {
+          this.chapitres = response.data;
+        })
+        .catch(error => {
+          console.error("Erreur lors de la récupération des chapitres :", error);
+        });
+    }
+  },
+  watch: {
+    thematicId(newId) {
+      this.loadAllSuperChapitre(newId);
+    }
+  },
+  mounted() {
+    this.loadAllSuperChapitre(this.thematicId);
+  }
 };
 </script>
 
+
 <style scoped>
-.islamic-container {
+.Chapitre-container {
   background-color: #e3f2fd;
   min-height: 100vh;
   direction: rtl;

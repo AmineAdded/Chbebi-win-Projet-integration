@@ -55,24 +55,25 @@ const routes = [
     component: () => import('@/components/ForgotPassword.vue')
   } ,
   {
-    path: '/islam',
-    name: 'Islam',
-    component: () => import('@/views/IslamicView.vue')
-  }  ,
+    path: '/Chapitre/:thematicId,:thematicTitle',
+    name: 'Chapitre',
+    component: () => import('@/views/ChapitreView.vue'),
+    props: true,
+  } ,
   {
     path: '/agenda',
     name: 'AgendaView',
     component: () => import('@/views/AgendaView.vue')
-  }  ,
+  } ,
   {
     path: '/time-management',
     name: 'timeView',
     component: () => import('@/views/timeView.vue')
-  }  ,
+  } ,
   {
-    path: '/islamic/:topicId',
-    name: 'TopicChaptersView',
-    component: () => import('@/views/TopicChaptersView.vue'),
+    path: '/SousChapitre/:chapitreId,:chapitreTitle',
+    name: 'SousChapitre',
+    component: () => import('@/views/SousChapitre.vue'),
     props: true,
   },
   {

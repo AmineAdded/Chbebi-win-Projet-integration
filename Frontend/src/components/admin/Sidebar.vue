@@ -114,7 +114,7 @@ export default {
       this.$emit('showUpdateAccount');
     },
     logout(){
-      const store =useUserStore();
+      const store = useUserStore();
       store.logout();
       this.$router.push('/');
     },

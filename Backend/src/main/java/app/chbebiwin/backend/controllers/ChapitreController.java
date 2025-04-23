@@ -46,4 +46,14 @@ public class ChapitreController {
         chapitreService.deleteChapitre(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/super/{thematicId}")
+    public List<Chapitre> getAllSuperChapitresByThematic(@PathVariable Long thematicId) {
+        return chapitreService.getAllSuperChapitresByThematic(thematicId);
+    }
+
+    @GetMapping("/sous/{superChapitreId}")
+    public List<Chapitre> getSousChapitresBySuperChapitreId(@PathVariable Long superChapitreId) {
+        return chapitreService.getSousChapitresBySuperChapitreId(superChapitreId);
+    }
 }

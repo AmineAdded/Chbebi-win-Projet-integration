@@ -61,7 +61,7 @@
               <v-list-item
                 v-for="(thematic, index) in thematics"
                 :key="index"
-                :to="'/theme/' + thematic.id"
+                :to="{ name: 'Chapitre', params: { thematicId: thematic.id, thematicTitle: thematic.nom } }"
                 link
                 active-class="theme-menu-item-active"
                 class="theme-menu-item"
