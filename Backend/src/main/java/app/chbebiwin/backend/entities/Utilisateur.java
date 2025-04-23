@@ -1,5 +1,6 @@
 package app.chbebiwin.backend.entities;
 
+import app.chbebiwin.backend.entities.AgendaPage.AgendaPage;
 import app.chbebiwin.backend.entities.Feedback.Feedback;
 import app.chbebiwin.backend.entities.Personnalite.Personnalite;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -42,5 +43,8 @@ public class Utilisateur {
 
     @OneToMany(mappedBy = "utilisateur",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Feedback> feedbacks;
+
+    @OneToMany(mappedBy = "utilisateur",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<AgendaPage> agendaPage;
 
 }

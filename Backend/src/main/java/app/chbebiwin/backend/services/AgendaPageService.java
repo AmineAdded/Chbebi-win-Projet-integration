@@ -1,6 +1,6 @@
 package app.chbebiwin.backend.services;
 
-import app.chbebiwin.backend.entities.AgendaPage;
+import app.chbebiwin.backend.entities.AgendaPage.AgendaPage;
 import app.chbebiwin.backend.repositories.AgendaPageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,8 +13,8 @@ public class AgendaPageService {
     @Autowired
     private AgendaPageRepository repo;
 
-    public List<AgendaPage> getAllPages(String userId) {
-        return repo.findByUserIdOrderByPageNumber(userId);
+    public List<AgendaPage> getAllPages(Long userId) {
+        return repo.findByUtilisateurIdOrderByPageNumber(userId);
     }
 
     public AgendaPage savePage(AgendaPage page) {

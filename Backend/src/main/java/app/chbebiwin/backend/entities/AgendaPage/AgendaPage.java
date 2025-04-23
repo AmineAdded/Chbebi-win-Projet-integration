@@ -1,5 +1,6 @@
-package app.chbebiwin.backend.entities;
+package app.chbebiwin.backend.entities.AgendaPage;
 
+import app.chbebiwin.backend.entities.Utilisateur;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
