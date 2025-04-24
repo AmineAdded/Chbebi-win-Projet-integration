@@ -1,32 +1,27 @@
 <template>
-  <v-container>
-    <v-card class="login-card mx-auto pa-8" elevation="10">
-      <div class="logo-container text-center mb-5">
-        <img :src="logo" alt="ChbebiWin Logo" class="logo-image" />
-        <div class="tagline">استمتع بالتحدي. اربح المزيد.</div>
-      </div>
+  <div class="signup-wrapper">
+    <v-container>
+      <v-card class="login-card mx-auto pa-8" elevation="10">
+        <div class="logo-container text-center mb-5">
+          <img :src="logo" alt="ChbebiWin Logo" class="logo-image" />
+          <div class="tagline">استمتع بالتحدي. اربح المزيد.</div>
+        </div>
 
-      <v-form class="form-container">
-        <h2 class="text-center mb-6 headline-text">إنشاء حساب جديد</h2>
+        <v-form class="form-container">
+          <h2 class="text-center mb-6 headline-text">إنشاء حساب جديد</h2>
 
-        <v-slide-y-transition>
           <v-sheet class="field-container mb-4" elevation="0">
             <v-text-field v-model="fullName" placeholder="اسمك الكامل" variant="outlined" density="comfortable"
               hide-details="auto" dir="rtl" :error-messages="errors.fullName" @input="errors.fullName = ''"
               class="custom-input" prepend-inner-icon="mdi-account-outline" color="primary"></v-text-field>
           </v-sheet>
-        </v-slide-y-transition>
 
-        <v-slide-y-transition>
           <v-sheet class="field-container mb-4" elevation="0">
             <v-text-field v-model="email" placeholder="بريدك الإلكتروني" variant="outlined" density="comfortable"
               hide-details="auto" dir="rtl" :error-messages="errors.email" @input="errors.email = ''"
-              :rules="emailRules" class="custom-input" prepend-inner-icon="mdi-email-outline"
-              color="primary"></v-text-field>
+              :rules="emailRules" class="custom-input" prepend-inner-icon="mdi-email-outline" color="primary"></v-text-field>
           </v-sheet>
-        </v-slide-y-transition>
 
-        <v-slide-y-transition>
           <v-sheet class="field-container mb-4" elevation="0">
             <v-text-field v-model="password" placeholder="كلمة السر" :type="showPassword ? 'text' : 'password'"
               variant="outlined" density="comfortable" hide-details="auto" dir="rtl" :error-messages="errors.password"
@@ -39,9 +34,7 @@
               </template>
             </v-text-field>
           </v-sheet>
-        </v-slide-y-transition>
 
-        <v-slide-y-transition>
           <v-sheet class="field-container mb-5" elevation="0">
             <v-text-field v-model="confirmPassword" placeholder="إعادة كلمة السر"
               :type="showConfirmPassword ? 'text' : 'password'" variant="outlined" density="comfortable"
@@ -55,59 +48,59 @@
               </template>
             </v-text-field>
           </v-sheet>
-        </v-slide-y-transition>
 
-        <div class="password-strength-container mt-1 mb-5" v-if="password">
-          <div class="strength-text">{{ getPasswordStrengthText() }}</div>
-          <div class="strength-bar">
-            <div class="strength-progress" :class="passwordStrengthClass" :style="{ width: passwordStrength + '%' }">
+          <div class="password-strength-container mt-1 mb-5" v-if="password">
+            <div class="strength-text">{{ getPasswordStrengthText() }}</div>
+            <div class="strength-bar">
+              <div class="strength-progress" :class="passwordStrengthClass" :style="{ width: passwordStrength + '%' }">
+              </div>
+            </div>
+            <div class="password-tips">
+              <div class="tip" :class="{ 'fulfilled': /[A-Z]/.test(password) }">
+                <v-icon :color="/[A-Z]/.test(password) ? 'success' : 'grey'" size="small">
+                  {{ /[A-Z]/.test(password) ? 'mdi-check-circle' : 'mdi-circle-outline' }}
+                </v-icon>
+                <span>حرف كبير واحد على الأقل</span>
+              </div>
+              <div class="tip" :class="{ 'fulfilled': /[0-9]/.test(password) }">
+                <v-icon :color="/[0-9]/.test(password) ? 'success' : 'grey'" size="small">
+                  {{ /[0-9]/.test(password) ? 'mdi-check-circle' : 'mdi-circle-outline' }}
+                </v-icon>
+                <span>رقم واحد على الأقل</span>
+              </div>
+              <div class="tip" :class="{ 'fulfilled': password.length >= 8 }">
+                <v-icon :color="password.length >= 8 ? 'success' : 'grey'" size="small">
+                  {{ password.length >= 8 ? 'mdi-check-circle' : 'mdi-circle-outline' }}
+                </v-icon>
+                <span>الحد الأدنى 8 أحرف</span>
+              </div>
             </div>
           </div>
-          <div class="password-tips">
-            <div class="tip" :class="{ 'fulfilled': /[A-Z]/.test(password) }">
-              <v-icon :color="/[A-Z]/.test(password) ? 'success' : 'grey'" size="small">
-                {{ /[A-Z]/.test(password) ? 'mdi-check-circle' : 'mdi-circle-outline' }}
-              </v-icon>
-              <span>حرف كبير واحد على الأقل</span>
-            </div>
-            <div class="tip" :class="{ 'fulfilled': /[0-9]/.test(password) }">
-              <v-icon :color="/[0-9]/.test(password) ? 'success' : 'grey'" size="small">
-                {{ /[0-9]/.test(password) ? 'mdi-check-circle' : 'mdi-circle-outline' }}
-              </v-icon>
-              <span>رقم واحد على الأقل</span>
-            </div>
-            <div class="tip" :class="{ 'fulfilled': password.length >= 8 }">
-              <v-icon :color="password.length >= 8 ? 'success' : 'grey'" size="small">
-                {{ password.length >= 8 ? 'mdi-check-circle' : 'mdi-circle-outline' }}
-              </v-icon>
-              <span>الحد الأدنى 8 أحرف</span>
-            </div>
+
+          <div class="action-buttons d-flex flex-column flex-md-row justify-center gap-4 mt-6 mb-6">
+            <v-btn class="signup-btn mb-3 mb-md-0" size="large" rounded="xl" elevation="4" @click.prevent="register">
+              <v-icon start>mdi-account-plus</v-icon>
+              تسجيل الحساب
+            </v-btn>
+
+            <v-btn class="login-btn" size="large" rounded="xl" elevation="4" @click.prevent="$emit('openLogin')">
+              <v-icon start>mdi-login</v-icon>
+              عندي حساب
+            </v-btn>
           </div>
-        </div>
+        </v-form>
 
-        <div class="d-flex flex-column flex-md-row justify-center gap-4">
-          <v-btn class="signup-btn" size="large" rounded="xl" elevation="4" @click.prevent="register">
-            <v-icon start>mdi-account-plus</v-icon>
-            تسجيل الحساب
-          </v-btn>
-
-          <v-btn class="login-btn" size="large" rounded="xl" elevation="4" @click.prevent="$emit('openLogin')">
-            <v-icon start>mdi-login</v-icon>
-            عندي حساب
+        <div class="text-center mt-6">
+          <v-btn rounded="xl" class="back-btn" @click.prevent="$emit('closeSignUp')">
+            <v-icon start>mdi-arrow-left</v-icon>
+            العودة
           </v-btn>
         </div>
-      </v-form>
+      </v-card>
+    </v-container>
+  </div>
 
-      <div class="text-center mt-8">
-        <v-btn rounded="xl" class="back-btn" @click.prevent="$emit('closeSignUp')">
-          <v-icon start>mdi-arrow-left</v-icon>
-          العودة
-        </v-btn>
-      </div>
-    </v-card>
-  </v-container>
-
-  <v-snackbar v-model="showSnackBar" :color="snackbarColor" location="top" timeout="1000" rounded="xl">
+  <v-snackbar v-model="showSnackBar" :color="snackbarColor" location="top" timeout="3000" rounded="xl">
     <div class="d-flex align-center">
       <v-icon class="mr-2" color="white">
         {{ snackbarIcon }}
@@ -148,14 +141,17 @@ export default {
         confirmPassword: ''
       },
       passwordRules: [
+        v => !!v || 'كلمة المرور مطلوبة',
         v => /[A-Z]/.test(v) || 'يجب أن تحتوي على حرف كبير واحد على الأقل',
         v => /[0-9]/.test(v) || 'يجب أن تحتوي على رقم واحد على الأقل',
         v => (v && v.length >= 8) || 'الحد الأدنى 8 أحرف'
       ],
       emailRules: [
-        (v) => /.+@.+\..+/.test(v) || "يجب أن يكون البريد الإلكتروني صالحًا",
+        v => !!v || 'البريد الإلكتروني مطلوب',
+        v => /.+@.+\..+/.test(v) || "يجب أن يكون البريد الإلكتروني صالحًا",
       ],
       confirmPasswordRules: [
+        v => !!v || 'تأكيد كلمة المرور مطلوب',
         v => (v && v === this.password) || 'كلمات المرور غير متطابقة'
       ]
     }
@@ -193,7 +189,36 @@ export default {
       return 'قوي';
     },
     async register() {
-      if (this.fullName && this.email && this.password && this.confirmPassword) {
+      // Validate form first
+      let isValid = true;
+      
+      if (!this.fullName) {
+        this.errors.fullName = 'الاسم مطلوب';
+        isValid = false;
+      }
+      if (!this.email) {
+        this.errors.email = 'البريد الإلكتروني مطلوب';
+        isValid = false;
+      } else if (!/.+@.+\..+/.test(this.email)) {
+        this.errors.email = 'يجب أن يكون البريد الإلكتروني صالحًا';
+        isValid = false;
+      }
+      if (!this.password) {
+        this.errors.password = 'كلمة المرور مطلوبة';
+        isValid = false;
+      } else if (!(/[A-Z]/.test(this.password) && /[0-9]/.test(this.password) && this.password.length >= 8)) {
+        this.errors.password = 'كلمة المرور لا تستوفي المتطلبات';
+        isValid = false;
+      }
+      if (!this.confirmPassword) {
+        this.errors.confirmPassword = 'تأكيد كلمة المرور مطلوب';
+        isValid = false;
+      } else if (this.confirmPassword !== this.password) {
+        this.errors.confirmPassword = 'كلمات المرور غير متطابقة';
+        isValid = false;
+      }
+
+      if (isValid) {
         try {
           // Afficher un snackbar de chargement
           this.snackbarColor = 'info';
@@ -215,26 +240,15 @@ export default {
           this.showSnackBar = true;
 
           // Rediriger après un court délai
-          this.$router.push('/AvantTest');
+          setTimeout(() => {
+            this.$router.push('/AvantTest');
+          }, 2000);
         } catch (err) {
           this.snackbarColor = 'error';
           this.snackbarIcon = 'mdi-alert-circle';
           this.showSnackBar = true;
           this.text = err.response?.data?.message || "حدث خطأ أثناء إنشاء الحساب";
           console.log(this.text);
-        }
-      } else {
-        if (!this.fullName) {
-          this.errors.fullName = 'الاسم مطلوب';
-        }
-        if (!this.email) {
-          this.errors.email = 'البريد الإلكتروني مطلوب';
-        }
-        if (!this.password) {
-          this.errors.password = 'كلمة المرور مطلوبة';
-        }
-        if (!this.confirmPassword) {
-          this.errors.confirmPassword = 'تأكيد كلمة المرور مطلوب';
         }
       }
     }
@@ -246,6 +260,22 @@ export default {
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
+.signup-wrapper {
+  max-height: 100vh;
+  overflow-y: auto;
+  padding: 20px 0;
+  scroll-behavior: smooth;
+  /* Cacher la barre de défilement pour Firefox */
+  scrollbar-width: none;
+}
+
+/* Cacher la barre de défilement pour Chrome, Safari, etc. */
+.signup-wrapper::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
 .login-card {
   width: 100%;
   max-width: 520px;
@@ -253,15 +283,16 @@ export default {
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  overflow: hidden;
+  overflow: visible;
   position: relative;
   z-index: 10;
   transition: all 0.3s ease;
+  /* Ajout de marge pour éviter l'effet collé */
+  margin: 10px auto 30px;
 }
 
 .logo-image {
   max-width: 200px;
-  /* Ajustez selon la taille souhaitée */
   height: 100px;
   margin-bottom: 0.5rem;
   transition: transform 0.3s ease;
@@ -400,11 +431,14 @@ export default {
   color: #4caf50;
 }
 
+.action-buttons {
+  margin-top: 30px;
+}
+
 .login-btn,
 .signup-btn {
   min-width: 160px;
   padding: 12px 24px;
-  margin-left: 10px;
   font-weight: 700;
   font-size: 1rem;
   letter-spacing: 0.5px;
@@ -449,9 +483,13 @@ export default {
 
 /* Responsive adjustments */
 @media (max-width: 600px) {
+  .signup-wrapper {
+    padding: 10px 0;
+  }
+  
   .login-card {
-    margin: 16px;
-    padding: 24px 16px !important;
+    margin: 5px auto 20px;
+    padding: 16px !important;
   }
 
   .logo-text {
@@ -465,16 +503,10 @@ export default {
   .login-btn,
   .signup-btn {
     width: 100%;
-    margin-bottom: 12px;
   }
 
   .password-tips {
     font-size: 0.75rem;
   }
-}
-
-/* Animation légère pour les champs */
-.v-slide-y-transition-enter-active {
-  transition-delay: calc(0.1s * v-bind('index'));
 }
 </style>
