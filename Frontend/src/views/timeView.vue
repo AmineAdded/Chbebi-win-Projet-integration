@@ -39,13 +39,13 @@
           <div v-for="(task, index) in currentTasks" :key="index" 
                class="task-item" :class="{ 'completed': task.done }">
             <div class="task-content">
-              <div class="task-text">{{ task.text }}</div>
+              <div class="task-text">{{ task.nomTache }}</div>
               <div class="task-status" :class="{ 'status-completed': task.done }">
                 {{ task.done ? 'مكتمل' : 'قيد التنفيذ' }}
               </div>
             </div>
             <label class="checkbox-container">
-              <input type="checkbox" class="task-checkbox" v-model="task.done" @change="saveTasks" />
+              <input type="checkbox" class="task-checkbox" v-model="task.done" @change="saveChange(task.done,task.id)" />
               <span class="checkmark"></span>
             </label>
           </div>
@@ -87,6 +87,8 @@ import Navbar from '@/components/Navbar.vue';
 import Footer from '@/components/Footer.vue';
 import { defineComponent } from "vue";
 import UpdateAccount from '@/components/UpdateAccount.vue';
+import { useUserStore } from '@/store/User/userStore';
+import TacheService from '@/Services/TacheService.js';
 
 export default defineComponent({
   components: {
@@ -118,65 +120,90 @@ export default defineComponent({
     dateKey() {
       return this.selectedDate.toDateString();
     },
+    isoDate() {
+      return this.selectedDate.toISOString().split('T')[0];
+    },
     currentTasks() {
       return this.tasksByDate[this.dateKey] || [];
     }
   },
   methods: {
-    saveTasks() {
-      localStorage.setItem("tasksByDate", JSON.stringify(this.tasksByDate));
-    },
-    loadTasks() {
-      const stored = localStorage.getItem("tasksByDate");
-      if (stored) {
-        this.tasksByDate = JSON.parse(stored);
+    async loadTasks() {
+      const store = useUserStore();
+      const id = store.user.id;
+
+      try {
+        const tasks = await TacheService.getTachesByUserandDate(id, this.isoDate);
+        this.tasksByDate[this.dateKey] = tasks;
+      } catch (error) {
+        console.error("Erreur lors du chargement des tâches :", error);
       }
     },
-    addTask() {
+    async saveChange(done,id){
+        try{
+          return await TacheService.updateTache(id, done);
+        }
+        catch(err){
+          console.error("Erreur lors de la mise à jour de la tâche :", err);
+        }
+        
+    },
+
+    async addTask() {
       if (!this.newTask.trim()) return;
-      
+
       if (!this.tasksByDate[this.dateKey]) {
         this.tasksByDate[this.dateKey] = [];
       }
-      
+
       this.tasksByDate[this.dateKey].push({
-        text: this.newTask.trim(),
-        done: false
+        nomTache: this.newTask.trim(),
+        userId: useUserStore().user.id,
+        date: this.isoDate,
       });
       
+      try {
+        await TacheService.addTache(this.newTask.trim(), useUserStore().user.id, this.isoDate);
+        this.loadTasks();
+      } catch (error) {
+        console.error("Erreur lors de l'ajout de la tâche :", error);
+      }
       this.newTask = '';
-      this.saveTasks();
     },
+
     prevDay() {
       const newDate = new Date(this.selectedDate);
       newDate.setDate(newDate.getDate() - 1);
       this.selectedDate = newDate;
     },
+
     nextDay() {
       const newDate = new Date(this.selectedDate);
       newDate.setDate(newDate.getDate() + 1);
       this.selectedDate = newDate;
     },
+
     loadToday() {
       this.selectedDate = new Date();
     },
+
     focusTaskInput() {
       this.$refs.taskInput.focus();
     }
   },
+
   mounted() {
     this.loadTasks();
   },
+
   watch: {
-    tasksByDate: {
-      handler() {
-        this.saveTasks();
-      },
-      deep: true
+    selectedDate() {
+      this.loadTasks();
     }
   }
 });
 </script>
+
 
 <style scoped>
 :root {

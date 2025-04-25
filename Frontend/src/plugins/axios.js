@@ -4,7 +4,7 @@ import axios from "axios";
 // Full config:  https://github.com/axios/axios#request-config
 axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || 'http://localhost:9090/api/';
 // axios.defaults.headers.post["Access-Control-Allow-Origin"] = "*";
-axios.defaults.headers.common['Accept'] = 'application/json';
+axios.defaults.headers.common['Accept'] = '*/*';
 
 let config = {
   // baseURL: process.env.baseURL || process.env.apiUrl || ""
