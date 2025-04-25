@@ -28,7 +28,7 @@
         <button class="close-btn" @click="showModal = false">X</button>
         <iframe
           class="video-frame"
-          :src="selectedChapter.lienVideo"
+          :src="getEmbedUrl(selectedChapter.lienVideo)"
           frameborder="0"
           allowfullscreen
         ></iframe>
@@ -41,7 +41,7 @@
   </div>
 </template>
   
-  <script>
+<script>
 import Navbar from "@/components/Navbar.vue";
 import Footer from "@/components/Footer.vue";
 import UpdateAccount from "@/components/UpdateAccount.vue";
@@ -52,8 +52,6 @@ export default {
   components: { Navbar, Footer, UpdateAccount },
   data() {
     return {
-      // chapitreId: this.$route.params.chapitreId,
-      // chapitreTitle: this.$route.params.chapitreTitle,
       showModal: false,
       showUpdateAccount: false,
       selectedChapter: {},
@@ -66,12 +64,21 @@ export default {
     },
     chapitreId() {
       return this.$route.params.chapitreId;
-    },
+    }
   },
   mounted() {
     this.loadAllSousChapitre(this.chapitreId);
   },
   methods: {
+    getEmbedUrl(url) {
+      if (!url) return '';
+      const videoId = url.includes('youtu.be/')
+        ? url.split('youtu.be/')[1].split('?')[0]
+        : url.includes('watch?v=')
+        ? url.split('watch?v=')[1].split('&')[0]
+        : '';
+      return `https://www.youtube.com/embed/${videoId}`;
+    },
     openModal(chapter) {
       this.selectedChapter = chapter;
       this.showModal = true;
