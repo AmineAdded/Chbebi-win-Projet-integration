@@ -33,9 +33,7 @@
           allowfullscreen
         ></iframe>
         <p>{{ selectedChapter.description }}</p>
-        <a :href="selectedChapter.pdf" target="_blank" download
-          >تحميل الملف PDF</a
-        >
+        <a :href="`/PDFs/${selectedChapter.pdf}`" target="_blank" download>تحميل الملف PDF</a>
       </div>
     </v-dialog>
 
