@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import app.chbebiwin.backend.entities.SousChapitres;
+
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -16,14 +19,13 @@ public class Chapitre {
     private long id;
     private String title;
     private String description;
-    private String lienVideo;
     private String image;
-    private String pdf;
     @ManyToOne
     @JoinColumn(name = "thematic_id")
     @JsonIgnore
     private Thematic thematic;
-    private boolean isSuperChapitre;
-    @Column(nullable = true)
-    private Long superChapitreId;
+
+    @OneToMany(mappedBy = "chapitre")
+    private List<SousChapitres> sousChapitres;
+
 }

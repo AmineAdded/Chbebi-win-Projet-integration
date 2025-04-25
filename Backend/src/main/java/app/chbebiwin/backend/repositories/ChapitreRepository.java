@@ -5,12 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ChapitreRepository extends JpaRepository<Chapitre, Long> {
-    List<Chapitre> findByIsSuperChapitreTrue();
-    List<Chapitre> findByIsSuperChapitreFalse();
-    List<Chapitre> findBySuperChapitreId(Long superChapitreId);
-    List<Chapitre> findByIsSuperChapitreTrueAndThematicId(Long thematicId);
-
+   Optional<List<Chapitre>> findAllByThematicId(long id);
 }

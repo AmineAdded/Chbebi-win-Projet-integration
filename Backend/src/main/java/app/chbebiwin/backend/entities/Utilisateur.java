@@ -51,4 +51,8 @@ public class Utilisateur {
     @OneToMany(mappedBy = "user")
     private List<Tache> taches;
 
+    @OneToMany(mappedBy = "user")
+    private List<SousChapitres> sousChapitres;
+
+
 }
