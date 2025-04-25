@@ -17,7 +17,9 @@
     "roboto-fontface": "*",
     "vue": "^3.2.13",
     "vue-i18n": "^9.1.0",
+    "vue-pdf-embed": "^2.1.2",
     "vue-router": "^4.0.3",
+    "vue3-pdfjs": "^0.1.6",
     "vuetify": "^3.7.0-beta.1",
     "vuex": "^4.0.0",
     "webfontloader": "^1.0.0"
