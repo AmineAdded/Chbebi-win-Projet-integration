@@ -2,15 +2,15 @@ import axios from "axios";
 
 export default {
     getAllSuperChapitre(thematicId) {
-        return axios.get(`chapitres/super/${thematicId}`);
+        return axios.get(`chapitres/get/${thematicId}`);
     },
-    deleteChapitre(id) {
-        return axios.delete(`chapitres/delete/${id}`);
-    },
-    updateChapitre(id, chapitre) {
-        return axios.put(`chapitres/update/${id}`, chapitre);
-    },
-    createChapitre(chapitre) {
-        return axios.post(`chapitres/create`, chapitre);
-    },
+    async getChapitreProgress(id){
+        try {
+            const response = await axios.get('chapitres/getProgress/'+id);
+            return response.data;
+        } catch (err) {
+            console.error(err);
+            throw err;
+        }
+    }
 };

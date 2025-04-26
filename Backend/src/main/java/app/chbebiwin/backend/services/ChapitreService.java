@@ -1,62 +1,66 @@
 package app.chbebiwin.backend.services;
 
 import app.chbebiwin.backend.entities.Chapitre;
+import app.chbebiwin.backend.entities.SousChapitres;
+import app.chbebiwin.backend.entities.Thematic;
 import app.chbebiwin.backend.repositories.ChapitreRepository;
+import app.chbebiwin.backend.repositories.ThematicRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ChapitreService {
-    private final ChapitreRepository chapitreRepository;
+    @Autowired
+    private ChapitreRepository chapitreRepository;
+    @Autowired
+    private ThematicRepository thematicRepository;
 
-    public ChapitreService(ChapitreRepository chapitreRepository) {
-        this.chapitreRepository = chapitreRepository;
+    public List<Chapitre> getChapitres(Long thematicId){
+        Thematic t = thematicRepository.findById(thematicId).get();
+        return chapitreRepository.findAllByThematicId(t.getId()).orElseThrow(() -> new RuntimeException("لم يتم العثور على أي فصل لهذه الموضوعية"));
     }
-
-    public List<Chapitre> getAllChapitres() {
-        return chapitreRepository.findAll();
-    }
-
-    public Optional<Chapitre> getChapitreById(Long id) {
-        return chapitreRepository.findById(id);
-    }
-
-    public Chapitre createChapitre(Chapitre chapitre) {
+    public Chapitre createChapitre(Chapitre chapitre){
         return chapitreRepository.save(chapitre);
     }
+    public Chapitre updateChapitre(Long id,Chapitre chapitre){
+        Chapitre c = chapitreRepository.findById(id).get();
+        c.setDescription(chapitre.getDescription());
+        c.setTitle(chapitre.getTitle());
+        c.setImage(chapitre.getImage());
+        c.setThematic(chapitre.getThematic());
 
-    public Chapitre updateChapitre(Long id, Chapitre chapitreDetails) {
-        return chapitreRepository.findById(id).map(chapitre -> {
-            chapitre.setTitle(chapitreDetails.getTitle());
-            chapitre.setDescription(chapitreDetails.getDescription());
-            chapitre.setLienVideo(chapitreDetails.getLienVideo());
-            chapitre.setImage(chapitreDetails.getImage());
-            chapitre.setPdf(chapitreDetails.getPdf());
-            chapitre.setThematic(chapitreDetails.getThematic());
-            return chapitreRepository.save(chapitre);
-        }).orElseGet(() -> {
-            chapitreDetails.setId(id);
-            return chapitreRepository.save(chapitreDetails);
-        });
+        return chapitreRepository.save(c);
+
     }
 
-    public void deleteChapitre(Long id) {
-        chapitreRepository.deleteById(id);
+    public String deleteChapitre(Long id){
+        if(chapitreRepository.existsById(id)){
+            chapitreRepository.deleteById(id);
+            return "تم حذف الفصل بنجاح";
+        }
+        return "الفصل غير موجود";
     }
 
-    public List<Chapitre> getAllSuperChapitres() {
-        return chapitreRepository.findByIsSuperChapitreTrue();
+    public long getProgress(Long id) {
+        Chapitre c = chapitreRepository.findById(id).get();
+        List<SousChapitres> s = c.getSousChapitres();
+        long sum = 0;
+
+        for (SousChapitres x : s) {
+            sum += x.getPourcentage();
+        }
+
+        if (s.size() == 0) {
+            c.setPourcentage(0);
+            return 0;
+        }
+
+        long result = sum / s.size();
+        c.setPourcentage(result);
+        chapitreRepository.save(c);
+        return result;
     }
 
-    public List<Chapitre> getAllSousChapitres() {
-        return chapitreRepository.findByIsSuperChapitreFalse();
-    }
-    public List<Chapitre> getSousChapitresBySuperChapitreId(Long superChapitreId) {
-        return chapitreRepository.findBySuperChapitreId(superChapitreId);
-    }
-    public List<Chapitre> getAllSuperChapitresByThematic(Long thematicId) {
-        return chapitreRepository.findByIsSuperChapitreTrueAndThematicId(thematicId);
-    }
+
 }

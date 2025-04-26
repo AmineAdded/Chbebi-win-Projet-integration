@@ -2,58 +2,37 @@ package app.chbebiwin.backend.controllers;
 
 import app.chbebiwin.backend.entities.Chapitre;
 import app.chbebiwin.backend.services.ChapitreService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/chapitres")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins ="*")
 public class ChapitreController {
+    @Autowired
+    private ChapitreService chapitreService;
 
-    private final ChapitreService chapitreService;
-
-    public ChapitreController(ChapitreService chapitreService) {
-        this.chapitreService = chapitreService;
+    @GetMapping("/get/{id}")
+    public List<Chapitre> getChapitresByThematic(@PathVariable Long id) {
+        return chapitreService.getChapitres(id);
     }
 
-    @GetMapping
-    public List<Chapitre> getAllChapitres() {
-        return chapitreService.getAllChapitres();
+    @PostMapping("/craete")
+    public Chapitre addChapitre(@RequestBody Chapitre chapitre) {
+        return  chapitreService.createChapitre(chapitre);
     }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Chapitre> getChapitreById(@PathVariable Long id) {
-        return chapitreService.getChapitreById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @PutMapping("/upadte/{id}")
+    public Chapitre updateChapitre(@PathVariable Long id,@RequestBody Chapitre chapitre) {
+        return chapitreService.updateChapitre(id, chapitre);
     }
-
-    @PostMapping
-    public Chapitre createChapitre(@RequestBody Chapitre chapitre) {
-        return chapitreService.createChapitre(chapitre);
+    @DeleteMapping("/delete/{id}")
+    public String deleteChapitre(@PathVariable Long id) {
+        return chapitreService.deleteChapitre(id);
     }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Chapitre> updateChapitre(@PathVariable Long id, @RequestBody Chapitre chapitre) {
-        Chapitre updated = chapitreService.updateChapitre(id, chapitre);
-        return ResponseEntity.ok(updated);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteChapitre(@PathVariable Long id) {
-        chapitreService.deleteChapitre(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/super/{thematicId}")
-    public List<Chapitre> getAllSuperChapitresByThematic(@PathVariable Long thematicId) {
-        return chapitreService.getAllSuperChapitresByThematic(thematicId);
-    }
-
-    @GetMapping("/sous/{superChapitreId}")
-    public List<Chapitre> getSousChapitresBySuperChapitreId(@PathVariable Long superChapitreId) {
-        return chapitreService.getSousChapitresBySuperChapitreId(superChapitreId);
+    @GetMapping("/getProgress/{id}")
+   public long getProgress(@PathVariable Long id) {
+        return chapitreService.getProgress(id);
     }
 }
