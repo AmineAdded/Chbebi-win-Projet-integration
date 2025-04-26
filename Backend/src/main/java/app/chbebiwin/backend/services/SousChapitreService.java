@@ -32,7 +32,6 @@ public class SousChapitreService {
         s.setLienVideo(sousChapitre.getLienVideo());
         s.setChapitre(chapitreRepository.findById(sousChapitre.getChapitre().getId()).get());
         s.setLastPageRead(sousChapitre.getLastPageRead());
-        s.setCompleted(sousChapitre.isCompleted());
 
         return sousChapitreRepository.save(s);
 
@@ -45,13 +44,14 @@ public class SousChapitreService {
         return sousChapitreRepository.findAll();
     }
 
-    public SousChapitres setlastReadPage(Long id,Long pageNumber) {
+    public SousChapitres setlastReadPage(Long id,SousChapitres sousChapitres) {
         SousChapitres s = sousChapitreRepository.findById(id).get();
-        s.setLastPageRead(pageNumber);
+        s.setLastPageRead(sousChapitres.getLastPageRead());
+        s.setPourcentage(sousChapitres.getPourcentage());
         return sousChapitreRepository.save(s);
     }
 
-    public Long getLastReadPage(Long id) {
-        return sousChapitreRepository.findById(id).get().getLastPageRead();
+    public SousChapitres getLastReadPage(Long id) {
+        return sousChapitreRepository.findById(id).get();
     }
 }

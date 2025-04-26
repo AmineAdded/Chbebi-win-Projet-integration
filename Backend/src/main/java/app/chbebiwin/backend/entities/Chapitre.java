@@ -27,5 +27,8 @@ public class Chapitre {
 
     @OneToMany(mappedBy = "chapitre")
     private List<SousChapitres> sousChapitres;
+    @Column(nullable = false)
+    private long pourcentage = 0;
+
 
 }

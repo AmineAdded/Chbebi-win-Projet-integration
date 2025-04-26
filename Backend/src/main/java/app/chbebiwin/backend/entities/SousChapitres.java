@@ -26,10 +26,11 @@ public class SousChapitres {
 
     private String lienVideo;
     private String pdf;
-    private boolean completed;
     private Long lastPageRead;
     private String image;
     private String title;
     private String description;
+    @Column(nullable = false)
+    private long pourcentage = 0;
 
 }

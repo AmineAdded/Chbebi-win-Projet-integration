@@ -31,4 +31,8 @@ public class ChapitreController {
     public String deleteChapitre(@PathVariable Long id) {
         return chapitreService.deleteChapitre(id);
     }
+    @GetMapping("/getProgress/{id}")
+   public long getProgress(@PathVariable Long id) {
+        return chapitreService.getProgress(id);
+    }
 }

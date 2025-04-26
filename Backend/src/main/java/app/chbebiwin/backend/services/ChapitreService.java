@@ -1,6 +1,7 @@
 package app.chbebiwin.backend.services;
 
 import app.chbebiwin.backend.entities.Chapitre;
+import app.chbebiwin.backend.entities.SousChapitres;
 import app.chbebiwin.backend.entities.Thematic;
 import app.chbebiwin.backend.repositories.ChapitreRepository;
 import app.chbebiwin.backend.repositories.ThematicRepository;
@@ -40,4 +41,26 @@ public class ChapitreService {
         }
         return "الفصل غير موجود";
     }
+
+    public long getProgress(Long id) {
+        Chapitre c = chapitreRepository.findById(id).get();
+        List<SousChapitres> s = c.getSousChapitres();
+        long sum = 0;
+
+        for (SousChapitres x : s) {
+            sum += x.getPourcentage();
+        }
+
+        if (s.size() == 0) {
+            c.setPourcentage(0);
+            return 0;
+        }
+
+        long result = sum / s.size();
+        c.setPourcentage(result);
+        chapitreRepository.save(c);
+        return result;
+    }
+
+
 }
