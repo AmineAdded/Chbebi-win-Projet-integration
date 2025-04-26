@@ -49,6 +49,27 @@
   </div>
 </template>
   
+<script>
+export default {
+  data() {
+    return {
+      chapters: [
+        { id: 1, title: "مقدمة", description: "تعريف عام بالتطبيق" },
+        { id: 2, title: "التنظيم", description: "كيف تنظم وقتك بشكل فعال" }
+      ]
+    };
+  },
+  methods: {
+    editChapter(chapter) {
+      console.log("تعديل:", chapter);
+    },
+    deleteChapter(id) {
+      this.chapters = this.chapters.filter(chap => chap.id !== id);
+    }
+  }
+};
+</script>
+
 <style scoped>
 .table-card {
   background-color: #ffffff;
@@ -251,24 +272,3 @@ td {
   color: #555;
 }
 </style>
-
-<script>
-export default {
-  data() {
-    return {
-      chapters: [
-        { id: 1, title: "مقدمة", description: "تعريف عام بالتطبيق" },
-        { id: 2, title: "التنظيم", description: "كيف تنظم وقتك بشكل فعال" }
-      ]
-    };
-  },
-  methods: {
-    editChapter(chapter) {
-      console.log("تعديل:", chapter);
-    },
-    deleteChapter(id) {
-      this.chapters = this.chapters.filter(chap => chap.id !== id);
-    }
-  }
-};
-</script>

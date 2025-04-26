@@ -1,5 +1,5 @@
 <template>
-   <div v-if="isLoading" class="loader-container">
+  <div v-if="isLoading" class="loader-container">
     <div class="loader-content">
       <div class="custom-loader">
         <div class="pulse-ring"></div>
@@ -8,6 +8,7 @@
       <div class="mt-4 text-center loading-text">جاري التحميل...</div>
     </div>
   </div>
+
   <div v-else class="dashboard-container">
     <!-- Sidebar -->
     <div class="nav"><Sidebar @showUpdateAccount="show = true" /></div>

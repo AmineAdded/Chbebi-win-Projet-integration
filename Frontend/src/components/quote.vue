@@ -22,7 +22,7 @@ export default {
   },
   methods: {
     loadRandomQuote() {
-      quoteService.getRandomQuote()
+      quoteService.getAllQuotes()
         .then(response => {
           this.quote = response.data;
         })
