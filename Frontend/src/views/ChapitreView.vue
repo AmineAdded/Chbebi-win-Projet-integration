@@ -49,6 +49,16 @@
                   </div>
                 </div>
               </div>
+              <!-- Bouton pour télécharger le certificat -->
+              <v-btn
+                v-if="chapitre.pourcentage === 100"
+                color="success"
+                class="mt-3"
+                @click="generateCertificate(chapitre)"
+                block
+              >
+                🎓 تحميل الشهادة
+              </v-btn>
             </div>
           </router-link>
         </div>
@@ -64,6 +74,9 @@ import Navbar from "../components/Navbar.vue";
 import Footer from "../components/Footer.vue";
 import UpdateAccount from "@/components/UpdateAccount.vue";
 import SuperChapitre from "@/Services/chapitreService.js";
+import { PDFDocument, rgb } from 'pdf-lib';
+import { saveAs } from 'file-saver';
+import fontkit from '@pdf-lib/fontkit';
 
 export default {
   name: "ChapitreView",
@@ -76,6 +89,10 @@ export default {
     return {
       showUpdateAccount: false,
       chapitres: [],
+      user: {
+        name: '', 
+        email: ''
+      },
     };
   },
   computed: {
@@ -130,16 +147,88 @@ export default {
         try {
           // Supposons que nous avons une méthode pour obtenir le pourcentage de progression d'un chapitre
           const progressData = await SuperChapitre.getChapitreProgress(chapitre.id);
-          console.log(`Progression pour le chapitre ${chapitre.id}:`, progressData);
+          console.log("Progression pour le chapitre ${chapitre.id}:", progressData);
           if (progressData) {
             chapitre.pourcentage = progressData;
           } else {
             chapitre.pourcentage = 0;
           }
         } catch (err) {
-          console.error(`Erreur lors du chargement de la progression pour le chapitre ${chapitre.id}:`, err);
+          console.error("Erreur lors du chargement de la progression pour le chapitre ${chapitre.id}:", err);
           chapitre.pourcentage = 0;
         }
+      }
+    },
+    async generateCertificate(chapitre) {
+  try {
+    console.log("🚀 بدء إنشاء الشهادة");
+
+    // 1. تحميل ملف الشهادة الأساسي
+    const existingPdfBytes = await fetch('/PDFs/Certificate.pdf').then(res => {
+      if (!res.ok) throw new Error("فشل في تحميل شهادة القالب");
+      return res.arrayBuffer();
+    });
+
+    // 2. تحميل مستند PDF
+    const pdfDoc = await PDFDocument.load(existingPdfBytes);
+    pdfDoc.registerFontkit(fontkit);
+    const page = pdfDoc.getPages()[0];
+
+    // 3. تحميل الخط العربي
+    const arabicFontBytes = await fetch('/fonts/Amiri-Bold.ttf').then(res => {
+      if (!res.ok) throw new Error("فشل في تحميل الخط العربي");
+      return res.arrayBuffer();
+    });
+    const arabicFont = await pdfDoc.embedFont(arabicFontBytes);
+
+    // 4. إعداد النصوص
+    const texts = {
+      name: this.user.name || 'اسم المستخدم',
+      chapter: chapitre.title || 'عنوان الفصل',
+      date: new Date().toLocaleDateString('ar-SA', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
+    };
+
+    // 6. وظيفة مساعدة للرسم المركزي
+    const drawCenteredText = (text, xPage, yPage, size, color = rgb(0, 0, 0)) => {
+      page.drawText(text, {
+        x: xPage,
+        y: yPage,
+        size,
+        font: arabicFont,
+        color,
+      });
+    };
+
+    // 7. رسم العناصر بمسافات متناسقة
+    drawCenteredText(texts.name,308, 300, 16); // الاسم (الحجم الأكبر)
+    drawCenteredText(texts.chapter,305, 227, 14, rgb(0.1, 0.4, 0.6)); // الفصل
+    drawCenteredText(texts.date,170, 208, 14, rgb(0.3, 0.3, 0.3)); // التاريخ
+
+    // 7. حفظ الملف النهائي
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    saveAs(blob, `شهادة_${chapitre.title.replace(/\s+/g, '_')}.pdf`);
+
+    console.log("✅ تم إنشاء الشهادة بنجاح");
+  } catch (error) {
+    console.error('❌ حصل خطأ أثناء إنشاء الشهادة:', error);
+    alert('فشل إنشاء الشهادة: ${error.message}');
+  }
+},
+
+    async loadUserInfo() {
+      try {
+        // Tu récupères ici les infos utilisateur (à adapter selon ton API ou localStorage)
+        const userInfo = JSON.parse(localStorage.getItem('user')) || {};
+        this.user.name = userInfo.nom || 'Utilisateur';
+        this.user.email = userInfo.email || 'example@email.com';
+      } catch (error) {
+        console.error("Erreur lors du chargement des infos utilisateur:", error);
       }
     }
   },
@@ -150,10 +239,10 @@ export default {
   },
   mounted() {
     this.loadAllSuperChapitre(this.thematicId);
+    this.loadUserInfo();
   }
 };
 </script>
-
 
 <style scoped>
 .Chapitre-container {
