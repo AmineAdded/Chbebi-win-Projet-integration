@@ -21,21 +21,21 @@
                 <div class="stats-label">إحصائيات التقدم</div>
                 <v-progress-linear
                   v-if="sousChapitre.lastPageRead && sousChapitre.totalPages"
-                  :color="getProgressColor(sousChapitre.lastPageRead, sousChapitre.totalPages)"
+                  :color="getProgressColor(sousChapitre.pourcentage || 0)"
                   :buffer-value="100"
                   buffer-color="light-blue-lighten-4"
-                  :model-value="calculateProgress(sousChapitre.lastPageRead, sousChapitre.totalPages)"
+                  :model-value="sousChapitre.pourcentage || 0"
                   height="14"
                   rounded
                   striped
                 >
                   <template v-slot:default="{ value }">
-                    <strong class="progress-value">{{ Math.ceil(value) }}%</strong>
+                    <strong class="progress-value">{{ value }}%</strong>
                   </template>
                 </v-progress-linear>
                 <div class="progress-text">
                   <div class="progress-detailed">
-                    {{ calculateProgress(sousChapitre.lastPageRead, sousChapitre.totalPages) }}% مكتمل
+                    {{ sousChapitre.pourcentage || 0 }}% مكتمل
                     <v-tooltip location="bottom">
                       <template v-slot:activator="{ props }">
                         <v-icon
@@ -51,12 +51,12 @@
                     </v-tooltip>
                   </div>
                   <v-chip
-                    :color="getStatusColor(sousChapitre.lastPageRead, sousChapitre.totalPages)"
+                    :color="getStatusColor(sousChapitre.pourcentage || 0)"
                     size="small"
                     class="status-chip"
                     variant="outlined"
                   >
-                    {{ getStatusText(sousChapitre.lastPageRead, sousChapitre.totalPages) }}
+                    {{ getStatusText(sousChapitre.pourcentage || 0) }}
                   </v-chip>
                 </div>
               </div>
@@ -150,15 +150,13 @@ export default {
       }
       return Math.min(Math.round((currentPage / totalPages) * 100), 100);
     },
-    getProgressColor(currentPage, totalPages) {
-      const progress = this.calculateProgress(currentPage, totalPages);
+    getProgressColor(progress) {
       if (progress < 30) return 'red-darken-1';
       if (progress < 60) return 'amber-darken-2';
       if (progress < 90) return 'light-blue-darken-1';
       return 'green-darken-1';
     },
-    getStatusColor(currentPage, totalPages) {
-      const progress = this.calculateProgress(currentPage, totalPages);
+    getStatusColor(progress) {
       if (progress === 0) return 'grey';
       if (progress < 30) return 'red';
       if (progress < 60) return 'amber';
@@ -166,8 +164,7 @@ export default {
       if (progress < 100) return 'teal';
       return 'green';
     },
-    getStatusText(currentPage, totalPages) {
-      const progress = this.calculateProgress(currentPage, totalPages);
+    getStatusText(progress) {
       if (progress === 0) return 'لم يبدأ';
       if (progress < 30) return 'بداية';
       if (progress < 60) return 'في تقدم';
@@ -223,11 +220,17 @@ export default {
     
     async saveCurrentPage() {
       try {
-        const res = await SousChapitre.setLastReadPage(this.selectedChapter.id, this.currentPage);
+        if (!this.currentPage || !this.totalPages || this.totalPages === 0) {
+          return 0;
+        }
+        const pourcentage = Math.min(Math.round((this.currentPage / this.totalPages) * 100), 100);
+        const res = await SousChapitre.setLastReadPage(this.selectedChapter.id, this.currentPage, pourcentage);
+        
         // Mettre à jour également la progression dans la liste des sous-chapitres
         const index = this.sousChapitres.findIndex(sc => sc.id === this.selectedChapter.id);
         if (index !== -1) {
           this.sousChapitres[index].lastPageRead = this.currentPage;
+          this.sousChapitres[index].pourcentage = pourcentage;
           if (!this.sousChapitres[index].totalPages && this.totalPages) {
             this.sousChapitres[index].totalPages = this.totalPages;
           }
@@ -265,7 +268,12 @@ export default {
         const lastPageData = await SousChapitre.getLastReadPage(chapter.id);
         
         if (lastPageData) {
-          this.currentPage = lastPageData;
+          this.currentPage = lastPageData.lastPageRead || 1;
+          // S'assurer que le chapitre sélectionné a aussi la bonne valeur de pourcentage
+          const index = this.sousChapitres.findIndex(sc => sc.id === chapter.id);
+          if (index !== -1) {
+            this.sousChapitres[index].pourcentage = lastPageData.pourcentage || 0;
+          }
         } else {
           this.currentPage = 1;
         }
@@ -316,7 +324,8 @@ export default {
         try {
           const lastPageData = await SousChapitre.getLastReadPage(sousChapitre.id);
           if (lastPageData) {
-            sousChapitre.lastPageRead = lastPageData;
+            sousChapitre.lastPageRead = lastPageData.lastPageRead || 0;
+            sousChapitre.pourcentage = lastPageData.pourcentage || 0;
           }
         } catch (err) {
           console.error(`Erreur lors du chargement de la progression pour ${sousChapitre.id}:`, err);

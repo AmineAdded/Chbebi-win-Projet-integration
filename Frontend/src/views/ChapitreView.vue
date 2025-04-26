@@ -6,18 +6,51 @@
       <UpdateAccount @closeUpdateAccount="showUpdateAccount = false" />
     </v-dialog>
 
-    <v-container fluid>
+    <v-container fluid> 
       <h2 class="section-title">{{ thematicTitle }}</h2>
       <div class="cards-wrapper">
         
-        <div v-for="(chapitre, index) in chapitres" :key="index" class="card ">
-          <router-link :to="{ name: 'SousChapitre', params: { chapitreId: chapitre.id, chapitreTitle: chapitre.title } }" class="card">
-          <img :src="require('@/assets/' + chapitre.image)" alt="Chapitre chapitre" class="card-img" />
-          <div class="card-body">
-            <h3 class="card-title">{{ chapitre.title }}</h3>
-            <p class="card-desc">{{ chapitre.description }}</p>
-          </div>
-        </router-link>
+        <div v-for="(chapitre, index) in chapitres" :key="index" class="card">
+          <router-link :to="{ name: 'SousChapitre', params: { chapitreId: chapitre.id, chapitreTitle: chapitre.title } }" class="card-link">
+            <img :src="require('@/assets/' + chapitre.image)" alt="Chapitre chapitre" class="card-img" />
+            <div class="card-body">
+              <h3 class="card-title">{{ chapitre.title }}</h3>
+              <p class="card-desc">{{ chapitre.description }}</p>
+              
+              <!-- Ajout de la barre de progression -->
+              <div class="progress-container">
+                <div class="progress-stats">
+                  <div class="stats-label">إحصائيات التقدم</div>
+                  <v-progress-linear
+                    :color="getProgressColor(chapitre.pourcentage || 0)"
+                    :buffer-value="100"
+                    buffer-color="light-blue-lighten-4"
+                    :model-value="chapitre.pourcentage || 0"
+                    height="14"
+                    rounded
+                    striped
+                  >
+                    <template v-slot:default="{ value }">
+                      <strong class="progress-value">{{ Math.ceil(value) }}%</strong>
+                    </template>
+                  </v-progress-linear>
+                  <div class="progress-text">
+                    <div class="progress-detailed">
+                      {{ chapitre.pourcentage || 0 }}% مكتمل
+                    </div>
+                    <v-chip
+                      :color="getStatusColor(chapitre.pourcentage || 0)"
+                      size="small"
+                      class="status-chip"
+                      variant="outlined"
+                    >
+                      {{ getStatusText(chapitre.pourcentage || 0) }}
+                    </v-chip>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </router-link>
         </div>
       </div>
     </v-container>
@@ -54,14 +87,60 @@ export default {
     },
   },
   methods: {
-    loadAllSuperChapitre(thematicId) {
-      SuperChapitre.getAllSuperChapitre(thematicId)
-        .then(response => {
-          this.chapitres = response.data;
-        })
-        .catch(error => {
-          console.error("Erreur lors de la récupération des chapitres :", error);
-        });
+    // Fonctions pour déterminer les couleurs et le texte en fonction du pourcentage
+    getProgressColor(progress) {
+      if (progress < 30) return 'red-darken-1';
+      if (progress < 60) return 'amber-darken-2';
+      if (progress < 90) return 'light-blue-darken-1';
+      return 'green-darken-1';
+    },
+    getStatusColor(progress) {
+      if (progress === 0) return 'grey';
+      if (progress < 30) return 'red';
+      if (progress < 60) return 'amber';
+      if (progress < 90) return 'blue';
+      if (progress < 100) return 'teal';
+      return 'green';
+    },
+    getStatusText(progress) {
+      if (progress === 0) return 'لم يبدأ';
+      if (progress < 30) return 'بداية';
+      if (progress < 60) return 'في تقدم';
+      if (progress < 90) return 'متقدم';
+      if (progress < 100) return 'قريب من الإكمال';
+      return 'مكتمل';
+    },
+    
+    // Charger tous les chapitres
+    async loadAllSuperChapitre(thematicId) {
+      try {
+        const response = await SuperChapitre.getAllSuperChapitre(thematicId);
+        this.chapitres = response.data;
+        
+        // Après avoir chargé les chapitres, on charge leurs pourcentages de progression
+        await this.loadProgressInfo();
+      } catch (error) {
+        console.error("Erreur lors de la récupération des chapitres :", error);
+      }
+    },
+    
+    // Nouvelle méthode pour charger la progression de chaque chapitre
+    async loadProgressInfo() {
+      for (const chapitre of this.chapitres) {
+        try {
+          // Supposons que nous avons une méthode pour obtenir le pourcentage de progression d'un chapitre
+          const progressData = await SuperChapitre.getChapitreProgress(chapitre.id);
+          console.log(`Progression pour le chapitre ${chapitre.id}:`, progressData);
+          if (progressData) {
+            chapitre.pourcentage = progressData;
+          } else {
+            chapitre.pourcentage = 0;
+          }
+        } catch (err) {
+          console.error(`Erreur lors du chargement de la progression pour le chapitre ${chapitre.id}:`, err);
+          chapitre.pourcentage = 0;
+        }
+      }
     }
   },
   watch: {
@@ -101,8 +180,6 @@ export default {
 }
 
 .card {
-  text-decoration: none;
-
   width: 300px;
   background-color: white;
   border-radius: 12px;
@@ -113,6 +190,14 @@ export default {
 
 .card:hover {
   transform: translateY(-5px);
+}
+
+.card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .card-img {
@@ -135,10 +220,43 @@ export default {
   font-size: 1rem;
   color: #424242;
   line-height: 1.5;
+  margin-bottom: 15px;
 }
-a.no-style {
-  text-decoration: none;
-  color: inherit;
+
+/* Styles pour la barre de progression */
+.progress-container {
+  margin-top: 15px;
+}
+
+.progress-stats {
+  width: 100%;
+}
+
+.stats-label {
+  font-size: 0.9rem;
+  color: #546e7a;
+  margin-bottom: 5px;
+}
+
+.progress-text {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 0.85rem;
+}
+
+.progress-detailed {
+  color: #455a64;
+}
+
+.progress-value {
+  font-size: 0.8rem;
+  color: white;
+}
+
+.status-chip {
+  font-size: 0.75rem;
 }
 
 /* Responsive */

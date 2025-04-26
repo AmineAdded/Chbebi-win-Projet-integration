@@ -4,10 +4,12 @@ export default {
     getAllSousChapitre(chapitreId) {
         return axios.get('SousChapitres/getByChapitreId/' + chapitreId);
     },
-    async setLastReadPage(id, currentPage) {
+    async setLastReadPage(id, currentPage,pourcentage) {
         try {
             const response = await axios.put(`SousChapitres/setLastPageRead/${id}`,
-                { pageNumber: currentPage });
+                { lastPageRead: currentPage,
+                    pourcentage: pourcentage 
+                });
             return response.data;
         } catch (err) {
             console.error(err);
