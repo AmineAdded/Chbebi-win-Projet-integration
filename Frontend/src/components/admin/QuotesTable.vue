@@ -6,13 +6,13 @@
         <span class="icon">+</span> إضافة اقتباس جديد
       </button>
     </div>
-    
+
     <div class="quotes-list" v-if="quotes.length > 0">
       <div v-for="(quote, index) in quotes" :key="quote.id" class="quote-card">
         <div class="quote-content">
           <div class="quote-number">{{ index + 1 }}</div>
-          <div class="quote-text">"{{ quote.text }}"</div>
-          <div class="quote-author">— {{ quote.author }}</div>
+          <div class="quote-text">"{{ quote.contenu }}"</div>
+          <div class="quote-author">— {{ quote.nomAuteur }} —</div>
         </div>
         <div class="quote-actions">
           <button class="action-btn edit" @click="editQuote(quote)">
@@ -24,40 +24,57 @@
         </div>
       </div>
     </div>
-    
+
     <div v-else class="empty-state">
       <div class="empty-icon">📝</div>
       <p>لا توجد اقتباسات حاليًا</p>
-      <button class="add-button" @click="showAddForm = true">إضافة اقتباس جديد</button>
+      <button class="add-button" @click="showAddForm = true">
+        إضافة اقتباس جديد
+      </button>
     </div>
-    
+
     <!-- Modal for delete confirmation -->
     <div class="modal" v-if="showDeleteModal">
       <div class="modal-content">
         <h3>تأكيد الحذف</h3>
         <p>هل أنت متأكد من رغبتك في حذف هذا الاقتباس؟</p>
         <div class="modal-actions">
-          <button class="cancel-btn" @click="showDeleteModal = false">إلغاء</button>
-          <button class="confirm-btn" @click="deleteQuote(quoteToDelete)">تأكيد</button>
+          <button class="cancel-btn" @click="showDeleteModal = false">
+            إلغاء
+          </button>
+          <button class="confirm-btn" @click="deleteQuote(quoteToDelete)">
+            تأكيد
+          </button>
         </div>
       </div>
     </div>
-    
+
     <!-- Form for adding/editing quote -->
     <div class="modal" v-if="showAddForm || editingQuote">
       <div class="modal-content">
-        <h3>{{ editingQuote ? 'تعديل الاقتباس' : 'إضافة اقتباس جديد' }}</h3>
+        <h3>{{ editingQuote ? "تعديل الاقتباس" : "إضافة اقتباس جديد" }}</h3>
         <form @submit.prevent="saveQuote">
           <div class="form-group">
             <label for="quoteText">الاقتباس</label>
-            <textarea id="quoteText" v-model="currentQuote.text" required></textarea>
+            <textarea
+              id="quoteText"
+              v-model="currentQuote.contenu"
+              required
+            ></textarea>
           </div>
           <div class="form-group">
             <label for="authorName">المؤلف</label>
-            <input type="text" id="authorName" v-model="currentQuote.author" required>
+            <input
+              type="text"
+              id="authorName"
+              v-model="currentQuote.nomAuteur"
+              required
+            />
           </div>
           <div class="modal-actions">
-            <button type="button" class="cancel-btn" @click="cancelEdit">إلغاء</button>
+            <button type="button" class="cancel-btn" @click="cancelEdit">
+              إلغاء
+            </button>
             <button type="submit" class="confirm-btn">حفظ</button>
           </div>
         </form>
@@ -66,9 +83,114 @@
   </div>
 </template>
 
+<script>
+import quoteService from "@/Services/QuoteService";
+
+export default {
+  data() {
+    return {
+      quotes: [],
+      showDeleteModal: false,
+      quoteToDelete: null,
+      showAddForm: false,
+      editingQuote: null,
+      currentQuote: {
+        contenu: "",
+        nomAuteur: "",
+      },
+    };
+  },
+  mounted() {
+    this.fetchQuotes();
+  },
+  methods: {
+    fetchQuotes() {
+      quoteService
+        .getAllQuotes()
+        .then((response) => {
+          this.quotes = response.data;
+        })
+        .catch((error) => {
+          console.error(
+            "Erreur lors de la récupération des citations :",
+            error
+          );
+        });
+    },
+
+    confirmDelete(id) {
+      this.quoteToDelete = id;
+      this.showDeleteModal = true;
+    },
+
+    deleteQuote() {
+      quoteService
+        .deleteQuote(this.quoteToDelete)
+        .then(() => {
+          this.quotes = this.quotes.filter((q) => q.id !== this.quoteToDelete);
+          this.showDeleteModal = false;
+          this.quoteToDelete = null;
+        })
+        .catch((error) => {
+          console.error("Erreur lors de la suppression :", error);
+        });
+    },
+
+    editQuote(quote) {
+      this.editingQuote = quote;
+      this.currentQuote = {
+        contenu: quote.contenu,
+        nomAuteur: quote.nomAuteur,
+      };
+      this.showAddForm = true;
+    },
+
+    cancelEdit() {
+      this.showAddForm = false;
+      this.editingQuote = null;
+      this.currentQuote = {
+        contenu: "",
+        nomAuteur: "",
+      };
+    },
+
+    saveQuote() {
+      if (this.editingQuote) {
+        // 🔁 Mise à jour
+        quoteService
+          .updateQuote(this.editingQuote.id, this.currentQuote)
+          .then((response) => {
+            const index = this.quotes.findIndex(
+              (q) => q.id === this.editingQuote.id
+            );
+            if (index !== -1) {
+              this.quotes[index] = response.data;
+            }
+            this.cancelEdit();
+          })
+          .catch((error) => {
+            console.error("Erreur lors de la mise à jour :", error);
+          });
+      } else {
+        // ➕ Ajout
+        quoteService
+          .createQuote(this.currentQuote)
+          .then((response) => {
+            this.quotes.push(response.data);
+            this.cancelEdit();
+          })
+          .catch((error) => {
+            console.error("Erreur lors de la création :", error);
+          });
+      }
+    },
+  },
+};
+</script>
+
 <style scoped>
 .quotes-container {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   max-width: 900px;
   margin: 0 auto;
   padding: 2rem;
@@ -315,66 +437,3 @@ h2 {
   background-color: #2980b9;
 }
 </style>
-
-<script>
-export default {
-  data() {
-    return {
-      quotes: [
-        { id: 1, text: "العقل السليم في الجسم السليم", author: "مثل عالمي" },
-        { id: 2, text: "النجاح يأتي بالمثابرة", author: "شخص مجهول" }
-      ],
-      showDeleteModal: false,
-      quoteToDelete: null,
-      showAddForm: false,
-      editingQuote: null,
-      currentQuote: {
-        text: '',
-        author: ''
-      }
-    };
-  },
-  methods: {
-    confirmDelete(id) {
-      this.quoteToDelete = id;
-      this.showDeleteModal = true;
-    },
-    deleteQuote(id) {
-      this.quotes = this.quotes.filter(q => q.id !== id);
-      this.showDeleteModal = false;
-      this.quoteToDelete = null;
-    },
-    editQuote(quote) {
-      this.editingQuote = quote;
-      this.currentQuote = { ...quote };
-    },
-    cancelEdit() {
-      this.showAddForm = false;
-      this.editingQuote = null;
-      this.currentQuote = {
-        text: '',
-        author: ''
-      };
-    },
-    saveQuote() {
-      if (this.editingQuote) {
-        // Update existing quote
-        const index = this.quotes.findIndex(q => q.id === this.editingQuote.id);
-        if (index !== -1) {
-          this.quotes[index] = { ...this.currentQuote };
-        }
-      } else {
-        // Add new quote
-        const newId = Math.max(0, ...this.quotes.map(q => q.id)) + 1;
-        this.quotes.push({
-          id: newId,
-          text: this.currentQuote.text,
-          author: this.currentQuote.author
-        });
-      }
-      
-      this.cancelEdit();
-    }
-  }
-};
-</script>

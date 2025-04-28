@@ -82,11 +82,13 @@
   </div>
 </template>
 
+
 <script>
 export default {
   data() {
     return {
       chapters: [
+
         {
           id: 1,
           title: "مقدمة",
@@ -298,6 +300,7 @@ export default {
       }
       
       return false;
+
     }
   }
 };
@@ -540,6 +543,7 @@ td {
   color: #555;
 }
 
+
 /* Modal styling */
 .modal {
   position: fixed;
@@ -656,4 +660,5 @@ td {
 tr.expanded {
   background-color: #f8f9fa;
 }
+
 </style>

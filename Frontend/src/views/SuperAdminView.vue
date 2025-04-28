@@ -9,10 +9,9 @@
 
     <!-- محتوى الصفحة -->
     <div v-else class="admin-content">
-      <Sidebar />
+      <div class="nav"><Sidebar @showUpdateAccount="show = true" /></div>
       <div class="main-content">
         <h1 class="page-title">👑 لوحة الإدارة العليا</h1>
-        <h2 class="page-subtitle">إدارة المستخدمين</h2>
         <user-table 
           :is-super-admin="true"
           @role-updated="handleRoleUpdate"
@@ -20,6 +19,9 @@
         />
       </div>
     </div>
+    <v-dialog v-model="show" persistent width="auto">
+        <UpdateAccount @closeUpdateAccount="show = false" />
+    </v-dialog>
   </div>
 </template>
 
@@ -27,15 +29,19 @@
 import Sidebar from '@/components/admin/Sidebar.vue'
 import UserTable from '@/components/admin/UsersTable.vue'
 import axios from 'axios'
+import UpdateAccount from "@/components/UpdateAccount.vue";
+
 
 export default {
   components: { 
     UserTable,
-    Sidebar
+    Sidebar,
+    UpdateAccount
   },
   data() {
     return {
-      unauthorized: false
+      unauthorized: false,
+      show: false,
     }
   },
   mounted() {
