@@ -18,8 +18,10 @@ public class QuestionController {
         this.questionService = questionService;
     }
 
+
     @PostMapping("/create")
     public Question create(@RequestBody QuestionRequest request) {
+
         return questionService.createQuestion(request);
     }
     @DeleteMapping("/delete/{id}")
@@ -45,6 +47,7 @@ public class QuestionController {
 
     @PostMapping("/getQuestionsTest")
     public List<Question> getQuestionsTest(@RequestBody Test test){
+
         return questionService.getAllQuestions(test);
     }
 }

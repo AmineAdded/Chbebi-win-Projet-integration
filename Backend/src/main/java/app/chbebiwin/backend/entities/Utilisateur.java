@@ -3,6 +3,7 @@ package app.chbebiwin.backend.entities;
 import app.chbebiwin.backend.entities.AgendaPage.AgendaPage;
 import app.chbebiwin.backend.entities.Feedback.Feedback;
 import app.chbebiwin.backend.entities.Personnalite.Personnalite;
+import app.chbebiwin.backend.entities.SousChapitre.SousChapitres;
 import app.chbebiwin.backend.entities.Tache.Tache;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

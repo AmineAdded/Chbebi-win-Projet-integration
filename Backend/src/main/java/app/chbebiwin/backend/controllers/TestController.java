@@ -21,7 +21,7 @@ public class TestController {
         return testService.createTest(test);
     }
     @DeleteMapping("/delete/{id}")
-    public String delete(Long id) {
+    public String delete(@PathVariable Long id) {
         return testService.deleteTest(id);
     }
     @GetMapping("/get/{id}")

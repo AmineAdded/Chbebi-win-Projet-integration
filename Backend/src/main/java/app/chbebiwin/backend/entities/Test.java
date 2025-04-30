@@ -1,6 +1,7 @@
 package app.chbebiwin.backend.entities;
 
 import app.chbebiwin.backend.entities.Question.Question;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,5 +21,6 @@ public class Test {
     private String typeTest;
     private int utilisable;
     @OneToMany(mappedBy = "test",cascade = CascadeType.ALL,orphanRemoval = true)
+    @Nullable
     private List<Question> questions;
 }

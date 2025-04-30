@@ -19,7 +19,6 @@
       <DashboardOverview />
 
       <ChaptersTable /><br><br>
-      <QuizzesTable /><br><br>
       <TestsTable /><br><br>
       <QuotesTable /><br><br>
       <AnalyticsChart /><br>
@@ -35,7 +34,6 @@
 import Sidebar from "@/components/admin/Sidebar.vue";
 import DashboardOverview from "@/components/admin/DashboardOverview.vue";
 import ChaptersTable from "@/components/admin/ChaptersTable.vue";
-import QuizzesTable from "@/components/admin/QuizzesTable.vue";
 import TestsTable from "@/components/admin/TestsTable.vue";
 import QuotesTable from "@/components/admin/QuotesTable.vue";
 import AnalyticsChart from "@/components/admin/AnalyticsChart.vue";
@@ -46,7 +44,6 @@ export default {
     Sidebar,
     DashboardOverview,
     ChaptersTable,
-    QuizzesTable,
     TestsTable,
     QuotesTable,
     AnalyticsChart,

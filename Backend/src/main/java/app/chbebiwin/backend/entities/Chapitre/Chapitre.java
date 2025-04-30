@@ -1,11 +1,13 @@
-package app.chbebiwin.backend.entities;
+package app.chbebiwin.backend.entities.Chapitre;
 
+import app.chbebiwin.backend.entities.Thematic;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import app.chbebiwin.backend.entities.SousChapitres;
+import app.chbebiwin.backend.entities.SousChapitre.SousChapitres;
 
 import java.util.List;
 
@@ -25,7 +27,8 @@ public class Chapitre {
     @JsonIgnore
     private Thematic thematic;
 
-    @OneToMany(mappedBy = "chapitre")
+    @OneToMany(mappedBy = "chapitre",cascade = CascadeType.ALL,orphanRemoval = true)
+    @Nullable
     private List<SousChapitres> sousChapitres;
     @Column(nullable = false)
     private long pourcentage = 0;
