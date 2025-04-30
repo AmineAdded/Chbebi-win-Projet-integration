@@ -40,6 +40,8 @@ public class TestService {
         return testRepository.findById(id)
                 .map(existingTest -> {
                     existingTest.setNomTest(test.getNomTest());
+                    existingTest.setTypeTest(test.getTypeTest());
+                    existingTest.setUtilisable(test.getUtilisable());
                     return testRepository.save(existingTest);
                 })
                 .orElseGet(() -> testRepository.save(test));
@@ -51,7 +53,7 @@ public class TestService {
     public Test getTestUtilisable() {
         List<Test> tests = testRepository.findAll();
         for (Test test : tests) {
-            if ("personnalite".equals(test.getTypeTest()) && test.getUtilisable() == 1) {
+            if ("personnalité".equals(test.getTypeTest()) && test.getUtilisable() == 1) {
                 return test;
             }
         }

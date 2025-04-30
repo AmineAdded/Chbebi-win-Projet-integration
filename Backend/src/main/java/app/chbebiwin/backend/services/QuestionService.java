@@ -43,14 +43,12 @@ public class QuestionService {
         }
         return null;
     }
-    public List<Question> getAllQuestions(Test test){
-        List<Question> questions = new ArrayList<>();
-        for(Question question : questionRepository.findAll()){
-            if(question.getTest().getId().equals(test.getId())){
-                questions.add(question);
-            }
+    public List<Question> getAllQuestions(Test test) {
+        if (test == null || test.getId() == null) {
+            throw new IllegalArgumentException("Test or Test ID cannot be null");
         }
-        return questions;
+
+        return questionRepository.findByTestId(test.getId());
     }
     public Question updateQuestion(Long id, QuestionRequest request) {
         return questionRepository.findById(id)
