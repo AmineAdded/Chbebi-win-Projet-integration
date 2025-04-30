@@ -38,6 +38,7 @@ public class ThematicService {
     }
 
     public void deleteThematic(Long id) {
+
         thematicRepository.deleteById(id);
     }
 }
