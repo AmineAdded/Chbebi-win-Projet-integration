@@ -4,12 +4,7 @@
       <h2><span class="icon">🧪</span> الاختبارات</h2>
       <div class="actions-group">
         <div class="search-container">
-          <input 
-            type="text" 
-            v-model="searchQuery" 
-            placeholder="بحث في الاختبارات..." 
-            class="search-input"
-          />
+          <input type="text" v-model="searchQuery" placeholder="بحث في الاختبارات..." class="search-input" />
           <span class="search-icon">🔍</span>
         </div>
         <button class="add-button" @click="showAddTestModal = true">
@@ -18,26 +13,33 @@
       </div>
     </div>
 
-    <div class="tests-list" v-if="filteredTests.length > 0">
+    <div v-if="loading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>جاري تحميل البيانات...</p>
+    </div>
+
+    <div class="tests-list" v-else-if="filteredTests.length > 0">
       <div class="test-container" v-for="(test, index) in filteredTests" :key="test.id">
         <div class="test-card">
           <div class="test-info">
             <div class="test-number">{{ index + 1 }}</div>
             <div class="test-details">
-              <h3 class="test-title">{{ test.title }}</h3>
+              <h3 class="test-title">{{ test.title || test.nom_test }}</h3>
               <div class="test-meta">
                 <span>آخر تحديث: {{ test.lastUpdated }}</span>
+                <span v-if="test.type_test">النوع: {{ test.type_test }}</span>
+                <span>متاح للاستخدام: {{ test.utilisable ? 'نعم' : 'لا' }}</span>
               </div>
             </div>
           </div>
-          
+
           <div class="test-questions-container">
             <div class="test-questions-count">
               <span class="questions-value">{{ test.questions ? test.questions.length : 0 }}</span>
               <span class="questions-label">أسئلة</span>
             </div>
           </div>
-          
+
           <div class="test-actions">
             <button class="action-button view" @click="toggleViewQuestions(test)">
               <span class="action-icon">👁️</span>
@@ -57,7 +59,7 @@
             </button>
           </div>
         </div>
-        
+
         <!-- Questions List -->
         <div class="questions-list" v-if="test.showQuestions && test.questions && test.questions.length > 0">
           <div class="question-container" v-for="(question, qIndex) in test.questions" :key="question.id">
@@ -81,9 +83,10 @@
                 </button>
               </div>
             </div>
-            
+
             <!-- Responses List -->
-            <div class="responses-list" v-if="question.showResponses && question.responses && question.responses.length > 0">
+            <div class="responses-list"
+              v-if="question.showResponses && question.responses && question.responses.length > 0">
               <div class="response-card" v-for="(response, rIndex) in question.responses" :key="rIndex">
                 <div class="response-text">{{ response.text }}</div>
               </div>
@@ -98,19 +101,19 @@
         </div>
       </div>
     </div>
-    
+
     <div class="empty-state" v-else>
       <div class="empty-icon">📝</div>
       <h3>لا توجد اختبارات</h3>
       <p>لم يتم العثور على أي اختبارات. يرجى إضافة اختبار جديد أو تغيير معايير البحث.</p>
       <button class="add-button" @click="showAddTestModal = true">إضافة اختبار جديد</button>
     </div>
-    
+
     <!-- Modal for delete confirmation -->
     <div class="modal" v-if="showDeleteModal">
       <div class="modal-content">
         <h3>تأكيد الحذف</h3>
-        <p>هل أنت متأكد من حذف "{{ testToDelete?.title }}"؟</p>
+        <p>هل أنت متأكد من حذف "{{ testToDelete?.title || testToDelete?.nom_test }}"؟</p>
         <p class="modal-warning">هذا الإجراء لا يمكن التراجع عنه.</p>
         <div class="modal-actions">
           <button class="cancel-button" @click="cancelDelete">إلغاء</button>
@@ -118,7 +121,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Modal for adding/editing a test -->
     <div class="modal" v-if="showAddTestModal">
       <div class="modal-content test-modal">
@@ -128,6 +131,16 @@
             <label for="testTitle">عنوان الاختبار</label>
             <input type="text" id="testTitle" v-model="currentTest.title" required>
           </div>
+          <div class="form-group">
+            <label for="testType">نوع الاختبار</label>
+            <input type="text" id="testType" v-model="currentTest.type_test">
+          </div>
+          <div class="form-group checkbox-group">
+            <label>
+              <input type="checkbox" v-model="currentTest.utilisable" @change="handleUtilisableChange">
+              متاح للاستخدام
+            </label>
+          </div>
           <div class="modal-actions">
             <button type="button" class="cancel-button" @click="cancelAddEdit">إلغاء</button>
             <button type="submit" class="confirm-button">حفظ</button>
@@ -135,7 +148,7 @@
         </form>
       </div>
     </div>
-    
+
     <!-- Modal for adding/editing a question -->
     <div class="modal" v-if="showQuestionModal">
       <div class="modal-content question-modal">
@@ -145,7 +158,7 @@
             <label for="questionText">نص السؤال</label>
             <input type="text" id="questionText" v-model="currentQuestion.text" required>
           </div>
-          
+
           <div class="responses-section">
             <h4>الإجابات</h4>
             <div class="form-group" v-for="(response, index) in currentQuestion.responses" :key="index">
@@ -153,7 +166,7 @@
               <input type="text" v-model="currentQuestion.responses[index].text" required>
             </div>
           </div>
-          
+
           <div class="modal-actions">
             <button type="button" class="cancel-button" @click="cancelQuestionEdit">إلغاء</button>
             <button type="submit" class="confirm-button">حفظ</button>
@@ -161,9 +174,533 @@
         </form>
       </div>
     </div>
+
+    <!-- Personnalité Test Alert Modal -->
+    <div class="modal" v-if="showPersonnaliteAlert">
+      <div class="modal-content alert-modal">
+        <h3>تنبيه: اختبار الشخصية</h3>
+        <p>يمكن أن يكون هناك اختبار شخصية واحد فقط متاح للاستخدام في النظام.</p>
+        <p>إذا قمت بتفعيل هذا الاختبار، سيتم إلغاء تفعيل الاختبار الآخر من نوع "personnalité" تلقائيًا.</p>
+        <p>هل تريد المتابعة؟</p>
+        <div class="modal-actions">
+          <button class="cancel-button" @click="cancelPersonnaliteAlert">إلغاء</button>
+          <button class="confirm-button" @click="confirmPersonnaliteAlert">متابعة</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Alert -->
+    <div class="error-alert" v-if="error">
+      <div class="error-content">
+        <span class="error-icon">⚠️</span>
+        <span class="error-message">{{ error }}</span>
+        <button class="error-close" @click="error = null">×</button>
+      </div>
+    </div>
+
+    <!-- Success Alert -->
+    <div class="success-alert" v-if="successMessage">
+      <div class="success-content">
+        <span class="success-icon">✅</span>
+        <span class="success-message">{{ successMessage }}</span>
+        <button class="success-close" @click="successMessage = null">×</button>
+      </div>
+    </div>
   </div>
 </template>
 
+
+
+<script>
+import QuestionService from '@/Services/QuestionService';
+import TestService from '@/Services/TestService';
+import ResponseService from '@/Services/ResponseService';
+
+export default {
+  data() {
+    return {
+      tests: [],
+      searchQuery: "",
+      showDeleteModal: false,
+      testToDelete: null,
+      showAddTestModal: false,
+      editingTest: null,
+      currentTest: {
+        title: "",
+        type_test: "",
+        utilisable: true,
+        questions: []
+      },
+      showQuestionModal: false,
+      editingQuestion: null,
+      currentQuestion: {
+        text: "",
+        responses: [
+          { text: "" },
+          { text: "" },
+          { text: "" },
+          { text: "" }
+        ]
+      },
+      currentTestForQuestion: null,
+      loading: false,
+      error: null,
+      successMessage: null,
+      showPersonnaliteAlert: false,
+      personnaliteTestBackup: null
+    };
+  },
+  computed: {
+    filteredTests() {
+      if (!this.searchQuery) return this.tests;
+
+      const query = this.searchQuery.toLowerCase();
+      return this.tests.filter(test =>
+        (test.title ? test.title.toLowerCase().includes(query) : false) ||
+        (test.nomTest ? test.nomTest.toLowerCase().includes(query) : false)
+      );
+    }
+  },
+  async created() {
+    try {
+      await this.fetchTests();
+    } catch (error) {
+      this.error = "فشل في تحميل الاختبارات";
+      console.error("Error loading tests:", error);
+    }
+  },
+  methods: {
+    async fetchTests() {
+      try {
+        this.loading = true;
+        const tests = await TestService.getAllTests();
+        console.log(`Fetched ${tests.length} tests:`, tests);
+
+        this.tests = tests.map(test => ({
+          ...test,
+          showQuestions: false,
+          title: test.nomTest,
+          type_test: test.typeTest,
+          utilisable: test.utilisable === 1,
+          lastUpdated: this.formatDate(new Date())
+        }));
+      } catch (error) {
+        console.error("Error fetching tests:", error);
+        this.error = "  فشل في تحميل الاختبارات";
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async toggleViewQuestions(test) {
+      const index = this.tests.findIndex(t => t.id === test.id);
+      if (index !== -1) {
+        const updatedTest = { ...test, showQuestions: !test.showQuestions };
+
+        try {
+          this.loading = true;
+
+          const questions = await QuestionService.getAllQuestions(test);
+          console.log(`Fetched ${questions.length} questions:`, questions);
+
+          updatedTest.questions = questions.map(q => ({
+            ...q,
+            showResponses: false,
+            text: q.contenu,
+            responses: q.reponses ? q.reponses.map(r => ({
+              ...r,
+              text: r.contenu
+            })) : []
+          }));
+        } catch (error) {
+          console.error("Error fetching test questions:", error);
+          this.error = "فشل في تحميل الأسئلة";
+          updatedTest.showQuestions = false;
+        } finally {
+          this.loading = false;
+        }
+
+
+        this.tests.splice(index, 1, updatedTest);
+
+        if (!updatedTest.showQuestions && updatedTest.questions) {
+          const updatedQuestions = updatedTest.questions.map(q => ({
+            ...q,
+            showResponses: false
+          }));
+          this.tests[index].questions = updatedQuestions;
+        }
+      }
+    },
+
+    toggleViewResponses(test, question) {
+      const testIndex = this.tests.findIndex(t => t.id === test.id);
+      if (testIndex !== -1) {
+        const questionIndex = this.tests[testIndex].questions.findIndex(q => q.id === question.id);
+        if (questionIndex !== -1) {
+          const updatedQuestions = [...this.tests[testIndex].questions];
+
+          const updatedQuestion = {
+            ...updatedQuestions[questionIndex],
+            showResponses: !updatedQuestions[questionIndex].showResponses
+          };
+
+          updatedQuestions.splice(questionIndex, 1, updatedQuestion);
+
+          this.tests[testIndex].questions = updatedQuestions;
+        }
+      }
+    },
+
+    editTest(test) {
+      this.editingTest = test;
+
+      this.currentTest = {
+        id: test.id,
+        title: test.title || test.nomTest || "",
+        type_test: test.type_test || test.typeTest || "",
+        utilisable: test.utilisable === 1 || test.utilisable === true,
+        questions: [...(test.questions || [])]
+      };
+
+      console.log("Editing test:", this.currentTest);
+
+      this.showAddTestModal = true;
+    },
+
+    async handleUtilisableChange() {
+      if (
+        this.currentTest.type_test.toLowerCase() === "personnalité" &&
+        this.currentTest.utilisable
+      ) {
+        this.personnaliteTestBackup = { ...this.currentTest };
+        this.showPersonnaliteAlert = true;
+      }
+    },
+
+    cancelPersonnaliteAlert() {
+      if (this.personnaliteTestBackup) {
+        this.currentTest.utilisable = this.personnaliteTestBackup.utilisable;
+      } else {
+        this.currentTest.utilisable = false;
+      }
+      this.showPersonnaliteAlert = false;
+      this.personnaliteTestBackup = null;
+    },
+
+    async confirmPersonnaliteAlert() {
+      try {
+        this.loading = true;
+
+        const personnaliteTests = await TestService.getTestsByType("personnalité");
+        console.log("Found personnalité tests:", personnaliteTests);
+
+        for (const test of personnaliteTests) {
+          if (this.editingTest && test.id === this.editingTest.id) {
+            continue;
+          }
+
+          if (test.utilisable === 1 || test.utilisable === true) {
+            console.log(`Setting test ${test.id} (${test.nomTest || test.title}) to non-utilisable`);
+
+            await TestService.updateTest(test.id, {
+              nomTest: test.nomTest || test.title,
+              typeTest: test.typeTest || test.type_test,
+              utilisable: 0
+            });
+
+            const index = this.tests.findIndex(t => t.id === test.id);
+            if (index !== -1) {
+              this.tests[index] = {
+                ...this.tests[index],
+                utilisable: false
+              };
+            }
+          }
+        }
+
+        this.showPersonnaliteAlert = false;
+        this.personnaliteTestBackup = null;
+        this.successMessage = "تم تحديث حالة الاختبارات بنجاح";
+      } catch (error) {
+        console.error("Error updating personnalité tests:", error);
+        this.error = "فشل في تحديث حالة الاختبارات";
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async deleteTest(id) {
+      try {
+        this.loading = true;
+        await TestService.deleteTest(id);
+        this.tests = this.tests.filter(t => t.id !== id);
+        this.showDeleteModal = false;
+        this.testToDelete = null;
+        this.successMessage = "تم حذف الاختبار بنجاح";
+      } catch (error) {
+        console.error("Error deleting test:", error);
+        this.error = "فشل في حذف الاختبار";
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    editQuestion(test, question) {
+      this.currentTestForQuestion = test;
+      this.editingQuestion = question;
+
+      this.currentQuestion = {
+        id: question.id,
+        text: question.contenu || question.text,
+        responses: question.responses && question.responses.length > 0 ?
+          [...question.responses.map(r => ({ ...r }))] :
+          [{ text: "" }, { text: "" }, { text: "" }, { text: "" }]
+      };
+
+      while (this.currentQuestion.responses.length < 4) {
+        this.currentQuestion.responses.push({ text: "" });
+      }
+
+      this.showQuestionModal = true;
+    },
+
+    addQuestionToTest(test) {
+      this.currentTestForQuestion = test;
+      this.editingQuestion = null;
+      this.currentQuestion = {
+        text: "",
+        responses: [
+          { text: "" },
+          { text: "" },
+          { text: "" },
+          { text: "" }
+        ]
+      };
+      this.showQuestionModal = true;
+    },
+
+    confirmDeleteTest(test) {
+      this.testToDelete = test;
+      this.showDeleteModal = true;
+    },
+
+    cancelDelete() {
+      this.showDeleteModal = false;
+      this.testToDelete = null;
+    },
+
+    cancelAddEdit() {
+      this.showAddTestModal = false;
+      this.editingTest = null;
+      this.currentTest = {
+        title: "",
+        type_test: "",
+        utilisable: true,
+        questions: []
+      };
+    },
+
+    async saveTest() {
+      try {
+        this.loading = true;
+        console.log("Saving test...", this.currentTest);
+
+        const testData = {
+          nomTest: this.currentTest.title,
+          typeTest: this.currentTest.type_test,
+          utilisable: this.currentTest.utilisable ? 1 : 0
+        };
+
+        console.log("Prepared test data for API:", testData);
+
+        let savedTest;
+
+        // Check if this is a personnalité test and it's utilisable
+        if (
+          testData.typeTest.toLowerCase() === "personnalité" &&
+          testData.utilisable === 1
+        ) {
+          // Check if there's already an active personnalité test before proceeding
+          const personnaliteTests = await TestService.getTestsByType("personnalité");
+          const hasActiveTest = personnaliteTests.some(test =>
+            (test.utilisable === 1 || test.utilisable === true) &&
+            (!this.editingTest || test.id !== this.currentTest.id)
+          );
+
+          if (hasActiveTest && !this.showPersonnaliteAlert) {
+            // Store the current test settings before showing the alert
+            this.personnaliteTestBackup = { ...this.currentTest };
+            this.showPersonnaliteAlert = true;
+            this.loading = false;
+            return; // Stop here and wait for user confirmation
+          }
+        }
+
+        if (this.editingTest) {
+          console.log("Updating existing test with ID:", this.currentTest.id);
+
+          savedTest = await TestService.updateTest(this.currentTest.id, testData);
+          console.log("Update response:", savedTest);
+
+          const index = this.tests.findIndex(t => t.id === this.currentTest.id);
+          if (index !== -1) {
+            this.tests[index] = {
+              ...this.tests[index],
+              nomTest: testData.nomTest,
+              typeTest: testData.typeTest,
+              utilisable: testData.utilisable === 1,
+              title: testData.nomTest,
+              type_test: testData.typeTest,
+              lastUpdated: this.formatDate(new Date())
+            };
+          }
+
+          this.successMessage = "تم تحديث الاختبار بنجاح";
+        } else {
+          savedTest = await TestService.createTest(testData);
+
+          this.tests.push({
+            ...savedTest,
+            title: savedTest.nomTest,
+            type_test: savedTest.typeTest,
+            showQuestions: false,
+            questions: [],
+            lastUpdated: this.formatDate(new Date()),
+            utilisable: savedTest.utilisable === 1
+          });
+
+          this.successMessage = "تم إنشاء الاختبار بنجاح";
+        }
+
+        if (testData.typeTest.toLowerCase() === "personnalité") {
+          await this.fetchTests();
+        }
+
+        this.cancelAddEdit();
+      } catch (error) {
+        console.error("Error saving test:", error);
+        console.error("Error details:", error.response?.data || error.message);
+        this.error = this.editingTest ? "فشل في تحديث الاختبار" : "فشل في إنشاء الاختبار";
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async handlePersonnaliteLogic() {
+      try {
+        const personnaliteTests = await TestService.getTestsByType("personnalité");
+
+        for (const test of personnaliteTests) {
+          if (this.editingTest && test.id === this.editingTest.id) {
+            continue;
+          }
+
+          if (test.utilisable === 1 || test.utilisable === true) {
+            console.log(`Setting test ${test.id} to non-utilisable`);
+            await TestService.updateTest(test.id, {
+              nomTest: test.nomTest || test.title,
+              typeTest: test.typeTest || test.type_test,
+              utilisable: 0
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error in handlePersonnaliteLogic:", error);
+        throw error;
+      }
+    },
+
+    async saveQuestion() {
+      if (!this.currentTestForQuestion) return;
+
+      try {
+        this.loading = true;
+
+        const questionData = {
+          contenu: this.currentQuestion.text,
+          testId: this.currentTestForQuestion.id
+        };
+
+        let savedQuestion;
+        if (this.editingQuestion) {
+          savedQuestion = await QuestionService.updateQuestion(this.currentQuestion.id, questionData);
+        } else {
+          savedQuestion = await QuestionService.createQuestion(questionData);
+        }
+
+        for (const response of this.currentQuestion.responses) {
+          if (response.text.trim() !== '') {
+            const responseData = {
+              contenu: response.text,
+              questionId: savedQuestion.id
+            };
+
+            if (response.id) {
+              await ResponseService.updateReponse(response.id, responseData);
+            } else {
+              await ResponseService.createReponse(responseData);
+            }
+          }
+        }
+
+        await this.fetchTests();
+        this.cancelQuestionEdit();
+        this.successMessage = this.editingQuestion ? "تم تحديث السؤال بنجاح" : "تم إضافة السؤال بنجاح";
+      } catch (error) {
+        console.error("Error saving question:", error);
+        this.error = "فشل في حفظ السؤال: " + (error.response?.data || error.message);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    cancelQuestionEdit() {
+      this.showQuestionModal = false;
+      this.editingQuestion = null;
+      this.currentTestForQuestion = null;
+      this.currentQuestion = {
+        text: "",
+        responses: [
+          { text: "" },
+          { text: "" },
+          { text: "" },
+          { text: "" }
+        ]
+      };
+    },
+
+    async deleteQuestion(test, question) {
+      try {
+        this.loading = true;
+        await QuestionService.deleteQuestion(question.id);
+
+        const testIndex = this.tests.findIndex(t => t.id === test.id);
+        if (testIndex !== -1 && this.tests[testIndex].questions) {
+          this.tests[testIndex].questions = this.tests[testIndex].questions.filter(
+            q => q.id !== question.id
+          );
+        }
+
+        this.successMessage = "تم حذف السؤال بنجاح";
+      } catch (error) {
+        console.error("Error deleting question:", error);
+        this.error = "فشل في حذف السؤال";
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    formatDate(date) {
+      return new Intl.DateTimeFormat('ar-SA', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      }).format(date);
+    }
+  }
+};
+</script>
 <style scoped>
 .tests-dashboard {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -452,7 +989,8 @@
   width: 100%;
 }
 
-.empty-questions, .empty-responses {
+.empty-questions,
+.empty-responses {
   padding: 1.5rem;
   text-align: center;
   color: #64748b;
@@ -587,7 +1125,13 @@
   color: #334155;
 }
 
-.form-group input {
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-group input[type="text"] {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid #e2e8f0;
@@ -608,467 +1152,110 @@
   margin-bottom: 1.5rem;
 }
 
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  background-color: #f8fafc;
+  border-radius: 12px;
+}
+
+.loading-spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.error-alert {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #fee2e2;
+  border-left: 4px solid #ef4444;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 350px;
+  z-index: 1000;
+}
+
+.error-content {
+  display: flex;
+  align-items: center;
+}
+
+.error-icon {
+  margin-left: 0.75rem;
+}
+
+.error-message {
+  flex-grow: 1;
+  color: #b91c1c;
+}
+
+.error-close {
+  background: none;
+  border: none;
+  color: #b91c1c;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-right: -0.5rem;
+  padding: 0.25rem;
+}
+
 @media (max-width: 768px) {
   .dashboard-header {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .actions-group {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .search-input {
     width: 100%;
   }
-  
+
   .test-card {
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
   }
-  
+
   .test-questions-container {
     margin: 0.5rem 0;
   }
-  
+
   .test-actions {
     justify-content: space-around;
   }
-  
+
   .question-card {
     flex-direction: column;
     align-items: stretch;
     gap: 0.75rem;
   }
-  
+
   .question-actions {
     justify-content: flex-end;
   }
 }
 </style>
-<script>
-export default {
-  data() {
-    return {
-      tests: [
-        { 
-          id: 1, 
-          title: "اختبار التحليل المنطقي", 
-          lastUpdated: "15 أبريل 2025",
-          showQuestions: false,
-          questions: [
-            {
-              id: 101,
-              text: "ما هو الاستنتاج المنطقي لهذه المعطيات؟",
-              showResponses: false,
-              responses: [
-                { text: "الخيار الأول" },
-                { text: "الخيار الثاني" },
-                { text: "الخيار الثالث" },
-                { text: "الخيار الرابع" }
-              ]
-            },
-            {
-              id: 102,
-              text: "اختر المسار الصحيح لحل المشكلة المعطاة",
-              showResponses: false,
-              responses: [
-                { text: "الخيار الأول" },
-                { text: "الخيار الثاني" },
-                { text: "الخيار الثالث" },
-                { text: "الخيار الرابع" }
-              ]
-            },
-            {
-              id: 103,
-              text: "ما هي الفرضية المناسبة في هذه الحالة؟",
-              showResponses: false,
-              responses: [
-                { text: "الخيار الأول" },
-                { text: "الخيار الثاني" },
-                { text: "الخيار الثالث" },
-                { text: "الخيار الرابع" }
-              ]
-            }
-          ]
-        },
-        { 
-          id: 2, 
-          title: "اختبار الشخصية", 
-          lastUpdated: "10 أبريل 2025",
-          showQuestions: false,
-          questions: [
-            {
-              id: 201,
-              text: "كيف تتصرف عند مواجهة موقف صعب؟",
-              showResponses: false,
-              responses: [
-                { text: "أواجه المشكلة مباشرة" },
-                { text: "أطلب المساعدة" },
-                { text: "أفكر بعمق قبل اتخاذ القرار" },
-                { text: "أؤجل اتخاذ القرار" }
-              ]
-            },
-            {
-              id: 202,
-              text: "ماذا تفضل في أوقات فراغك؟",
-              showResponses: false,
-              responses: [
-                { text: "القراءة" },
-                { text: "مشاهدة الأفلام" },
-                { text: "ممارسة الرياضة" },
-                { text: "قضاء الوقت مع الأصدقاء" }
-              ]
-            }
-          ]
-        },
-        { 
-          id: 3, 
-          title: "اختبار المهارات التقنية", 
-          lastUpdated: "5 أبريل 2025",
-          showQuestions: false,
-          questions: [
-            {
-              id: 301,
-              text: "ما هي لغة البرمجة المناسبة لتطوير تطبيقات الويب؟",
-              showResponses: false,
-              responses: [
-                { text: "JavaScript" },
-                { text: "C++" },
-                { text: "Swift" },
-                { text: "Matlab" }
-              ]
-            },
-            {
-              id: 302,
-              text: "ما هو البروتوكول المستخدم لنقل صفحات الويب؟",
-              showResponses: false,
-              responses: [
-                { text: "FTP" },
-                { text: "HTTP" },
-                { text: "SMTP" },
-                { text: "SSH" }
-              ]
-            },
-            {
-              id: 303,
-              text: "أي من التالي يعتبر قاعدة بيانات علائقية؟",
-              showResponses: false,
-              responses: [
-                { text: "MongoDB" },
-                { text: "Redis" },
-                { text: "MySQL" },
-                { text: "Firebase" }
-              ]
-            },
-            {
-              id: 304,
-              text: "ما هو مصطلح API؟",
-              showResponses: false,
-              responses: [
-                { text: "واجهة برمجة التطبيقات" },
-                { text: "بروتوكول إنترنت متقدم" },
-                { text: "مؤشر أداء التطبيق" },
-                { text: "واجهة اتصال متقدمة" }
-              ]
-            }
-          ]
-        },
-        { 
-          id: 4, 
-          title: "اختبار القدرات اللغوية", 
-          lastUpdated: "28 مارس 2025",
-          showQuestions: false,
-          questions: [
-            {
-              id: 401,
-              text: "اختر الكلمة الصحيحة إملائياً",
-              showResponses: false,
-              responses: [
-                { text: "إستقبال" },
-                { text: "استقبال" },
-                { text: "أستقبال" },
-                { text: "إستقبل" }
-              ]
-            },
-            {
-              id: 402,
-              text: "ما هو جمع كلمة 'معلومة'؟",
-              showResponses: false,
-              responses: [
-                { text: "معلومات" },
-                { text: "معالم" },
-                { text: "معلمات" },
-                { text: "معاليم" }
-              ]
-            }
-          ]
-        }
-      ],
-      searchQuery: "",
-      showDeleteModal: false,
-      testToDelete: null,
-      showAddTestModal: false,
-      editingTest: null,
-      currentTest: {
-        title: "",
-        questions: []
-      },
-      showQuestionModal: false,
-      editingQuestion: null,
-      currentQuestion: {
-        text: "",
-        responses: [
-          { text: "" },
-          { text: "" },
-          { text: "" },
-          { text: "" }
-        ]
-      },
-      currentTestForQuestion: null
-    };
-  },
-  computed: {
-    filteredTests() {
-      if (!this.searchQuery) return this.tests;
-      
-      const query = this.searchQuery.toLowerCase();
-      return this.tests.filter(test => 
-        test.title.toLowerCase().includes(query)
-      );
-    }
-  },
-  methods: {
-    toggleViewQuestions(test) {
-      const index = this.tests.findIndex(t => t.id === test.id);
-      if (index !== -1) {
-        // Create a new copy of the test with updated showQuestions
-        const updatedTest = { ...test, showQuestions: !test.showQuestions };
-        
-        // Replace the old test with the updated one
-        this.tests.splice(index, 1, updatedTest);
-        
-        // If questions are being hidden, also hide all responses
-        if (!updatedTest.showQuestions && updatedTest.questions) {
-          // Make a copy of all questions with responses hidden
-          const updatedQuestions = updatedTest.questions.map(q => {
-            return { ...q, showResponses: false };
-          });
-          
-          // Update the questions in the test
-          this.tests[index].questions = updatedQuestions;
-        }
-      }
-    },
-    toggleViewResponses(test, question) {
-      const testIndex = this.tests.findIndex(t => t.id === test.id);
-      if (testIndex !== -1) {
-        const questionIndex = this.tests[testIndex].questions.findIndex(q => q.id === question.id);
-        if (questionIndex !== -1) {
-          // Create a copy of the questions array
-          const updatedQuestions = [...this.tests[testIndex].questions];
-          
-          // Create an updated question with toggled showResponses
-          const updatedQuestion = {
-            ...updatedQuestions[questionIndex],
-            showResponses: !updatedQuestions[questionIndex].showResponses
-          };
-          
-          // Replace the old question with the updated one
-          updatedQuestions.splice(questionIndex, 1, updatedQuestion);
-          
-          // Update the questions array in the test
-          this.tests[testIndex].questions = updatedQuestions;
-        }
-      }
-    },
-    editTest(test) {
-      this.editingTest = test;
-      this.currentTest = { 
-        id: test.id,
-        title: test.title,
-        questions: [...test.questions]
-      };
-      this.showAddTestModal = true;
-    },
-    confirmDeleteTest(test) {
-      this.testToDelete = test;
-      this.showDeleteModal = true;
-    },
-    cancelDelete() {
-      this.showDeleteModal = false;
-      this.testToDelete = null;
-    },
-    deleteTest(id) {
-      this.tests = this.tests.filter(t => t.id !== id);
-      this.showDeleteModal = false;
-      this.testToDelete = null;
-    },
-    cancelAddEdit() {
-      this.showAddTestModal = false;
-      this.editingTest = null;
-      this.currentTest = {
-        title: "",
-        questions: []
-      };
-    },
-    saveTest() {
-      const today = new Date();
-      const formattedDate = `${today.getDate()} ${this.getArabicMonth(today.getMonth())} ${today.getFullYear()}`;
-      
-      if (this.editingTest) {
-        // Update existing test
-        const index = this.tests.findIndex(t => t.id === this.editingTest.id);
-        if (index !== -1) {
-          // Create a new object with the updated values
-          const updatedTest = {
-            ...this.editingTest,
-            title: this.currentTest.title,
-            lastUpdated: formattedDate
-          };
-          
-          // Replace the old test with the updated one
-          this.tests.splice(index, 1, updatedTest);
-        }
-      } else {
-        // Add new test
-        const newId = Math.max(0, ...this.tests.map(t => t.id)) + 1;
-        const newTest = {
-          id: newId,
-          title: this.currentTest.title,
-          lastUpdated: formattedDate,
-          showQuestions: false,
-          questions: [] // Initialize with empty questions array
-        };
-        
-        this.tests.push(newTest);
-      }
-      
-      this.cancelAddEdit();
-    },
-    
-    // New methods for question management
-    addQuestionToTest(test) {
-      this.currentTestForQuestion = test;
-      this.editingQuestion = null;
-      this.resetCurrentQuestion();
-      this.showQuestionModal = true;
-    },
-    
-    editQuestion(test, question) {
-      this.currentTestForQuestion = test;
-      this.editingQuestion = question;
-      
-      // Create a deep copy of the question
-      this.currentQuestion = {
-        id: question.id,
-        text: question.text,
-        responses: question.responses.map(r => ({ text: r.text }))
-      };
-      
-      // Ensure we have exactly 4 responses
-      while (this.currentQuestion.responses.length < 4) {
-        this.currentQuestion.responses.push({ text: "" });
-      }
-      
-      this.showQuestionModal = true;
-    },
-    
-    deleteQuestion(test, question) {
-      const testIndex = this.tests.findIndex(t => t.id === test.id);
-      if (testIndex !== -1) {
-        // Create a new array of questions without the one to delete
-        const updatedQuestions = this.tests[testIndex].questions.filter(q => q.id !== question.id);
-        
-        // Update the test with the new questions array
-        const updatedTest = { ...this.tests[testIndex], questions: updatedQuestions };
-        this.tests.splice(testIndex, 1, updatedTest);
-      }
-    },
-    
-    cancelQuestionEdit() {
-      this.showQuestionModal = false;
-      this.editingQuestion = null;
-      this.currentTestForQuestion = null;
-      this.resetCurrentQuestion();
-    },
-    
-    resetCurrentQuestion() {
-      this.currentQuestion = {
-        text: "",
-        responses: [
-          { text: "" },
-          { text: "" },
-          { text: "" },
-          { text: "" }
-        ]
-      };
-    },
-    
-    saveQuestion() {
-      const testIndex = this.tests.findIndex(t => t.id === this.currentTestForQuestion.id);
-      if (testIndex === -1) return;
-      
-      if (this.editingQuestion) {
-        // Update existing question
-        const questionIndex = this.tests[testIndex].questions.findIndex(q => q.id === this.editingQuestion.id);
-        if (questionIndex !== -1) {
-          // Create updated questions array
-          const updatedQuestions = [...this.tests[testIndex].questions];
-          
-          // Update the specific question
-          updatedQuestions[questionIndex] = {
-            ...this.editingQuestion,
-            text: this.currentQuestion.text,
-            responses: this.currentQuestion.responses.map(r => ({ text: r.text }))
-          };
-          
-          // Update the test with the new questions array
-          const updatedTest = { ...this.tests[testIndex], questions: updatedQuestions };
-          this.tests.splice(testIndex, 1, updatedTest);
-        }
-      } else {
-        // Add new question
-        const newId = this.getNewQuestionId();
-        const newQuestion = {
-          id: newId,
-          text: this.currentQuestion.text,
-          showResponses: false,
-          responses: this.currentQuestion.responses.map(r => ({ text: r.text }))
-        };
-        
-        // Create a new array of questions with the new one
-        const updatedQuestions = [...this.tests[testIndex].questions, newQuestion];
-        
-        // Update the test with the new questions array
-        const updatedTest = { ...this.tests[testIndex], questions: updatedQuestions };
-        this.tests.splice(testIndex, 1, updatedTest);
-      }
-      
-      this.cancelQuestionEdit();
-    },
-    
-    getNewQuestionId() {
-      // Find the highest question ID across all tests and add 1
-      let maxId = 0;
-      this.tests.forEach(test => {
-        if (test.questions && test.questions.length > 0) {
-          const highestId = Math.max(...test.questions.map(q => q.id));
-          maxId = Math.max(maxId, highestId);
-        }
-      });
-      return maxId + 1;
-    },
-    
-    getArabicMonth(monthIndex) {
-      const arabicMonths = [
-        "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
-        "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
-      ];
-      return arabicMonths[monthIndex];
-    }
-  }
-};
-</script>
