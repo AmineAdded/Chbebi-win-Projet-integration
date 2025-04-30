@@ -1,16 +1,53 @@
+
 <template>
   <div class="table-card">
     <div class="card-header">
       <h2><i class="icon">📖</i> الفصول</h2>
       <div class="card-actions">
+        <button class="add-btn thematic-btn" @click="showAddThematicModal">
+          <i class="icon">➕</i> إضافة مجال جديد
+        </button>
         <button class="add-btn" @click="addNewChapter(null)">
           <i class="icon">➕</i> إضافة فصل جديد
         </button>
-        <button class="filter-btn"><i class="icon">🔍</i></button>
+        <button class="filter-btn" @click="toggleSearch"><i class="icon">🔍</i></button>
+        <div class="thematic-selector">
+          <select v-if="thematics.length > 0" v-model="selectedThematicId" class="thematic-select"
+            @change="loadChaptersByThematic">
+            <option value="">-- اختر مجال --</option>
+            <option v-for="thematic in thematics" :key="thematic.id" :value="thematic.id">{{ thematic.nom }}</option>
+          </select>
+          <div v-if="selectedThematicId" class="thematic-actions">
+            <button class="edit-thematic-btn" @click="editThematic(selectedThematicId)">
+              <i class="icon">✏️</i>
+            </button>
+            <button class="delete-thematic-btn" @click="deleteThematic(selectedThematicId)">
+              <i class="icon">🗑</i>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="table-responsive">
+    <!-- Search bar -->
+    <div v-if="showSearch" class="search-container">
+      <div class="search-input-wrapper">
+        <input type="text" v-model="searchTerm" class="search-input" placeholder="ابحث عن فصل..." @input="performSearch"
+          dir="rtl" />
+        <button v-if="searchTerm" class="clear-search" @click="clearSearch">✕</button>
+      </div>
+      <div class="search-info" v-if="searchTerm">
+        {{ searchResults.length }} نتيجة بحث
+      </div>
+    </div>
+
+    <!-- Loading indicator -->
+    <div v-if="loading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>جاري تحميل البيانات...</p>
+    </div>
+
+    <div v-else class="table-responsive">
       <table>
         <thead>
           <tr>
@@ -21,13 +58,19 @@
         </thead>
         <tbody>
           <!-- Render flattened hierarchy -->
-          <tr v-for="(item) in flattenedChapters" :key="item.id" 
-            class="table-row" 
-            :class="{ 'child-row': item.level === 1, 'grandchild-row': item.level === 2, 'third-level-row': item.level >= 3 }">
+          <tr v-for="(item) in displayedChapters" :key="item.id" class="table-row" :class="{
+            'child-row': item.level === 1,
+            'grandchild-row': item.level === 2,
+            'third-level-row': item.level >= 3,
+            'search-highlight': isSearchMatch(item)
+          }">
             <td class="id-column">{{ item.numbering }}</td>
             <td class="title-column">
               <span class="title-content" :style="{ paddingRight: (item.level * 20) + 'px' }">
                 {{ item.title }}
+                <span v-if="item.pourcentage > 0" class="progress-indicator">
+                  {{ item.pourcentage }}%
+                </span>
               </span>
             </td>
             <td class="actions-column">
@@ -47,17 +90,45 @@
               </div>
             </td>
           </tr>
+          <tr v-if="displayedChapters.length === 0">
+            <td colspan="3" class="no-results">لا توجد نتائج</td>
+          </tr>
         </tbody>
       </table>
     </div>
-    
+
     <div class="table-footer">
       <div class="pagination">
-        <button class="page-btn"><i class="icon">⬅️</i></button>
-        <span class="page-info">صفحة 1 من 1</span>
-        <button class="page-btn"><i class="icon">➡️</i></button>
+        <button class="page-btn" :disabled="currentPage <= 1" @click="changePage(-1)"><i class="icon">⬅️</i></button>
+        <span class="page-info">صفحة {{ currentPage }} من {{ totalPages }}</span>
+        <button class="page-btn" :disabled="currentPage >= totalPages" @click="changePage(1)"><i
+            class="icon">➡️</i></button>
       </div>
       <div class="entries-info">إجمالي: {{ totalChapters }} فصل</div>
+    </div>
+
+    <!-- Modal for adding/editing thematic -->
+    <div class="modal" v-if="showThematicModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>{{ isEditingThematic ? 'تعديل المجال' : 'إضافة مجال جديد' }}</h3>
+          <button class="close-btn" @click="closeThematicModal">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="thematicName">اسم المجال</label>
+            <input type="text" id="thematicName" v-model="newThematic.nom" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="thematicDescription">وصف المجال</label>
+            <textarea id="thematicDescription" v-model="newThematic.description" class="form-control"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="cancel-btn" @click="closeThematicModal">إلغاء</button>
+          <button class="save-btn" @click="saveThematic">حفظ</button>
+        </div>
+      </div>
     </div>
 
     <!-- Modal for adding/editing chapter -->
@@ -68,9 +139,38 @@
           <button class="close-btn" @click="closeModal">✕</button>
         </div>
         <div class="modal-body">
+          <!-- Standard fields for both chapters and sub-chapters -->
           <div class="form-group">
             <label for="chapterTitle">عنوان الفصل</label>
             <input type="text" id="chapterTitle" v-model="currentChapter.title" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="chapterDescription">وصف الفصل</label>
+            <textarea id="chapterDescription" v-model="currentChapter.description" class="form-control"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="chapterImage">الصورة</label>
+            <input type="text" id="chapterImage" v-model="currentChapter.image" class="form-control"
+              placeholder="رابط الصورة">
+          </div>
+
+          <!-- Additional fields for sous-chapters only -->
+          <div v-if="parentId" class="form-group">
+            <label for="videoLink">رابط الفيديو</label>
+            <input type="text" id="videoLink" v-model="currentChapter.lien_video" class="form-control">
+          </div>
+          <div v-if="parentId" class="form-group">
+            <label for="pdfLink">ملف PDF</label>
+            <input type="text" id="pdfLink" v-model="currentChapter.pdf" class="form-control">
+          </div>
+
+          <!-- Thematic selection for main chapters (when adding new) -->
+          <div v-if="!parentId && !isEditing" class="form-group">
+            <label for="thematicSelect">المجال</label>
+            <select id="thematicSelect" v-model="currentChapter.thematicId" class="form-control">
+              <option value="">-- اختر مجال --</option>
+              <option v-for="thematic in thematics" :key="thematic.id" :value="thematic.id">{{ thematic.nom }}</option>
+            </select>
           </div>
         </div>
         <div class="modal-footer">
@@ -79,129 +179,339 @@
         </div>
       </div>
     </div>
+
+    <!-- Error Alert -->
+    <div class="error-alert" v-if="error">
+      <div class="error-content">
+        <span class="error-icon">⚠️</span>
+        <span class="error-message">{{ error }}</span>
+        <button class="error-close" @click="error = null">×</button>
+      </div>
+    </div>
   </div>
 </template>
 
 
 <script>
+import ChapterService from '@/Services/chapitreService';
+import SousChapterService from '@/Services/sousChapitreService';
+import ThematicService from '@/Services/thematicService';
+
 export default {
   data() {
     return {
-      chapters: [
-
-        {
-          id: 1,
-          title: "مقدمة",
-          children: [
-            {
-              id: 101,
-              title: "تعريف عام بالتطبيق",
-              children: [
-                { 
-                  id: 1001, 
-                  title: "الهدف من التطبيق",
-                  children: [
-                    { id: 10001, title: "تسهيل الوصول للمعلومات", children: [] },
-                    { id: 10002, title: "تحسين تجربة المستخدم", children: [] }
-                  ] 
-                }
-              ]
-            }
-          ]
-        }
-      ],
+      chapters: [],
+      thematics: [],
       expandedItems: new Set(),
       showModal: false,
+      showThematicModal: false,
       isEditing: false,
-      currentChapter: { id: null, title: '', children: [] },
-      parentId: null
+      isEditingThematic: false,
+      currentChapter: {
+        id: null,
+        title: '',
+        description: '',
+        image: '',
+        thematicId: '',
+        lien_video: '',
+        pdf: '',
+        pourcentage: 0
+      },
+      newThematic: {
+        id: null,
+        nom: '',
+        description: ''
+      },
+      parentId: null,
+      showSearch: false,
+      searchTerm: '',
+      searchResults: [],
+      itemsPerPage: 10,
+      currentPage: 1,
+      loading: false,
+      error: null,
+      selectedThematicId: ''
     };
   },
   computed: {
     flattenedChapters() {
-      // Create a flattened representation of the chapter hierarchy
       const result = [];
-     
+
       const processChapter = (chapter, parentIndex = '', level = 0) => {
-        // const index = parentIndex ? `${parentIndex}.${result.length - result.lastIndexOf(item => item.level === level) + 1}` : `${result.filter(item => item.level === 0).length + 1}`;
-        
         // Don't include children if parent is not expanded, unless it's top level
         if (level === 0 || this.isParentExpanded(chapter.id)) {
           const numbering = parentIndex ? `${parentIndex}` : `${result.filter(item => item.level === 0).length + 1}`;
-          
+
           result.push({
             id: chapter.id,
             title: chapter.title,
+            description: chapter.description,
+            image: chapter.image,
             numbering: numbering,
             level: level,
-            hasChildren: chapter.children && chapter.children.length > 0
+            pourcentage: chapter.pourcentage || 0,
+            hasChildren: chapter.sousChapitres && chapter.sousChapitres.length > 0
           });
-          
+
           // Process children if parent is expanded
-          if (this.isExpanded(chapter.id) && chapter.children && chapter.children.length > 0) {
-            chapter.children.forEach((child, childIndex) => {
+          if (this.isExpanded(chapter.id) && chapter.sousChapitres && chapter.sousChapitres.length > 0) {
+            chapter.sousChapitres.forEach((child, childIndex) => {
               const childNumbering = `${numbering}.${childIndex + 1}`;
               processChapter(child, childNumbering, level + 1);
             });
           }
         }
       };
-      
+
       // Start with top-level chapters
       this.chapters.forEach(chapter => {
         processChapter(chapter);
       });
-      
+
       return result;
     },
+    displayedChapters() {
+      // If searching, return search results
+      if (this.searchTerm) {
+        return this.searchResults;
+      }
+
+      // Otherwise return paginated flattened chapters
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.flattenedChapters.slice(start, end);
+    },
     totalChapters() {
-      // Function to count all chapters including nested ones
-      const countChapters = (items) => {
-        if (!items || !items.length) return 0;
-        
-        let count = items.length;
-        for (const item of items) {
-          if (item.children && item.children.length) {
-            count += countChapters(item.children);
-          }
-        }
-        return count;
-      };
-      
-      return countChapters(this.chapters);
+      return this.flattenedChapters.length;
+    },
+    totalPages() {
+      if (this.searchTerm) {
+        return Math.max(1, Math.ceil(this.searchResults.length / this.itemsPerPage));
+      }
+      return Math.max(1, Math.ceil(this.flattenedChapters.length / this.itemsPerPage));
+    }
+  },
+  async created() {
+    try {
+      this.loading = true;
+      // First load thematics
+      await this.loadThematics();
+
+      // If thematics were loaded successfully, automatically load the first one
+      if (this.thematics.length > 0) {
+        this.selectedThematicId = this.thematics[0].id;
+        await this.loadChaptersByThematic();
+      }
+    } catch (error) {
+      this.error = "حدث خطأ أثناء تحميل البيانات";
+      console.error("Error loading data:", error);
+    } finally {
+      this.loading = false;
     }
   },
   methods: {
-    isParentExpanded(childId) {
-      // Check if all parent chapters in the hierarchy are expanded
-      const findParent = (chapters, childId, parentIds = []) => {
-        for (const chapter of chapters) {
-          if (chapter.children && chapter.children.length) {
-            const childIndex = chapter.children.findIndex(c => c.id === childId);
-            if (childIndex !== -1) {
-              return [...parentIds, chapter.id];
-            }
-            
-            const result = findParent(chapter.children, childId, [...parentIds, chapter.id]);
-            if (result.length) return result;
+    async loadThematics() {
+      try {
+        this.thematics = await ThematicService.getAllThematics();
+      } catch (error) {
+        console.error("Error loading thematics:", error);
+        this.error = "فشل في تحميل المجالات";
+      }
+    },
+
+    showAddThematicModal() {
+      this.isEditingThematic = false;
+      this.newThematic = { id: null, nom: '', description: '' };
+      this.showThematicModal = true;
+    },
+
+    editThematic(thematicId) {
+      const thematic = this.thematics.find(t => t.id === thematicId);
+      if (!thematic) {
+        this.error = "لم يتم العثور على المجال";
+        return;
+      }
+
+      this.isEditingThematic = true;
+      this.newThematic = { 
+        id: thematic.id,
+        nom: thematic.nom,
+        description: thematic.description 
+      };
+      this.showThematicModal = true;
+    },
+
+    async deleteThematic(thematicId) {
+      if (!confirm('هل أنت متأكد من حذف هذا المجال؟ سيتم حذف جميع الفصول المرتبطة به أيضًا.')) {
+        return;
+      }
+
+      try {
+        this.loading = true;
+        await ThematicService.deleteThematic(thematicId);
+        
+        // Reload thematics
+        await this.loadThematics();
+        
+        // Reset selection if the deleted thematic was selected
+        if (this.selectedThematicId === thematicId) {
+          this.selectedThematicId = this.thematics.length > 0 ? this.thematics[0].id : '';
+          if (this.selectedThematicId) {
+            await this.loadChaptersByThematic();
+          } else {
+            this.chapters = [];
           }
         }
-        return [];
-      };
-      
-      const parentIds = findParent(this.chapters, childId);
-      // Check if all parents are expanded
-      return parentIds.every(id => this.expandedItems.has(id));
-    },
-    hasChildren(chapter) {
-      if (typeof chapter === 'object') {
-        return chapter.hasChildren;
+        
+      } catch (error) {
+        console.error("Error deleting thematic:", error);
+        this.error = "فشل في حذف المجال. قد يكون هناك فصول مرتبطة به.";
+      } finally {
+        this.loading = false;
       }
-      return false;
     },
+
+    closeThematicModal() {
+      this.showThematicModal = false;
+      this.newThematic = { id: null, nom: '', description: '' };
+      this.isEditingThematic = false;
+    },
+
+    async saveThematic() {
+      if (!this.newThematic.nom.trim()) {
+        this.error = "الرجاء إدخال اسم المجال";
+        return;
+      }
+
+      try {
+        this.loading = true;
+        
+        if (this.isEditingThematic) {
+          // Update existing thematic
+          await ThematicService.updateThematic(this.newThematic.id, this.newThematic);
+        } else {
+          // Create new thematic
+          await ThematicService.createThematic(this.newThematic);
+        }
+
+        // Reload thematics
+        await this.loadThematics();
+
+        // If we edited the currently selected thematic, reload chapters to reflect any name changes
+        if (this.isEditingThematic && this.selectedThematicId === this.newThematic.id) {
+          await this.loadChaptersByThematic();
+        }
+
+        // Close modal and reset form
+        this.closeThematicModal();
+      } catch (error) {
+        console.error(this.isEditingThematic ? "Error updating thematic:" : "Error creating thematic:", error);
+        this.error = this.isEditingThematic ? "فشل في تحديث المجال" : "فشل في إنشاء المجال";
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async loadChaptersByThematic() {
+      try {
+        this.loading = true;
+        this.error = null;
+
+        console.log(`Attempting to load chapters for thematic ID: ${this.selectedThematicId}`);
+
+        if (!this.selectedThematicId) {
+          console.log('No thematic selected, skipping chapter load');
+          this.chapters = [];
+          return;
+        }
+
+        // Add explicit log before API call
+        console.log(`Making API request to: /chapitres/get/${this.selectedThematicId}`);
+
+        const chapters = await ChapterService.getChaptersByThematic(this.selectedThematicId);
+
+        console.log('API response received:', chapters);
+
+        // Transform data to match our component structure
+        this.chapters = chapters.map(chapter => ({
+          id: chapter.id,
+          title: chapter.title,
+          description: chapter.description,
+          image: chapter.image,
+          pourcentage: chapter.pourcentage,
+          sousChapitres: chapter.sousChapitres || []
+        }));
+
+        console.log('Transformed chapters:', this.chapters);
+
+        // Reset pagination
+        this.currentPage = 1;
+        // Clear search
+        this.clearSearch();
+      } catch (error) {
+        console.error("Error fetching chapters:", error);
+        // More detailed error message
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.error("Response data:", error.response.data);
+          console.error("Response status:", error.response.status);
+          this.error = `فشل في تحميل الفصول - خطأ ${error.response.status}`;
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.error("No response received:", error.request);
+          this.error = "فشل في تحميل الفصول - لم يتم استلام رد من الخادم";
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.error("Error setting up request:", error.message);
+          this.error = `فشل في تحميل الفصول - ${error.message}`;
+        }
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    isParentExpanded(childId) {
+      // For sub-chapters, check if the parent chapter is expanded
+      const findParentChapterId = (childId) => {
+        for (const chapter of this.chapters) {
+          if (chapter.sousChapitres) {
+            for (const sousChapter of chapter.sousChapitres) {
+              if (sousChapter.id === childId) {
+                return chapter.id;
+              }
+
+              // Check deeper levels if necessary - adjust as needed for your structure
+              if (sousChapter.sousChapitres) {
+                for (const subSousChapter of sousChapter.sousChapitres) {
+                  if (subSousChapter.id === childId) {
+                    return sousChapter.id;
+                  }
+                }
+              }
+            }
+          }
+        }
+        return null;
+      };
+
+      const parentId = findParentChapterId(childId);
+      if (!parentId) return true;
+
+      // Also check if parent's parent is expanded
+      const grandParentId = findParentChapterId(parentId);
+
+      return this.expandedItems.has(parentId) && (!grandParentId || this.expandedItems.has(grandParentId));
+    },
+
+    hasChildren(chapter) {
+      return chapter.hasChildren;
+    },
+
     isExpanded(id) {
       return this.expandedItems.has(id);
     },
+
     toggleExpand(id) {
       if (this.expandedItems.has(id)) {
         this.expandedItems.delete(id);
@@ -209,98 +519,351 @@ export default {
         this.expandedItems.add(id);
       }
     },
-    findChapter(chapterList, id) {
-      if (!chapterList || !chapterList.length) return null;
-      
-      for (const chapter of chapterList) {
-        if (chapter.id === id) return chapter;
-        if (chapter.children && chapter.children.length) {
-          const found = this.findChapter(chapter.children, id);
-          if (found) return found;
+
+    findChapter(id) {
+      return this.chapters.find(c => c.id === id);
+    },
+    findSousChapter(id) {
+      for (const chapter of this.chapters) {
+        if (chapter.sousChapitres) {
+          const found = chapter.sousChapitres.find(sc => sc.id === id);
+          if (found) return { sousChapter: found, parentId: chapter.id };
+
+          for (const sousChapter of chapter.sousChapitres) {
+            if (sousChapter.sousChapitres) {
+              const subFound = sousChapter.sousChapitres.find(ssc => ssc.id === id);
+              if (subFound) return { sousChapter: subFound, parentId: sousChapter.id };
+            }
+          }
         }
       }
       return null;
     },
-    addNewChapter(parentId) {
+
+    async addNewChapter(parentId) {
       this.isEditing = false;
-      this.currentChapter = { id: null, title: '', children: [] };
       this.parentId = parentId;
+      this.showValidationErrors = false;
+
+      if (parentId) {
+        const parentChapter = this.findChapter(parentId);
+        if (!parentChapter) {
+          const result = this.findSousChapter(parentId);
+          if (!result) {
+            this.error = "الفصل الأصلي غير موجود";
+            return;
+          }
+        }
+
+        this.currentChapter = {
+          title: '',
+          description: '',
+          image: '',
+          chapitreId: parentId,
+          lien_video: '',
+          pdf: '',
+          pourcentage: 0
+        };
+
+      } else {
+        this.currentChapter = {
+          title: '',
+          description: '',
+          image: '',
+          thematicId: this.selectedThematicId || '',
+          pourcentage: 0
+        };
+
+      }
+
       this.showModal = true;
     },
-    editChapter(chapter) {
-      // Find the actual chapter object in the data
-      const actualChapter = this.findChapter(this.chapters, chapter.id);
-      if (actualChapter) {
-        this.isEditing = true;
-        this.currentChapter = { ...actualChapter };
-        this.showModal = true;
+
+    async editChapter(chapter) {
+      this.isEditing = true;
+      this.showValidationErrors = false;
+
+      if (chapter.level === 0) {
+        const fullChapter = this.findChapter(chapter.id);
+        if (fullChapter) {
+          const thematicId = this.selectedThematicId; 
+
+          this.currentChapter = {
+            id: chapter.id,
+            title: fullChapter.title,
+            description: fullChapter.description,
+            image: fullChapter.image,
+            thematicId: thematicId, 
+            pourcentage: fullChapter.pourcentage
+          };
+
+          this.parentId = null;
+        } else {
+          this.error = "لم يتم العثور على الفصل";
+          return;
+        }
+      } else {
+        // Editing a sous-chapter
+        const result = this.findSousChapter(chapter.id);
+        if (result) {
+          this.currentChapter = {
+            id: chapter.id,
+            title: result.sousChapter.title,
+            description: result.sousChapter.description,
+            image: result.sousChapter.image,
+            lien_video: result.sousChapter.lien_video || '',
+            pdf: result.sousChapter.pdf || '',
+            chapitreId: result.parentId,
+            pourcentage: result.sousChapter.pourcentage
+          };
+
+          this.parentId = result.parentId;
+        } else {
+          this.error = "لم يتم العثور على الفصل الفرعي";
+          return;
+        }
       }
+
+      this.showModal = true;
     },
-    saveChapter() {
+
+
+    async saveChapter() {
       if (!this.currentChapter.title.trim()) {
-        alert('الرجاء إدخال عنوان الفصل');
+        this.error = "الرجاء إدخال عنوان الفصل";
         return;
       }
 
-      if (this.isEditing) {
-        // Update existing chapter
-        const chapter = this.findChapter(this.chapters, this.currentChapter.id);
-        if (chapter) {
-          chapter.title = this.currentChapter.title;
-        }
-      } else {
-        // Add new chapter
-        const newChapter = {
-          id: Date.now(),
-          title: this.currentChapter.title,
-          children: []
-        };
-        
-        if (this.parentId === null) {
-          this.chapters.push(newChapter);
+      try {
+        this.loading = true;
+
+        if (this.isEditing) {
+          if (this.parentId) {
+            const sousChapterData = {
+              id: this.currentChapter.id,
+              title: this.currentChapter.title,
+              description: this.currentChapter.description,
+              image: this.currentChapter.image,
+              lien_video: this.currentChapter.lien_video,
+              pdf: this.currentChapter.pdf,
+              chapitre: { id: this.parentId }
+            };
+            console.log ("Updating sous-chapter with data:", sousChapterData);
+            await SousChapterService.updateSousChapter(this.currentChapter.id, sousChapterData);
+          } else {
+            const chapterData = {
+              id: this.currentChapter.id,
+              title: this.currentChapter.title,
+              description: this.currentChapter.description,
+              image: this.currentChapter.image,
+              thematic: { id: this.selectedThematicId }
+            };
+
+            await ChapterService.updateChapter(this.currentChapter.id, chapterData);
+          }
         } else {
-          const parent = this.findChapter(this.chapters, this.parentId);
-          if (parent) {
-            if (!parent.children) {
-              parent.children = [];
+          // Create new chapter or sous-chapter
+          if (this.parentId) {
+            // Create a sous-chapter
+            const sousChapterData = {
+              title: this.currentChapter.title,
+              description: this.currentChapter.description,
+              image: this.currentChapter.image,
+              lien_video: this.currentChapter.lien_video,
+              pdf: this.currentChapter.pdf,
+              chapitreId:  this.parentId 
+            };
+
+            await SousChapterService.createSousChapter(sousChapterData);
+          } else {
+            // Create a main chapter
+            if (!this.currentChapter.thematicId) {
+              this.error = "الرجاء اختيار مجال";
+              this.loading = false;
+              return;
             }
-            parent.children.push(newChapter);
-            this.expandedItems.add(this.parentId);
+
+            const chapterData = {
+              title: this.currentChapter.title,
+              description: this.currentChapter.description,
+              image: this.currentChapter.image,
+              thematicId: this.currentChapter.thematicId
+            };
+            console.log ("Creating chapter with data:", chapterData);
+            await ChapterService.createChapter(chapterData);
           }
         }
+
+        // Reload data
+        await this.loadChaptersByThematic();
+        this.closeModal();
+      } catch (error) {
+        console.error("Error saving chapter:", error);
+        this.error = "فشل في حفظ الفصل";
+      } finally {
+        this.loading = false;
       }
-      
-      this.closeModal();
     },
+
     closeModal() {
       this.showModal = false;
-      this.currentChapter = { id: null, title: '', children: [] };
+      this.currentChapter = {
+        id: null,
+        title: '',
+        description: '',
+        image: '',
+        thematicId: '',
+        lien_video: '',
+        pdf: '',
+        pourcentage: 0
+      };
       this.parentId = null;
+      this.isEditing = false;
     },
-    deleteChapter(chapterId) {
-      if (confirm('هل أنت متأكد من حذف هذا الفصل؟')) {
-        this.deleteChapterFromList(this.chapters, chapterId);
+
+    async deleteChapter(chapterId) {
+      if (!confirm('هل أنت متأكد من حذف هذا الفصل؟ سيتم حذف جميع الفصول المرتبطة به أيضًا')) {
+        return;
+      }
+
+      try {
+        this.loading = true;
+
+        // Check if it's a main chapter or sous-chapter
+        const mainChapter = this.findChapter(chapterId);
+
+        if (mainChapter) {
+          // It's a main chapter
+          await ChapterService.deleteChapter(chapterId);
+        } else {
+          // It's a sous-chapter
+          await SousChapterService.deleteSousChapter(chapterId);
+        }
+
+        // Reload data
+        await this.loadChaptersByThematic();
+      } catch (error) {
+        console.error("Error deleting chapter:", error);
+        this.error = "فشل في حذف الفصل";
+      } finally {
+        this.loading = false;
       }
     },
-    deleteChapterFromList(chapterList, id) {
-      if (!chapterList || !chapterList.length) return false;
-      
-      const index = chapterList.findIndex(c => c.id === id);
-      if (index !== -1) {
-        chapterList.splice(index, 1);
-        return true;
+
+    toggleSearch() {
+      this.showSearch = !this.showSearch;
+      if (!this.showSearch) {
+        this.clearSearch();
+      } else {
+        this.$nextTick(() => {
+          // Focus on search input when it appears
+          const searchInput = document.querySelector('.search-input');
+          if (searchInput) {
+            searchInput.focus();
+          }
+        });
       }
-      
-      for (const chapter of chapterList) {
-        if (chapter.children && chapter.children.length) {
-          if (this.deleteChapterFromList(chapter.children, id)) {
-            return true;
+    },
+
+    performSearch() {
+      if (!this.searchTerm.trim()) {
+        this.searchResults = [];
+        this.currentPage = 1;
+        return;
+      }
+
+      // Search in all chapters and sous-chapters
+      const searchTermLower = this.searchTerm.toLowerCase();
+
+      // Generate complete flattened hierarchy for searching
+      const allItems = [];
+
+      const flattenForSearch = (chapters, parentIndex = '', level = 0) => {
+        if (!chapters || !chapters.length) return;
+
+        chapters.forEach((chapter, index) => {
+          const numbering = parentIndex ? `${parentIndex}.${index + 1}` : `${index + 1}`;
+
+          allItems.push({
+            id: chapter.id,
+            title: chapter.title,
+            description: chapter.description || '',
+            numbering: numbering,
+            level: level,
+            pourcentage: chapter.pourcentage || 0,
+            hasChildren: chapter.sousChapitres && chapter.sousChapitres.length > 0
+          });
+
+          if (chapter.sousChapitres && chapter.sousChapitres.length > 0) {
+            flattenForSearch(chapter.sousChapitres, numbering, level + 1);
+          }
+        });
+      };
+
+      flattenForSearch(this.chapters);
+
+      // Filter based on title or description
+      this.searchResults = allItems.filter(item =>
+        item.title.toLowerCase().includes(searchTermLower) ||
+        item.description.toLowerCase().includes(searchTermLower)
+      );
+
+      // Reset pagination when search changes
+      this.currentPage = 1;
+
+      // Expand parents of all search results to ensure visibility
+      this.searchResults.forEach(item => {
+        if (item.level > 0) {
+          // Find all parent IDs for this item
+          let current = item;
+          while (current.level > 0) {
+            const parent = this.findParentByChildId(current.id);
+            if (parent) {
+              this.expandedItems.add(parent.id);
+              current = parent;
+            } else {
+              break;
+            }
+          }
+        }
+      });
+    },
+
+    findParentByChildId(childId) {
+      // Find parent for a given child ID
+      for (const chapter of this.chapters) {
+        if (chapter.sousChapitres) {
+          const found = chapter.sousChapitres.find(sc => sc.id === childId);
+          if (found) return chapter;
+
+          // Look deeper if needed
+          for (const sousChapter of chapter.sousChapitres) {
+            if (sousChapter.sousChapitres) {
+              const subFound = sousChapter.sousChapitres.find(ssc => ssc.id === childId);
+              if (subFound) return sousChapter;
+            }
           }
         }
       }
-      
-      return false;
+      return null;
+    },
 
+    clearSearch() {
+      this.searchTerm = '';
+      this.searchResults = [];
+      this.currentPage = 1;
+    },
+
+    isSearchMatch(item) {
+      if (!this.searchTerm || !this.searchResults.length) return false;
+      return this.searchResults.some(result => result.id === item.id);
+    },
+
+    changePage(direction) {
+      const newPage = this.currentPage + direction;
+      if (newPage >= 1 && newPage <= this.totalPages) {
+        this.currentPage = newPage;
+      }
     }
   }
 };
@@ -391,6 +954,63 @@ h2 {
   background-color: #e1e8f0;
 }
 
+/* Search styling */
+.search-container {
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.search-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e1e8f0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.search-input:focus {
+  border-color: #4361ee;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+}
+
+.clear-search {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.search-info {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #666;
+  text-align: right;
+}
+
+.search-highlight {
+  background-color: #fff9e5 !important;
+}
+
+.no-results {
+  text-align: center;
+  padding: 32px 0;
+  color: #666;
+  font-style: italic;
+}
+
 .table-responsive {
   overflow-x: auto;
   border-radius: 8px;
@@ -402,7 +1022,8 @@ table {
   border-spacing: 0;
 }
 
-th, td {
+th,
+td {
   padding: 14px;
   text-align: right;
 }
@@ -463,7 +1084,9 @@ td {
   justify-content: flex-end;
 }
 
-.view-btn, .edit-btn, .delete-btn {
+.view-btn,
+.edit-btn,
+.delete-btn {
   width: 32px;
   height: 32px;
   border-radius: 6px;
@@ -529,8 +1152,13 @@ td {
   transition: all 0.2s ease;
 }
 
-.page-btn:hover {
+.page-btn:hover:not(:disabled) {
   background-color: #f0f4f8;
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .page-info {
@@ -660,5 +1288,4 @@ td {
 tr.expanded {
   background-color: #f8f9fa;
 }
-
 </style>
