@@ -1,8 +1,14 @@
 package app.chbebiwin.backend.services;
 
-import app.chbebiwin.backend.entities.SousChapitres;
+import app.chbebiwin.backend.entities.Chapitre.Chapitre;
+import app.chbebiwin.backend.entities.SousChapitre.SousChapitreRequest;
+import app.chbebiwin.backend.entities.SousChapitre.SousChapitres;
+import app.chbebiwin.backend.entities.Utilisateur;
 import app.chbebiwin.backend.repositories.ChapitreRepository;
 import app.chbebiwin.backend.repositories.SousChapitreRepository;
+import app.chbebiwin.backend.repositories.UtilisateurRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,48 +16,101 @@ import java.util.List;
 
 @Service
 public class SousChapitreService {
-    @Autowired
-    private SousChapitreRepository sousChapitreRepository;
-    @Autowired
-    private ChapitreRepository chapitreRepository;
+    private static final Logger logger = LoggerFactory.getLogger(SousChapitreService.class);
 
-    public List<SousChapitres> getChapitresById(Long id){
+    private final SousChapitreRepository sousChapitreRepository;
+    private final ChapitreRepository chapitreRepository;
+    private final UtilisateurRepository utilisateurRepository;
+
+    @Autowired
+    public SousChapitreService(SousChapitreRepository sousChapitreRepository,
+                               ChapitreRepository chapitreRepository,
+                               UtilisateurRepository utilisateurRepository) {
+        this.sousChapitreRepository = sousChapitreRepository;
+        this.chapitreRepository = chapitreRepository;
+        this.utilisateurRepository = utilisateurRepository;
+    }
+
+    public List<SousChapitres> getChapitresById(Long id) {
         return sousChapitreRepository.findAllByChapitreId(id);
     }
 
-    public SousChapitres addSousChapitre(SousChapitres sousChapitre){
+    public SousChapitres addSousChapitre(SousChapitreRequest request) {
+        Chapitre chapitre = chapitreRepository.findById(request.getChapitreId())
+                .orElseThrow(() -> new RuntimeException("لم يتم العثور على معرف الفصل"));
+
+        SousChapitres sousChapitre = new SousChapitres();
+        sousChapitre.setTitle(request.getTitle());
+        sousChapitre.setDescription(request.getDescription());
+        sousChapitre.setImage(request.getImage());
+        sousChapitre.setLienVideo(request.getLienVideo());
+        sousChapitre.setPdf(request.getPdf());
+        sousChapitre.setLastPageRead(request.getLastPageRead());
+        sousChapitre.setPourcentage(request.getPourcentage());
+        sousChapitre.setChapitre(chapitre);
+
+        if (request.getUserId() != null) {
+            Utilisateur user = utilisateurRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new RuntimeException("لم يتم العثور على معرف المستخدم"));
+            sousChapitre.setUser(user);
+        }
+
         return sousChapitreRepository.save(sousChapitre);
     }
-    public SousChapitres upadteSousChapitre(Long id,SousChapitres sousChapitre){
-        SousChapitres s = sousChapitreRepository.findById(id).orElseThrow(() ->  new RuntimeException("لم يتم العثور على معرف الفصل الفرعي"));
 
-        s.setDescription(sousChapitre.getDescription());
-        s.setImage(sousChapitre.getImage());
-        s.setPdf(sousChapitre.getPdf());
-        s.setTitle(sousChapitre.getTitle());
-        s.setLienVideo(sousChapitre.getLienVideo());
-        s.setChapitre(chapitreRepository.findById(sousChapitre.getChapitre().getId()).get());
-        s.setLastPageRead(sousChapitre.getLastPageRead());
+    public SousChapitres updateSousChapitre(Long id, SousChapitreRequest request) {
+        SousChapitres sousChapitre = sousChapitreRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("لم يتم العثور على معرف الفصل الفرعي"));
 
-        return sousChapitreRepository.save(s);
+        Chapitre chapitre = chapitreRepository.findById(request.getChapitreId())
+                .orElseThrow(() -> new RuntimeException("لم يتم العثور على معرف الفصل"));
 
+        sousChapitre.setTitle(request.getTitle());
+        sousChapitre.setDescription(request.getDescription());
+        sousChapitre.setImage(request.getImage());
+        sousChapitre.setLienVideo(request.getLienVideo());
+        sousChapitre.setPdf(request.getPdf());
+        sousChapitre.setLastPageRead(request.getLastPageRead());
+        sousChapitre.setChapitre(chapitre);
+
+        // Update user if userId is provided
+        if (request.getUserId() != null) {
+            Utilisateur user = utilisateurRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new RuntimeException("لم يتم العثور على معرف المستخدم"));
+            sousChapitre.setUser(user);
+        }
+
+        return sousChapitreRepository.save(sousChapitre);
     }
 
-    public void deleteSousChapitre(Long id){
+    public void deleteSousChapitre(Long id) {
+        if (!sousChapitreRepository.existsById(id)) {
+            throw new RuntimeException("لم يتم العثور على الفصل الفرعي بالمعرف: " + id);
+        }
         sousChapitreRepository.deleteById(id);
     }
-    public List<SousChapitres> getSousChapitres(){
+
+    public List<SousChapitres> getSousChapitres() {
         return sousChapitreRepository.findAll();
     }
 
-    public SousChapitres setlastReadPage(Long id,SousChapitres sousChapitres) {
-        SousChapitres s = sousChapitreRepository.findById(id).get();
-        s.setLastPageRead(sousChapitres.getLastPageRead());
-        s.setPourcentage(sousChapitres.getPourcentage());
-        return sousChapitreRepository.save(s);
+    public SousChapitres setLastReadPage(Long id, SousChapitreRequest request) {
+        SousChapitres sousChapitre = sousChapitreRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("لم يتم العثور على معرف الفصل الفرعي"));
+
+        sousChapitre.setLastPageRead(request.getLastPageRead());
+        sousChapitre.setPourcentage(request.getPourcentage());
+
+        return sousChapitreRepository.save(sousChapitre);
     }
 
     public SousChapitres getLastReadPage(Long id) {
-        return sousChapitreRepository.findById(id).get();
+        return sousChapitreRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("لم يتم العثور على معرف الفصل الفرعي"));
+    }
+
+    public SousChapitres getSousChapitreById(Long id) {
+        return sousChapitreRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("لم يتم العثور على الفصل الفرعي بالمعرف: " + id));
     }
 }

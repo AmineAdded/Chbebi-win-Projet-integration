@@ -1,12 +1,12 @@
 package app.chbebiwin.backend.controllers;
 
-import app.chbebiwin.backend.entities.SousChapitres;
+import app.chbebiwin.backend.entities.SousChapitre.SousChapitreRequest;
+import app.chbebiwin.backend.entities.SousChapitre.SousChapitres;
 import app.chbebiwin.backend.services.SousChapitreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/SousChapitres")
@@ -20,22 +20,22 @@ public class SousChapitreController {
         return sousChapitreService.getChapitresById(id);
     }
     @PostMapping("/createSousChapitre")
-    public SousChapitres createSousChapitres(@RequestBody SousChapitres sousChapitre){
-        return sousChapitreService.addSousChapitre(sousChapitre);
+    public SousChapitres createSousChapitres(@RequestBody SousChapitreRequest sousChapitreRequest){
+        return sousChapitreService.addSousChapitre(sousChapitreRequest);
     }
 
     @PutMapping("/updateSousChapitre/{id}")
-    public SousChapitres upadteSousChapitre(@PathVariable Long id, @RequestBody SousChapitres sousChapitre){
-        return sousChapitreService.upadteSousChapitre(id, sousChapitre);
+    public SousChapitres upadteSousChapitre(@PathVariable Long id, @RequestBody SousChapitreRequest sousChapitreRequest){
+        return sousChapitreService.updateSousChapitre(id, sousChapitreRequest);
     }
     @DeleteMapping("/delete/{id}")
     public void deleteSousChapitre(@PathVariable Long id){
         sousChapitreService.deleteSousChapitre(id);
     }
     @PutMapping("/setLastPageRead/{id}")
-    public SousChapitres setLastReadPage(@PathVariable Long id, @RequestBody SousChapitres sousChapitres) {
+    public SousChapitres setLastReadPage(@PathVariable Long id, @RequestBody SousChapitreRequest sousChapitresRequest) {
         //Long pageNumber = requestBody.get("pageNumber");
-        return sousChapitreService.setlastReadPage(id, sousChapitres);
+        return sousChapitreService.setLastReadPage(id, sousChapitresRequest);
     }
     @GetMapping("/getLastReadPage/{id}")
     public SousChapitres getLastReadPage(@PathVariable Long id){

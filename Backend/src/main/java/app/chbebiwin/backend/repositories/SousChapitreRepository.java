@@ -1,6 +1,6 @@
 package app.chbebiwin.backend.repositories;
 
-import app.chbebiwin.backend.entities.SousChapitres;
+import app.chbebiwin.backend.entities.SousChapitre.SousChapitres;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

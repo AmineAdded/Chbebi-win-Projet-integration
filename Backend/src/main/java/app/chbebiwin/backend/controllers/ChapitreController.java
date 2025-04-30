@@ -1,6 +1,7 @@
 package app.chbebiwin.backend.controllers;
 
-import app.chbebiwin.backend.entities.Chapitre;
+import app.chbebiwin.backend.entities.Chapitre.Chapitre;
+import app.chbebiwin.backend.entities.Chapitre.ChapitreRequest;
 import app.chbebiwin.backend.services.ChapitreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,16 +20,17 @@ public class ChapitreController {
         return chapitreService.getChapitres(id);
     }
 
-    @PostMapping("/craete")
-    public Chapitre addChapitre(@RequestBody Chapitre chapitre) {
-        return  chapitreService.createChapitre(chapitre);
+    @PostMapping("/create")
+    public Chapitre addChapitre(@RequestBody ChapitreRequest chapitreRequest) {
+        return  chapitreService.createChapitre(chapitreRequest);
     }
-    @PutMapping("/upadte/{id}")
-    public Chapitre updateChapitre(@PathVariable Long id,@RequestBody Chapitre chapitre) {
-        return chapitreService.updateChapitre(id, chapitre);
+    @PutMapping("/update/{id}")
+    public Chapitre updateChapitre(@PathVariable Long id,@RequestBody ChapitreRequest chapitreRequest) {
+        return chapitreService.updateChapitre(id, chapitreRequest);
     }
     @DeleteMapping("/delete/{id}")
     public String deleteChapitre(@PathVariable Long id) {
+
         return chapitreService.deleteChapitre(id);
     }
     @GetMapping("/getProgress/{id}")
