@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class UserSousChapitreProgressRequest {
-    private Long pourcentage;
+    private long pourcentage;
     private Long userId;
-    private Long sousChapitreId;
-    private Long lastPageRead;
+    private long sousChapitreId;
+    private long lastPageRead;
 }

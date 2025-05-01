@@ -6,13 +6,15 @@ import app.chbebiwin.backend.repositories.UserSousChapitreProgressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserSousChapitreProgressService {
     @Autowired
     private UserSousChapitreProgressRepository userSousChapitreProgressRepository;
 
-    public UserSousChapitreProgress getLastReadPage(Long userId, Long sousChapitreId) {
-        return userSousChapitreProgressRepository.findByUtilisateurIdAndSousChapitreId(userId, sousChapitreId);
+    public UserSousChapitreProgress getLastReadPage( UserSousChapitreProgressRequest request) {
+        return userSousChapitreProgressRepository.findByUtilisateurIdAndSousChapitreId(request.getUserId(), request.getSousChapitreId());
     }
     public UserSousChapitreProgress setLastPageRead(UserSousChapitreProgressRequest request) {
         UserSousChapitreProgress u = userSousChapitreProgressRepository.findByUtilisateurIdAndSousChapitreId(request.getUserId(),request.getSousChapitreId());
@@ -21,5 +23,8 @@ public class UserSousChapitreProgressService {
         userSousChapitreProgressRepository.save(u);
 
         return u;
+    }
+    public List<UserSousChapitreProgress> findAllByUserIdAndSousChapitreIds(Long userId, List<Long> sousChapitreIds) {
+        return userSousChapitreProgressRepository.findAllByUtilisateurIdAndSousChapitreIdIn(userId, sousChapitreIds);
     }
 }
