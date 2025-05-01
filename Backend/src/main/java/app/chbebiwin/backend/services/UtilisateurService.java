@@ -2,6 +2,7 @@ package app.chbebiwin.backend.services;
 
 import app.chbebiwin.backend.Exceptions.EmailAlreadyExistsException;
 import app.chbebiwin.backend.entities.Authentification.UpdateProfileRequest;
+import app.chbebiwin.backend.entities.Authentification.UserReturn;
 import app.chbebiwin.backend.entities.Authentification.loginRequest;
 import app.chbebiwin.backend.entities.Authentification.signUpRequest;
 import app.chbebiwin.backend.entities.Personnalite.Personnalite;
@@ -58,7 +59,7 @@ public class UtilisateurService {
         return null;
     }
 
-    public Utilisateur loginUser(loginRequest request) {
+    public UserReturn loginUser(loginRequest request) {
         Utilisateur user = utilisateurRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Email incorrect"));
 
@@ -70,8 +71,16 @@ public class UtilisateurService {
         int tokenInt = 100000 + new Random().nextInt(900000);
         String token = String.valueOf(tokenInt);
         user.setAccessToken(token);
+
+        UserReturn u = new UserReturn();
+        u.setRole(user.getRole());
+        u.setAccessToken(token);
+        u.setNom(user.getNom());
+        u.setEmail(user.getEmail());
+        u.setMdpsCompte(user.getMdpsCompte());
+        u.setPersonnalite_id(user.getPersonnalite().getId());
         utilisateurRepository.save(user);
-        return user;
+        return u;
     }
 
     public Utilisateur registerUser(signUpRequest request) throws EmailAlreadyExistsException {

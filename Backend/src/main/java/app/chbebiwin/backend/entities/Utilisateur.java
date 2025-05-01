@@ -27,7 +27,6 @@ public class Utilisateur {
     private String email;
     @Column(nullable = false)
     private String  mdpsCompte;
-    private String mdpsSuperAdmin;
     private int role =0;
     private String resetToken;
     private LocalDateTime tokenExpiry;
