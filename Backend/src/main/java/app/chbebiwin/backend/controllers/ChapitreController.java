@@ -33,8 +33,10 @@ public class ChapitreController {
 
         return chapitreService.deleteChapitre(id);
     }
-    @GetMapping("/getProgress/{id}")
-   public long getProgress(@PathVariable Long id) {
-        return chapitreService.getProgress(id);
+    @PostMapping("/getProgress")
+    public long getProgress(@RequestBody List<Long> data) {
+        Long userId = data.get(0);
+        Long chapitreId = data.get(1);
+        return chapitreService.getProgress(userId, chapitreId);
     }
 }

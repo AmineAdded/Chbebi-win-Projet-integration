@@ -25,6 +25,6 @@ public class UserSousChapitreProgressController {
     }
     @PostMapping("/get/{userId}")
     public List<UserSousChapitreProgress> getAll(@PathVariable Long userId, @RequestBody List<Long> sousChapitreIds) {
-        return userSousChapitreProgressService.findAllByUserIdAndSousChapitreIds(userId, sousChapitreIds);
+        return userSousChapitreProgressService.createUserSousChapitreProgressIfNotExists(userId, sousChapitreIds);
     }
 }
