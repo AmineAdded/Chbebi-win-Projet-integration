@@ -18,6 +18,7 @@ export const useUserStore = defineStore("user", () => {
         accessToken.value = u.accessToken;
         role.value = u.role;
         nom.value = u.nom;
+        user.value.id = u.id;
         user.value.personnalite_id = u.personnalite_id;
 
         localStorage.setItem("user", JSON.stringify(u));
