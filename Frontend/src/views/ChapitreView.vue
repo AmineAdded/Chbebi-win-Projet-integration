@@ -77,6 +77,7 @@ import SuperChapitre from "@/Services/chapitreService.js";
 import { PDFDocument, rgb } from 'pdf-lib';
 import { saveAs } from 'file-saver';
 import fontkit from '@pdf-lib/fontkit';
+import { useUserStore } from "@/store/User/userStore";
 
 export default {
   name: "ChapitreView",
@@ -145,11 +146,16 @@ export default {
     async loadProgressInfo() {
       for (const chapitre of this.chapitres) {
         try {
+          const store = useUserStore();
+          const id  = store.user.id;
+          
           // Supposons que nous avons une méthode pour obtenir le pourcentage de progression d'un chapitre
-          const progressData = await SuperChapitre.getChapitreProgress(chapitre.id);
+          const progressData = [id, chapitre.id];  // [userId, chapitreId]
+
+          const result = await SuperChapitre.getProgress(progressData);
           console.log("Progression pour le chapitre ${chapitre.id}:", progressData);
-          if (progressData) {
-            chapitre.pourcentage = progressData;
+          if (result) {
+            chapitre.pourcentage = result;
           } else {
             chapitre.pourcentage = 0;
           }
@@ -240,6 +246,7 @@ export default {
   mounted() {
     this.loadAllSuperChapitre(this.thematicId);
     this.loadUserInfo();
+    this.loadProgressInfo()
   }
 };
 </script>

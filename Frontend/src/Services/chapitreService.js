@@ -67,8 +67,8 @@ export default {
    * @param {Number} id - The ID of the chapter
    * @returns {Promise} Promise object representing the progress
    */
-  getProgress(id) {
-    return axios.get(`${API_URL}/chapitres/getProgress/${id}`)
+  getProgress(data) {
+    return axios.post("chapitres/getProgress",data)
       .then(response => response.data)
       .catch(error => {
         console.error('Error fetching chapter progress:', error);

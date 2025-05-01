@@ -315,7 +315,6 @@ export default {
         const idUser = store.user.id;
 
         const lastPageData = await SousChapitre.getLastReadPage({ userId: idUser, sousChapitreId: index });
-        console.log("hhhhh", lastPageData);
 
         if (lastPageData) {
           this.currentPage = lastPageData.lastPageRead || 1;
@@ -345,7 +344,7 @@ export default {
         this.sousChapitres = response;
         const sousChapitreIds = this.sousChapitres.map(sc => sc.id);
         const res = await SousChapitre.getAllUserSouschapitreProgress(idUser, sousChapitreIds);
-        this.sousChapitreProgress = res;
+        this.sousChapitreProgress = res || [];
         // تحقق من أن البيانات مصفوفة
 
         console.log("Sous chapitres:", this.sousChapitres);
