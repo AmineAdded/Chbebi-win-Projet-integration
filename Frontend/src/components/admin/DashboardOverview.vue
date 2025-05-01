@@ -4,70 +4,121 @@
       <h1>مرحباً بك في لوحة القيادة</h1>
       <p class="date-display">{{ currentDate }}</p>
     </div>
-    
+
     <div class="cards-container">
       <div class="stat-card users-card">
         <div class="card-icon">👥</div>
         <div class="card-content">
           <h3>المستخدمين</h3>
-          <div class="stat-number">250</div>
+          <div class="stat-number">{{ stats.users }}</div>
           <div class="stat-label">نشط</div>
           <div class="progress-bar">
-            <div class="progress-value" style="width: 75%"></div>
+            <div class="progress-value" :style="{ width: userProgress + '%' }"></div>
           </div>
         </div>
       </div>
-      
+
       <div class="stat-card chapters-card">
         <div class="card-icon">📖</div>
         <div class="card-content">
           <h3>الفصول</h3>
-          <div class="stat-number">12</div>
+          <div class="stat-number">{{ stats.chapters }}</div>
           <div class="stat-label">منشورة</div>
           <div class="progress-bar">
-            <div class="progress-value" style="width: 60%"></div>
+            <div class="progress-value" :style="{ width: chapterProgress + '%' }"></div>
           </div>
         </div>
       </div>
-      
+
       <div class="stat-card quizzes-card">
         <div class="card-icon">📝</div>
         <div class="card-content">
           <h3>الاختبارات</h3>
-          <div class="stat-number">45</div>
+          <div class="stat-number">{{ stats.tests }}</div>
           <div class="stat-label">متاحة</div>
           <div class="progress-bar">
-            <div class="progress-value" style="width: 65%"></div>
+            <div class="progress-value" :style="{ width: quizProgress + '%' }"></div>
           </div>
         </div>
       </div>
-      
-      <div class="stat-card final-tests-card">
-        <div class="card-icon">🧪</div>
-        <div class="card-content">
-          <h3>الاختبارات النهائية</h3>
-          <div class="stat-number">30</div>
-          <div class="stat-label">مكتملة</div>
-          <div class="progress-bar">
-            <div class="progress-value" style="width: 80%"></div>
-          </div>
-        </div>
-      </div>
-      
+
       <div class="stat-card quotes-card">
         <div class="card-icon">💬</div>
         <div class="card-content">
           <h3>الاقتباسات</h3>
-          <div class="stat-number">100</div>
+          <div class="stat-number">{{ stats.quotes }}</div>
           <div class="stat-label">مشاركة</div>
           <div class="progress-bar">
-            <div class="progress-value" style="width: 40%"></div>
+            <div class="progress-value" :style="{ width: quoteProgress + '%' }"></div>
           </div>
         </div>
       </div>
     </div>
   </section>
 </template>
+
+<script>
+import { ref, onMounted, computed } from "vue";
+import {fetchStatistics} from '@/Services/statiqueService';
+
+export default {
+  setup() {
+    const currentDate = new Date().toLocaleDateString("ar-SA", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    const stats = ref({
+      users: 0,
+      chapters: 0,
+      tests: 0,
+      quotes: 0,
+    });
+
+    const loadStats = async () => {
+      try {
+        const data = await fetchStatistics(); // par défaut "week"
+        stats.value = data;
+      } catch (err) {
+        console.error("Erreur chargement statistiques:", err);
+      }
+    };
+
+    const total = computed(() => {
+      return (
+        stats.value.users +
+        stats.value.chapters +
+        stats.value.tests +
+        stats.value.quotes
+      );
+    });
+
+    const percent = (count) =>
+      total.value === 0 ? 0 : Math.round((count / total.value) * 100);
+
+    const userProgress = computed(() => percent(stats.value.users));
+    const chapterProgress = computed(() => percent(stats.value.chapters));
+    const quizProgress = computed(() => percent(stats.value.tests));
+    const quoteProgress = computed(() => percent(stats.value.quotes));
+
+    onMounted(() => {
+      loadStats();
+    });
+
+    return {
+      currentDate,
+      stats,
+      userProgress,
+      chapterProgress,
+      quizProgress,
+      quoteProgress,
+    };
+  },
+};
+</script>
+
 
 <style scoped>
 .overview {
@@ -188,18 +239,3 @@ h3 {
   }
 }
 </style>
-
-<script>
-export default {
-  data() {
-    return {
-      currentDate: new Date().toLocaleDateString('ar-SA', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      })
-    };
-  }
-};
-</script>

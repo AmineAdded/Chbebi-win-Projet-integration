@@ -108,17 +108,27 @@
       </table>
     </div>
 
-    <!-- Modal de confirmation pour la suppression -->
-    <div v-if="showDeleteModal" class="modal-overlay">
-      <div class="modal">
-        <h3>تأكيد الحذف</h3>
-        <p>هل أنت متأكد من رغبتك في حذف هذا المستخدم؟</p>
-        <div class="modal-actions">
-          <button class="cancel-button" @click="cancelDelete">إلغاء</button>
-          <button class="confirm-button" @click="confirmDelete">تأكيد</button>
+    <Transition name="modal-fade">
+      <div v-if="showDeleteModal" class="modal-overlay" @click.self="cancelDelete">
+        <div class="modal" :class="{ 'rtl-content': true }">
+          <div class="modal-header">
+            <h3>تأكيد الحذف</h3>
+            <button class="close-button" @click="cancelDelete">
+              <span>&times;</span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <p>هل أنت متأكد من رغبتك في حذف هذا المستخدم؟</p>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn cancel-button" @click="cancelDelete">إلغاء</button>
+            <button class="btn confirm-delete-button" @click="confirmDelete">تأكيد الحذف</button>
+          </div>
         </div>
       </div>
-    </div>
+    </Transition>
 
     <!-- Modal de mise à jour de l'utilisateur amélioré avec le champ de rôle au lieu du statut -->
     <Transition name="modal-fade">
@@ -275,6 +285,15 @@ export default {
 </script>
 
 <style scoped>
+/* Ajoutez ces styles pour le bouton de suppression */
+.confirm-delete-button {
+  background-color: #f44336;
+  color: white;
+}
+
+.confirm-delete-button:hover {
+  background-color: #d32f2f;
+}
 /* Réinitialisation et styles de base */
 * {
   box-sizing: border-box;

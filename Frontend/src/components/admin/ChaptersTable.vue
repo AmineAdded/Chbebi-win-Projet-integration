@@ -189,6 +189,22 @@
       </div>
     </div>
   </div>
+  <!-- Modal de confirmation de suppression -->
+  <div class="modal" v-if="showDeleteConfirmation">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>تأكيد الحذف</h3>
+        <button class="close-btn" @click="showDeleteConfirmation = false">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>{{ deleteConfirmationMessage }}</p>
+      </div>
+      <div class="modal-footer">
+        <button class="cancel-btn" @click="showDeleteConfirmation = false">إلغاء</button>
+        <button class="confirm-delete-btn" @click="confirmDeleteAction">تأكيد الحذف</button>
+      </div>
+    </div>
+  </div>
 </template>
 
 
@@ -230,7 +246,11 @@ export default {
       currentPage: 1,
       loading: false,
       error: null,
-      selectedThematicId: ''
+      selectedThematicId: '',
+      showDeleteConfirmation: false,
+      deleteConfirmationMessage: '',
+      itemToDelete: null,
+      deleteType: '' // 'chapter' ou 'thematic'
     };
   },
   computed: {
@@ -339,36 +359,6 @@ export default {
         description: thematic.description 
       };
       this.showThematicModal = true;
-    },
-
-    async deleteThematic(thematicId) {
-      if (!confirm('هل أنت متأكد من حذف هذا المجال؟ سيتم حذف جميع الفصول المرتبطة به أيضًا.')) {
-        return;
-      }
-
-      try {
-        this.loading = true;
-        await ThematicService.deleteThematic(thematicId);
-        
-        // Reload thematics
-        await this.loadThematics();
-        
-        // Reset selection if the deleted thematic was selected
-        if (this.selectedThematicId === thematicId) {
-          this.selectedThematicId = this.thematics.length > 0 ? this.thematics[0].id : '';
-          if (this.selectedThematicId) {
-            await this.loadChaptersByThematic();
-          } else {
-            this.chapters = [];
-          }
-        }
-        
-      } catch (error) {
-        console.error("Error deleting thematic:", error);
-        this.error = "فشل في حذف المجال. قد يكون هناك فصول مرتبطة به.";
-      } finally {
-        this.loading = false;
-      }
     },
 
     closeThematicModal() {
@@ -721,35 +711,6 @@ export default {
       this.isEditing = false;
     },
 
-    async deleteChapter(chapterId) {
-      if (!confirm('هل أنت متأكد من حذف هذا الفصل؟ سيتم حذف جميع الفصول المرتبطة به أيضًا')) {
-        return;
-      }
-
-      try {
-        this.loading = true;
-
-        // Check if it's a main chapter or sous-chapter
-        const mainChapter = this.findChapter(chapterId);
-
-        if (mainChapter) {
-          // It's a main chapter
-          await ChapterService.deleteChapter(chapterId);
-        } else {
-          // It's a sous-chapter
-          await SousChapterService.deleteSousChapter(chapterId);
-        }
-
-        // Reload data
-        await this.loadChaptersByThematic();
-      } catch (error) {
-        console.error("Error deleting chapter:", error);
-        this.error = "فشل في حذف الفصل";
-      } finally {
-        this.loading = false;
-      }
-    },
-
     toggleSearch() {
       this.showSearch = !this.showSearch;
       if (!this.showSearch) {
@@ -864,7 +825,81 @@ export default {
       if (newPage >= 1 && newPage <= this.totalPages) {
         this.currentPage = newPage;
       }
-    }
+    },
+
+    deleteChapter(chapterId) {
+      this.itemToDelete = chapterId;
+      this.deleteType = 'chapter';
+      
+      // Trouver le chapitre pour afficher son titre dans le message
+      const chapter = this.findChapter(chapterId) || this.findSousChapter(chapterId)?.sousChapter;
+      const chapterTitle = chapter?.title || 'هذا الفصل';
+      
+      this.deleteConfirmationMessage = `هل أنت متأكد من حذف ${chapterTitle}؟ سيتم حذف جميع الفصول المرتبطة به أيضًا.`;
+      this.showDeleteConfirmation = true;
+    },
+
+    // Modifier la méthode deleteThematic
+    deleteThematic(thematicId) {
+      this.itemToDelete = thematicId;
+      this.deleteType = 'thematic';
+      
+      const thematic = this.thematics.find(t => t.id === thematicId);
+      const thematicName = thematic?.nom || 'هذا المجال';
+      
+      this.deleteConfirmationMessage = `هل أنت متأكد من حذف ${thematicName}؟ سيتم حذف جميع الفصول المرتبطة به أيضًا.`;
+      this.showDeleteConfirmation = true;
+    },
+
+    // Nouvelle méthode pour confirmer la suppression
+    async confirmDeleteAction() {
+      try {
+        this.loading = true;
+        this.showDeleteConfirmation = false;
+
+        if (this.deleteType === 'chapter') {
+          const chapterId = this.itemToDelete;
+          const mainChapter = this.findChapter(chapterId);
+
+          if (mainChapter) {
+            await ChapterService.deleteChapter(chapterId);
+          } else {
+            await SousChapterService.deleteSousChapter(chapterId);
+          }
+          
+          await this.loadChaptersByThematic();
+        } 
+        else if (this.deleteType === 'thematic') {
+          const thematicId = this.itemToDelete;
+          await ThematicService.deleteThematic(thematicId);
+          
+          await this.loadThematics();
+          
+          if (this.selectedThematicId === thematicId) {
+            this.selectedThematicId = this.thematics.length > 0 ? this.thematics[0].id : '';
+            if (this.selectedThematicId) {
+              await this.loadChaptersByThematic();
+            } else {
+              this.chapters = [];
+            }
+          }
+        }
+
+        this.successMessage = "تم الحذف بنجاح";
+        setTimeout(() => {
+          this.successMessage = null;
+        }, 3000);
+      } catch (error) {
+        console.error("Error deleting:", error);
+        this.error = this.deleteType === 'chapter' 
+          ? "فشل في حذف الفصل. قد يكون هناك فصول فرعية مرتبطة به." 
+          : "فشل في حذف المجال. قد يكون هناك فصول مرتبطة به.";
+      } finally {
+        this.loading = false;
+        this.itemToDelete = null;
+        this.deleteType = '';
+      }
+    },
   }
 };
 </script>
@@ -1287,5 +1322,27 @@ td {
 /* Highlight expanded rows */
 tr.expanded {
   background-color: #f8f9fa;
+}
+
+/* Ajouter ces styles pour le modal de confirmation */
+.confirm-delete-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.confirm-delete-btn:hover {
+  background-color: #c0392b;
+}
+
+.modal-body p {
+  margin: 1rem 0;
+  font-size: 1.1rem;
+  color: #333;
 }
 </style>

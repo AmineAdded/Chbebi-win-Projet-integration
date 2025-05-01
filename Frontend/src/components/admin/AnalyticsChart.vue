@@ -76,7 +76,191 @@
     </div>
   </section>
 </template>
-  
+
+<script>
+import { ref, onMounted, computed, watch } from "vue";
+import Chart from "chart.js/auto";
+import {fetchStatistics} from '@/Services/statiqueService'; // <- service importé
+
+export default {
+  setup() {
+    const progressChart = ref(null);
+    const chartInstance = ref(null);
+    const isRefreshing = ref(false);
+    const showDropdown = ref(false);
+    const selectedPeriod = ref("week");
+    const currentChartType = ref("bar");
+    const activeDatasets = ref([true, true, true, true]);
+
+    const chartData = ref({
+      users: 0,
+      chapters: 0,
+      quizzes: 0,
+      quotes: 0
+    });
+
+    const timePeriods = [
+      { label: "يوم", value: "day" },
+      { label: "أسبوع", value: "week" },
+      { label: "شهر", value: "month" },
+      { label: "سنة", value: "year" }
+    ];
+
+    const legendItems = computed(() => [
+      { label: "المستخدمين", color: "#4361ee" },
+      { label: "الفصول", color: "#3a0ca3" },
+      { label: "الاختبارات", color: "#7209b7" },
+      { label: "الاقتباسات", color: "#f72585" }
+    ]);
+
+    const summaryStats = computed(() => {
+      const data = [
+        chartData.value.users,
+        chartData.value.chapters,
+        chartData.value.quizzes,
+        chartData.value.quotes
+      ];
+      const total = data.reduce((a, b) => a + b, 0);
+      return [
+        { label: "إجمالي النشاط", value: total },
+        {
+          label: "متوسط لكل فصل",
+          value: chartData.value.chapters === 0
+            ? 0
+            : Math.round(chartData.value.users / chartData.value.chapters)
+        },
+        {
+          label: "نسبة الاختبارات",
+          value: total === 0 ? "0%" : Math.round((chartData.value.quizzes / total) * 100) + "%"
+        },
+        {
+          label: "نسبة الاقتباسات",
+          value: total === 0 ? "0%" : Math.round((chartData.value.quotes / total) * 100) + "%"
+        }
+      ];
+    });
+
+    const loadStatistics = async () => {
+      try {
+        const data = await fetchStatistics(selectedPeriod.value); // <- appel au service
+        chartData.value = {
+          users: data.users,
+          chapters: data.chapters,
+          quizzes: data.tests, // backend retourne "tests"
+          quotes: data.quotes
+        };
+        initChart();
+      } catch (error) {
+        console.error("Erreur API:", error);
+      }
+    };
+
+    const initChart = () => {
+      if (chartInstance.value) chartInstance.value.destroy();
+      const ctx = progressChart.value.getContext("2d");
+
+      const createGradient = (color1, color2) => {
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, color1);
+        gradient.addColorStop(1, color2);
+        return gradient;
+      };
+
+      const config = {
+        type: currentChartType.value,
+        data: {
+          labels: ["المستخدمين", "الفصول", "الاختبارات", "الاقتباسات"],
+          datasets: [
+            {
+              label: "نظرة عامة",
+              data: [
+                chartData.value.users,
+                chartData.value.chapters,
+                chartData.value.quizzes,
+                chartData.value.quotes
+              ],
+              backgroundColor: [
+                createGradient("#4361ee", "rgba(67, 97, 238, 0.6)"),
+                createGradient("#3a0ca3", "rgba(58, 12, 163, 0.6)"),
+                createGradient("#7209b7", "rgba(114, 9, 183, 0.6)"),
+                createGradient("#f72585", "rgba(247, 37, 133, 0.6)")
+              ],
+              borderRadius: 8,
+              maxBarThickness: 60
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      };
+
+      chartInstance.value = new Chart(ctx, config);
+    };
+
+    const refreshData = () => {
+      isRefreshing.value = true;
+      setTimeout(async () => {
+        await loadStatistics();
+        isRefreshing.value = false;
+      }, 800);
+    };
+
+    const setTimePeriod = (period) => {
+      selectedPeriod.value = period;
+    };
+
+    const toggleDropdown = () => {
+      showDropdown.value = !showDropdown.value;
+    };
+
+    const changeChartType = (type) => {
+      currentChartType.value = type;
+      initChart();
+    };
+
+    const exportData = () => {
+      showDropdown.value = false;
+      const dataStr = JSON.stringify(chartData.value);
+      alert("تم تصدير البيانات: " + dataStr);
+    };
+
+    onMounted(() => {
+      loadStatistics();
+    });
+
+    watch(selectedPeriod, loadStatistics);
+
+    return {
+      progressChart,
+      isRefreshing,
+      refreshData,
+      showDropdown,
+      toggleDropdown,
+      changeChartType,
+      timePeriods,
+      selectedPeriod,
+      setTimePeriod,
+      exportData,
+      legendItems,
+      activeDatasets,
+      summaryStats
+    };
+  }
+};
+</script>
+
 <style scoped>
 .analytics-card {
   background-color: #ffffff;
@@ -355,402 +539,3 @@ h2 {
   }
 }
 </style>
-
-<script>
-import { ref, onMounted, computed } from "vue";
-import Chart from "chart.js/auto";
-
-export default {
-  props: {
-    initialData: {
-      type: Object,
-      default: () => ({
-        users: 250,
-        chapters: 12,
-        quizzes: 45,
-        quotes: 100
-      })
-    }
-  },
-  
-  setup(props) {
-    const progressChart = ref(null);
-    const chartInstance = ref(null);
-    const isRefreshing = ref(false);
-    const showDropdown = ref(false);
-    const selectedPeriod = ref('week');
-    const currentChartType = ref('bar');
-    const activeDatasets = ref([true, true, true, true]);
-    
-    const timePeriods = [
-      { label: 'يوم', value: 'day' },
-      { label: 'أسبوع', value: 'week' },
-      { label: 'شهر', value: 'month' },
-      { label: 'سنة', value: 'year' }
-    ];
-    
-    const legendItems = computed(() => [
-      { label: 'المستخدمين', color: '#4361ee' },
-      { label: 'الفصول', color: '#3a0ca3' },
-      { label: 'الاختبارات', color: '#7209b7' },
-      { label: 'الاقتباسات', color: '#f72585' }
-    ]);
-    
-    const chartData = {
-      day: [180, 8, 30, 75],
-      week: [250, 12, 45, 100],
-      month: [320, 15, 60, 150],
-      year: [420, 24, 120, 280]
-    };
-    
-    const summaryStats = computed(() => {
-      const data = chartData[selectedPeriod.value];
-      const total = data.reduce((a, b) => a + b, 0);
-      
-      return [
-        { 
-          label: 'إجمالي النشاط',
-          value: total
-        },
-        { 
-          label: 'متوسط لكل فصل',
-          value: Math.round(data[0] / data[1])
-        },
-        { 
-          label: 'نسبة الاختبارات',
-          value: Math.round((data[2] / total) * 100) + '%'
-        },
-        { 
-          label: 'نسبة الاقتباسات',
-          value: Math.round((data[3] / total) * 100) + '%'
-        }
-      ];
-    });
-    
-    const initChart = () => {
-      if (chartInstance.value) {
-        chartInstance.value.destroy();
-      }
-      
-      const ctx = progressChart.value.getContext("2d");
-      
-      // Gradients for different chart types
-      const userGradient = ctx.createLinearGradient(0, 0, 0, 400);
-      userGradient.addColorStop(0, '#4361ee');
-      userGradient.addColorStop(1, 'rgba(67, 97, 238, 0.6)');
-      
-      const chapterGradient = ctx.createLinearGradient(0, 0, 0, 400);
-      chapterGradient.addColorStop(0, '#3a0ca3');
-      chapterGradient.addColorStop(1, 'rgba(58, 12, 163, 0.6)');
-      
-      const quizGradient = ctx.createLinearGradient(0, 0, 0, 400);
-      quizGradient.addColorStop(0, '#7209b7');
-      quizGradient.addColorStop(1, 'rgba(114, 9, 183, 0.6)');
-      
-      const quoteGradient = ctx.createLinearGradient(0, 0, 0, 400);
-      quoteGradient.addColorStop(0, '#f72585');
-      quoteGradient.addColorStop(1, 'rgba(247, 37, 133, 0.6)');
-
-      const datasets = [];
-      let labels = [];
-      
-      if (currentChartType.value === 'bar') {
-        labels = ["المستخدمين", "الفصول", "الاختبارات", "الاقتباسات"];
-        datasets.push({
-          label: "نظرة عامة",
-          data: chartData[selectedPeriod.value],
-          backgroundColor: [
-            userGradient,
-            chapterGradient,
-            quizGradient,
-            quoteGradient
-          ],
-          borderRadius: 8,
-          maxBarThickness: 60
-        });
-      } else if (currentChartType.value === 'line') {
-        labels = getLabelsForPeriod(selectedPeriod.value);
-        
-        // Generate simulated data for each category
-        const userData = generateDataForPeriod(selectedPeriod.value, chartData[selectedPeriod.value][0]);
-        const chapterData = generateDataForPeriod(selectedPeriod.value, chartData[selectedPeriod.value][1]);
-        const quizData = generateDataForPeriod(selectedPeriod.value, chartData[selectedPeriod.value][2]);
-        const quoteData = generateDataForPeriod(selectedPeriod.value, chartData[selectedPeriod.value][3]);
-        
-        datasets.push(
-          {
-            label: "المستخدمين",
-            data: userData,
-            borderColor: '#4361ee',
-            backgroundColor: 'rgba(67, 97, 238, 0.1)',
-            tension: 0.4,
-            fill: true,
-            hidden: !activeDatasets.value[0]
-          },
-          {
-            label: "الفصول",
-            data: chapterData,
-            borderColor: '#3a0ca3',
-            backgroundColor: 'rgba(58, 12, 163, 0.1)',
-            tension: 0.4,
-            fill: true,
-            hidden: !activeDatasets.value[1]
-          },
-          {
-            label: "الاختبارات",
-            data: quizData,
-            borderColor: '#7209b7',
-            backgroundColor: 'rgba(114, 9, 183, 0.1)',
-            tension: 0.4,
-            fill: true,
-            hidden: !activeDatasets.value[2]
-          },
-          {
-            label: "الاقتباسات",
-            data: quoteData,
-            borderColor: '#f72585',
-            backgroundColor: 'rgba(247, 37, 133, 0.1)',
-            tension: 0.4,
-            fill: true,
-            hidden: !activeDatasets.value[3]
-          }
-        );
-      } else if (currentChartType.value === 'doughnut') {
-        labels = ["المستخدمين", "الفصول", "الاختبارات", "الاقتباسات"];
-        datasets.push({
-          data: chartData[selectedPeriod.value],
-          backgroundColor: [
-            '#4361ee',
-            '#3a0ca3',
-            '#7209b7',
-            '#f72585'
-          ],
-          borderColor: 'white',
-          borderWidth: 2,
-          hoverOffset: 10
-        });
-      }
-
-      const config = {
-        type: currentChartType.value,
-        data: {
-          labels: labels,
-          datasets: datasets
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: currentChartType.value === 'doughnut' ? '65%' : undefined,
-          plugins: {
-            legend: {
-              display: currentChartType.value === 'doughnut',
-              position: 'bottom',
-              labels: {
-                usePointStyle: true,
-                padding: 15,
-                font: {
-                  size: 12
-                }
-              }
-            },
-            tooltip: {
-              backgroundColor: 'rgba(255, 255, 255, 0.95)',
-              titleColor: '#2d3748',
-              bodyColor: '#4a5568',
-              padding: 12,
-              titleFont: {
-                size: 14,
-                weight: 'bold'
-              },
-              bodyFont: {
-                size: 13
-              },
-              borderColor: 'rgba(0, 0, 0, 0.05)',
-              borderWidth: 1,
-              displayColors: true,
-              boxWidth: 8,
-              boxHeight: 8,
-              usePointStyle: true,
-              callbacks: {
-                label: function(context) {
-                  let label = context.dataset.label || context.label || '';
-                  if (label) {
-                    label += ': ';
-                  }
-                  label += context.raw || context.formattedValue;
-                  return label;
-                }
-              }
-            }
-          },
-          scales: currentChartType.value !== 'doughnut' ? {
-            y: {
-              beginAtZero: true,
-              grid: {
-                display: true,
-                color: 'rgba(0, 0, 0, 0.03)',
-                drawBorder: false
-              },
-              ticks: {
-                font: {
-                  size: 12
-                },
-                color: '#718096',
-                padding: 8
-              },
-              border: {
-                display: false
-              }
-            },
-            x: {
-              grid: {
-                display: false,
-                drawBorder: false
-              },
-              ticks: {
-                font: {
-                  size: 12
-                },
-                color: '#718096',
-                padding: 8
-              },
-              border: {
-                display: false
-              }
-            }
-          } : {},
-          animation: {
-            duration: 1000,
-            easing: 'easeOutQuart'
-          },
-          elements: {
-            point: {
-              radius: 3,
-              hoverRadius: 5
-            }
-          }
-        }
-      };
-
-      chartInstance.value = new Chart(ctx, config);
-    };
-    
-    // Generate labels based on time period
-    const getLabelsForPeriod = (period) => {
-      switch(period) {
-        case 'day':
-          return ['8:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'];
-        case 'week':
-          return ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-        case 'month':
-          return ['1', '5', '10', '15', '20', '25', '30'];
-        case 'year':
-          return ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-      }
-    };
-    
-    // Generate simulated data for line charts
-    const generateDataForPeriod = (period, maxValue) => {
-      const numberOfPoints = getLabelsForPeriod(period).length;
-      let result = [];
-      let lastValue = maxValue * 0.7; // Start at 70% of max
-      
-      // Create somewhat realistic looking data with trends
-      for (let i = 0; i < numberOfPoints; i++) {
-        // Change between -10% and +15% from last value
-        const change = lastValue * (Math.random() * 0.25 - 0.1);
-        lastValue = Math.max(0, Math.min(maxValue, lastValue + change));
-        result.push(Math.round(lastValue));
-      }
-      
-      return result;
-    };
-    
-    const toggleDropdown = () => {
-      showDropdown.value = !showDropdown.value;
-    };
-    
-    const refreshData = () => {
-      isRefreshing.value = true;
-      
-      // Simulate data refresh delay
-      setTimeout(() => {
-        // Slightly modify data to simulate update
-        Object.keys(chartData).forEach(key => {
-          chartData[key] = chartData[key].map(val => 
-            Math.floor(val * (1 + (Math.random() * 0.15 - 0.05)))
-          );
-        });
-        
-        // Update chart
-        initChart();
-        
-        isRefreshing.value = false;
-      }, 800);
-    };
-    
-    const changeChartType = (type) => {
-      currentChartType.value = type;
-      showDropdown.value = false;
-      initChart();
-    };
-    
-    const setTimePeriod = (period) => {
-      selectedPeriod.value = period;
-      initChart();
-    };
-    
-    const toggleDataset = (index) => {
-      if (currentChartType.value === 'line') {
-        activeDatasets.value[index] = !activeDatasets.value[index];
-        if (chartInstance.value) {
-          chartInstance.value.data.datasets[index].hidden = !activeDatasets.value[index];
-          chartInstance.value.update();
-        }
-      }
-    };
-    
-    const exportData = () => {
-      showDropdown.value = false;
-      // Simulation of data export
-      const dataStr = JSON.stringify(chartData[selectedPeriod.value]);
-      alert('تم تصدير البيانات: ' + dataStr);
-    };
-    
-    onMounted(() => {
-      chartData.week = [
-        props.initialData.users || 250, 
-        props.initialData.chapters || 12, 
-        props.initialData.quizzes || 45, 
-        props.initialData.quotes || 100
-      ];
-      
-      initChart();
-      
-      // Close dropdown when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!e.target.closest('.dropdown') && showDropdown.value) {
-          showDropdown.value = false;
-        }
-      });
-    });
-    
-    return {
-      progressChart,
-      isRefreshing,
-      refreshData,
-      showDropdown,
-      toggleDropdown,
-      changeChartType,
-      timePeriods,
-      selectedPeriod,
-      setTimePeriod,
-      exportData,
-      legendItems,
-      activeDatasets,
-      toggleDataset,
-      summaryStats
-    };
-  }
-};
-</script>

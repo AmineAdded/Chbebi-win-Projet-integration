@@ -1,3 +1,4 @@
+
 <template>
   <div class="tests-dashboard">
     <div class="dashboard-header">
@@ -18,11 +19,11 @@
       <p>جاري تحميل البيانات...</p>
     </div>
 
-    <div class="tests-list" v-else-if="filteredTests.length > 0">
-      <div class="test-container" v-for="(test, index) in filteredTests" :key="test.id">
+    <div class="tests-list" v-else-if="paginatedTests.length > 0">
+      <div class="test-container" v-for="(test, index) in paginatedTests" :key="test.id">
         <div class="test-card">
           <div class="test-info">
-            <div class="test-number">{{ index + 1 }}</div>
+            <div class="test-number">{{ startIndex + index + 1 }}</div>
             <div class="test-details">
               <h3 class="test-title">{{ test.title || test.nom_test }}</h3>
               <div class="test-meta">
@@ -102,7 +103,52 @@
       </div>
     </div>
 
-    <div class="empty-state" v-else>
+    <!-- Pagination Controls -->
+    <div class="pagination-controls" v-if="filteredTests.length > itemsPerPage">
+      <button 
+        class="pagination-button" 
+        :disabled="currentPage === 1" 
+        @click="goToPage(currentPage - 1)"
+      >
+        <span class="pagination-icon">◀</span>
+        السابق
+      </button>
+      
+      <div class="page-numbers">
+        <button 
+          v-for="page in displayedPageNumbers" 
+          :key="page" 
+          class="page-number"
+          :class="{ active: currentPage === page }"
+          @click="goToPage(page)"
+        >
+          {{ page }}
+        </button>
+      </div>
+      
+      <button 
+        class="pagination-button" 
+        :disabled="currentPage === totalPages" 
+        @click="goToPage(currentPage + 1)"
+      >
+        التالي
+        <span class="pagination-icon">▶</span>
+      </button>
+      
+      <div class="pagination-info">
+        <select v-model="itemsPerPage" @change="handleItemsPerPageChange" class="items-per-page">
+          <option :value="5">5 لكل صفحة</option>
+          <option :value="10">10 لكل صفحة</option>
+          <option :value="15">15 لكل صفحة</option>
+          <option :value="20">20 لكل صفحة</option>
+        </select>
+        <span class="page-indicator">
+          صفحة {{ currentPage }} من {{ totalPages }}
+        </span>
+      </div>
+    </div>
+
+    <div class="empty-state" v-else-if="filteredTests.length === 0">
       <div class="empty-icon">📝</div>
       <h3>لا توجد اختبارات</h3>
       <p>لم يتم العثور على أي اختبارات. يرجى إضافة اختبار جديد أو تغيير معايير البحث.</p>
@@ -247,7 +293,11 @@ export default {
       error: null,
       successMessage: null,
       showPersonnaliteAlert: false,
-      personnaliteTestBackup: null
+      personnaliteTestBackup: null,
+      // Pagination variables
+      currentPage: 1,
+      itemsPerPage: 5,
+      maxPageButtons: 5
     };
   },
   computed: {
@@ -259,6 +309,40 @@ export default {
         (test.title ? test.title.toLowerCase().includes(query) : false) ||
         (test.nomTest ? test.nomTest.toLowerCase().includes(query) : false)
       );
+    },
+    // Pagination computed properties
+    totalPages() {
+      return Math.ceil(this.filteredTests.length / this.itemsPerPage);
+    },
+    paginatedTests() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.filteredTests.slice(start, end);
+    },
+    startIndex() {
+      return (this.currentPage - 1) * this.itemsPerPage;
+    },
+    displayedPageNumbers() {
+      const halfButtons = Math.floor(this.maxPageButtons / 2);
+      let startPage = Math.max(1, this.currentPage - halfButtons);
+      let endPage = Math.min(this.totalPages, startPage + this.maxPageButtons - 1);
+      
+      // Adjust if we're near the end
+      if (endPage - startPage + 1 < this.maxPageButtons) {
+        startPage = Math.max(1, endPage - this.maxPageButtons + 1);
+      }
+      
+      const pages = [];
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+      return pages;
+    }
+  },
+  watch: {
+    searchQuery() {
+      // Reset to first page when search query changes
+      this.currentPage = 1;
     }
   },
   async created() {
@@ -270,6 +354,35 @@ export default {
     }
   },
   methods: {
+    showSuccessMessage(message) {
+      this.successMessage = message;
+      // Disparaît après 3 secondes (3000 millisecondes)
+      setTimeout(() => {
+        this.successMessage = null;
+      }, 3000);
+    },
+    // Pagination methods
+    goToPage(page) {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+        // Close any open questions when changing pages
+        this.tests.forEach(test => {
+          if (test.showQuestions) {
+            test.showQuestions = false;
+            if (test.questions) {
+              test.questions.forEach(q => {
+                q.showResponses = false;
+              });
+            }
+          }
+        });
+      }
+    },
+    handleItemsPerPageChange() {
+      // Reset to first page when items per page changes
+      this.currentPage = 1;
+    },
+    
     async fetchTests() {
       try {
         this.loading = true;
@@ -370,7 +483,7 @@ export default {
 
     async handleUtilisableChange() {
       if (
-        this.currentTest.type_test.toLowerCase() === "personnalite" &&
+        this.currentTest.type_test.toLowerCase() === "personnalité" &&
         this.currentTest.utilisable
       ) {
         this.personnaliteTestBackup = { ...this.currentTest };
@@ -392,7 +505,7 @@ export default {
       try {
         this.loading = true;
 
-        const personnaliteTests = await TestService.getTestsByType("personnalite");
+        const personnaliteTests = await TestService.getTestsByType("personnalité");
         console.log("Found personnalité tests:", personnaliteTests);
 
         for (const test of personnaliteTests) {
@@ -421,7 +534,7 @@ export default {
 
         this.showPersonnaliteAlert = false;
         this.personnaliteTestBackup = null;
-        this.successMessage = "تم تحديث حالة الاختبارات بنجاح";
+        this.showSuccessMessage("تم تحديث حالة الاختبارات بنجاح");
       } catch (error) {
         console.error("Error updating personnalité tests:", error);
         this.error = "فشل في تحديث حالة الاختبارات";
@@ -437,7 +550,12 @@ export default {
         this.tests = this.tests.filter(t => t.id !== id);
         this.showDeleteModal = false;
         this.testToDelete = null;
-        this.successMessage = "تم حذف الاختبار بنجاح";
+        this.showSuccessMessage("تم حذف الاختبار بنجاح");
+        
+        // Handle pagination updates after deletion
+        if (this.paginatedTests.length === 0 && this.currentPage > 1) {
+          this.currentPage = this.currentPage - 1;
+        }
       } catch (error) {
         console.error("Error deleting test:", error);
         this.error = "فشل في حذف الاختبار";
@@ -556,7 +674,7 @@ export default {
             };
           }
 
-          this.successMessage = "تم تحديث الاختبار بنجاح";
+          this.showSuccessMessage("تم تحديث الاختبار بنجاح");
         } else {
           savedTest = await TestService.createTest(testData);
 
@@ -570,7 +688,10 @@ export default {
             utilisable: savedTest.utilisable === 1
           });
 
-          this.successMessage = "تم إنشاء الاختبار بنجاح";
+          this.showSuccessMessage("تم إنشاء الاختبار بنجاح");
+          
+          // Go to the last page if we added a new test
+          this.currentPage = this.totalPages;
         }
 
         if (testData.typeTest.toLowerCase() === "personnalité") {
@@ -646,7 +767,7 @@ export default {
 
         await this.fetchTests();
         this.cancelQuestionEdit();
-        this.successMessage = this.editingQuestion ? "تم تحديث السؤال بنجاح" : "تم إضافة السؤال بنجاح";
+        this.showSuccessMessage(this.editingQuestion ? "تم تحديث السؤال بنجاح" : "تم إضافة السؤال بنجاح");
       } catch (error) {
         console.error("Error saving question:", error);
         this.error = "فشل في حفظ السؤال: " + (error.response?.data || error.message);
@@ -669,6 +790,7 @@ export default {
         ]
       };
     },
+    
 
     async deleteQuestion(test, question) {
       try {
@@ -682,7 +804,7 @@ export default {
           );
         }
 
-        this.successMessage = "تم حذف السؤال بنجاح";
+        this.showSuccessMessage("تم حذف السؤال بنجاح");
       } catch (error) {
         console.error("Error deleting question:", error);
         this.error = "فشل في حذف السؤال";
@@ -1256,6 +1378,279 @@ export default {
 
   .question-actions {
     justify-content: flex-end;
+  }
+}
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 20px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.cancel-button {
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #333;
+}
+
+.confirm-button {
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+}
+
+.confirm-button.delete {
+  background-color: #f44336;
+}
+
+.modal-warning {
+  color: #f44336;
+  font-size: 13px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #555;
+}
+
+.form-group input[type="text"] {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin: 0;
+}
+
+.test-modal .form-group:last-child {
+  margin-bottom: 0;
+}
+
+.question-modal .responses-section {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.question-modal .responses-section h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #444;
+}
+
+.error-alert, .success-alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  max-width: 400px;
+  z-index: 1100;
+  animation: slideIn 0.3s ease-out;
+}
+
+.error-alert {
+  background-color: #ffebee;
+  border-left: 4px solid #f44336;
+}
+
+.success-alert {
+  background-color: #e8f5e9;
+  border-left: 4px solid #4CAF50;
+}
+
+.error-content, .success-content {
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.error-icon, .success-icon {
+  font-size: 20px;
+}
+
+.error-message, .success-message {
+  flex: 1;
+}
+
+.error-close, .success-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #777;
+  padding: 0;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Pagination styles */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 30px;
+  padding: 15px 0;
+  border-top: 1px solid #eee;
+}
+
+.pagination-button {
+  padding: 8px 15px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pagination-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 5px;
+}
+
+.page-number {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: white;
+}
+
+.page-number.active {
+  background-color: #4CAF50;
+  color: white;
+  border-color: #4CAF50;
+}
+
+.pagination-info {
+  margin-right: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.items-per-page {
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.page-indicator {
+  color: #777;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .actions-group {
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .search-container {
+    width: 100%;
+  }
+  
+  .search-input {
+    width: 100%;
+  }
+  
+  .add-button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .test-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .test-questions-container {
+    margin: 0;
+    align-self: flex-start;
+  }
+  
+  .test-actions {
+    align-self: stretch;
+    justify-content: space-between;
+  }
+  
+  .pagination-controls {
+    flex-wrap: wrap;
+  }
+  
+  .pagination-info {
+    width: 100%;
+    justify-content: center;
+    margin-right: 0;
+    margin-top: 10px;
   }
 }
 </style>
