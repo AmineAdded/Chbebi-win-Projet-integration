@@ -67,14 +67,23 @@ export default {
    * @param {Object} sousChapter - The sub-chapter with lastPageRead property
    * @returns {Promise} Promise object representing the updated sub-chapter
    */
-  setLastReadPage( sousChapter) {
-    return axios.put(`${API_URL}/SousChapitres/setLastPageRead`, sousChapter)
-      .then(response => response.data)
-      .catch(error => {
-        console.error('Error setting last read page:', error);
-        throw error;
-      }); 
-  },
+  // setLastReadPage( sousChapter) {
+  //   return axios.put(`${API_URL}/SousChapitres/setLastPageRead`, sousChapter)
+  //     .then(response => response.data)
+  //     .catch(error => {
+  //       console.error('Error setting last read page:', error);
+  //       throw error;
+  //     }); 
+  // },
+  async setLastReadPage(sousChapter) {
+    try {
+        const response = await axios.put(`UserSousChapitreProgress/setLastPageRead`, sousChapter);
+        return response.data;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+},
   
   /**
    * Get the last read page for a sub-chapter

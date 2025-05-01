@@ -133,6 +133,7 @@ import Footer from "@/components/Footer.vue";
 import UpdateAccount from "@/components/UpdateAccount.vue";
 import SousChapitre from "@/Services/sousChapitreService.js";
 import PdfEmbed from "vue-pdf-embed";
+import { useUserStore } from "@/store/User/userStore";
 
 export default {
   name: "SousChapitreView",
@@ -296,10 +297,13 @@ export default {
         if (!this.currentPage || !this.totalPages || this.totalPages === 0) {
           return 0;
         }
-        const pourcentage = Math.min(Math.round((this.currentPage / this.totalPages) * 100), 100);
-        const res = await SousChapitre.setLastReadPage({LastPageRead:this.currentPage, pourcentage:pourcentage});
-        
         const index = this.sousChapitres.findIndex(sc => sc.id === this.selectedChapter.id);
+        const store = useUserStore();
+        const idUser = store.user.id;
+        const pourcentage = Math.min(Math.round((this.currentPage / this.totalPages) * 100), 100);
+        const res = await SousChapitre.setLastReadPage({userId:idUser,SousChapitreId:index,LastPageRead:this.currentPage, pourcentage:pourcentage});
+        
+        
         if (index !== -1) {
           this.sousChapitres[index].lastPageRead = this.currentPage;
           this.sousChapitres[index].pourcentage = pourcentage;
@@ -336,7 +340,11 @@ export default {
       }
 
       try {
-        const lastPageData = await SousChapitre.getLastReadPage(chapter.id);
+        const index = this.sousChapitres.findIndex(sc => sc.id === this.selectedChapter.id);
+        const store = useUserStore();
+        const idUser = store.user.id;
+
+        const lastPageData = await SousChapitre.getLastReadPage({userId:idUser,SousChapitreId:index});
         
         if (lastPageData) {
           this.currentPage = lastPageData.lastPageRead || 1;
