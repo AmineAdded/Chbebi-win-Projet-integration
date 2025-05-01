@@ -237,7 +237,14 @@ export default {
     };
   },
   mounted() {
-    this.getAllThematics();
+    thematicService.getAllThematics()
+    .then(data => {
+      console.log('Thématiques récupérées:', data);
+      this.thematics = data;
+    })
+    .catch(error => {
+      console.error('Erreur lors du chargement des thématiques:', error);
+    });
   },
   computed: {
     showMenu() {

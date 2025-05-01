@@ -11,7 +11,7 @@ export default {
    */
   getSousChaptersByChapterId(chapterId) {
     return axios.get(`${API_URL}/SousChapitres/getByChapitreId/${chapterId}`)
-      .then(response => response.data)
+      .then(response => response.data) // تأكد من بنية البيانات
       .catch(error => {
         console.error('Error fetching sub-chapters:', error);
         throw error;

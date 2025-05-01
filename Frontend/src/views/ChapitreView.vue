@@ -130,16 +130,16 @@ export default {
     
     // Charger tous les chapitres
     async loadAllSuperChapitre(thematicId) {
-      try {
-        const response = await SuperChapitre.getAllSuperChapitre(thematicId);
-        this.chapitres = response.data;
-        
-        // Après avoir chargé les chapitres, on charge leurs pourcentages de progression
-        await this.loadProgressInfo();
-      } catch (error) {
-        console.error("Erreur lors de la récupération des chapitres :", error);
-      }
-    },
+  try {
+    const response = await SuperChapitre.getChaptersByThematic(thematicId);
+    // تأكد أن البيانات مصفوفة
+    this.chapitres = Array.isArray(response) ? response : [];
+    await this.loadProgressInfo();
+  } catch (error) {
+    console.error("Erreur lors de la récupération des chapitres :", error);
+    this.chapitres = []; // تعيين مصفوفة فارغة كإحتياطي
+  }
+},
     
     // Nouvelle méthode pour charger la progression de chaque chapitre
     async loadProgressInfo() {
