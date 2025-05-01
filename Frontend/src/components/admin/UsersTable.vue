@@ -2,10 +2,6 @@
   <section class="user-management">
     <div class="header">
       <h2>👥 إدارة المستخدمين</h2>
-      <button class="add-button">
-        <span class="icon">+</span>
-        <span>إضافة مستخدم</span>
-      </button>
     </div>
 
     <div class="table-container">
