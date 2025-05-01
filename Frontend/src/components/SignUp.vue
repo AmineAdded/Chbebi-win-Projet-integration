@@ -438,6 +438,7 @@ export default {
 .login-btn,
 .signup-btn {
   min-width: 160px;
+  margin-left: 10px;
   padding: 12px 24px;
   font-weight: 700;
   font-size: 1rem;
