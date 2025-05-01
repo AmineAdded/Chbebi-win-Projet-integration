@@ -3,7 +3,6 @@ package app.chbebiwin.backend.services;
 import app.chbebiwin.backend.entities.Chapitre.Chapitre;
 import app.chbebiwin.backend.entities.SousChapitre.SousChapitreRequest;
 import app.chbebiwin.backend.entities.SousChapitre.SousChapitres;
-import app.chbebiwin.backend.entities.Utilisateur;
 import app.chbebiwin.backend.repositories.ChapitreRepository;
 import app.chbebiwin.backend.repositories.SousChapitreRepository;
 import app.chbebiwin.backend.repositories.UtilisateurRepository;
@@ -20,7 +19,6 @@ public class SousChapitreService {
 
     private final SousChapitreRepository sousChapitreRepository;
     private final ChapitreRepository chapitreRepository;
-    private final UtilisateurRepository utilisateurRepository;
 
     @Autowired
     public SousChapitreService(SousChapitreRepository sousChapitreRepository,
@@ -28,7 +26,6 @@ public class SousChapitreService {
                                UtilisateurRepository utilisateurRepository) {
         this.sousChapitreRepository = sousChapitreRepository;
         this.chapitreRepository = chapitreRepository;
-        this.utilisateurRepository = utilisateurRepository;
     }
 
     public List<SousChapitres> getChapitresById(Long id) {
@@ -45,15 +42,8 @@ public class SousChapitreService {
         sousChapitre.setImage(request.getImage());
         sousChapitre.setLienVideo(request.getLienVideo());
         sousChapitre.setPdf(request.getPdf());
-        sousChapitre.setLastPageRead(request.getLastPageRead());
-        sousChapitre.setPourcentage(request.getPourcentage());
         sousChapitre.setChapitre(chapitre);
 
-        if (request.getUserId() != null) {
-            Utilisateur user = utilisateurRepository.findById(request.getUserId())
-                    .orElseThrow(() -> new RuntimeException("لم يتم العثور على معرف المستخدم"));
-            sousChapitre.setUser(user);
-        }
 
         return sousChapitreRepository.save(sousChapitre);
     }
@@ -70,15 +60,7 @@ public class SousChapitreService {
         sousChapitre.setImage(request.getImage());
         sousChapitre.setLienVideo(request.getLienVideo());
         sousChapitre.setPdf(request.getPdf());
-        sousChapitre.setLastPageRead(request.getLastPageRead());
         sousChapitre.setChapitre(chapitre);
-
-        // Update user if userId is provided
-        if (request.getUserId() != null) {
-            Utilisateur user = utilisateurRepository.findById(request.getUserId())
-                    .orElseThrow(() -> new RuntimeException("لم يتم العثور على معرف المستخدم"));
-            sousChapitre.setUser(user);
-        }
 
         return sousChapitreRepository.save(sousChapitre);
     }
@@ -94,21 +76,18 @@ public class SousChapitreService {
         return sousChapitreRepository.findAll();
     }
 
-    public SousChapitres setLastReadPage(Long id, SousChapitreRequest request) {
-        SousChapitres sousChapitre = sousChapitreRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("لم يتم العثور على معرف الفصل الفرعي"));
+//    public SousChapitres setLastReadPage(Long id, SousChapitreRequest request) {
+//        SousChapitres sousChapitre = sousChapitreRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("لم يتم العثور على معرف الفصل الفرعي"));
+//
+//        return sousChapitreRepository.save(sousChapitre);
+//    }
 
-        sousChapitre.setLastPageRead(request.getLastPageRead());
-        sousChapitre.setPourcentage(request.getPourcentage());
-
-        return sousChapitreRepository.save(sousChapitre);
-    }
-
-    public SousChapitres getLastReadPage(Long id) {
-        return sousChapitreRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("لم يتم العثور على معرف الفصل الفرعي"));
-    }
-
+//    public SousChapitres getLastReadPage(Long id) {
+//        return sousChapitreRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("لم يتم العثور على معرف الفصل الفرعي"));
+//    }
+//
     public SousChapitres getSousChapitreById(Long id) {
         return sousChapitreRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("لم يتم العثور على الفصل الفرعي بالمعرف: " + id));

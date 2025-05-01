@@ -32,14 +32,14 @@ public class SousChapitreController {
     public void deleteSousChapitre(@PathVariable Long id){
         sousChapitreService.deleteSousChapitre(id);
     }
-    @PutMapping("/setLastPageRead/{id}")
-    public SousChapitres setLastReadPage(@PathVariable Long id, @RequestBody SousChapitreRequest sousChapitresRequest) {
-        //Long pageNumber = requestBody.get("pageNumber");
-        return sousChapitreService.setLastReadPage(id, sousChapitresRequest);
-    }
-    @GetMapping("/getLastReadPage/{id}")
-    public SousChapitres getLastReadPage(@PathVariable Long id){
-        return sousChapitreService.getLastReadPage(id);
-    }
+//    @PutMapping("/setLastPageRead/{id}")
+//    public SousChapitres setLastReadPage(@PathVariable Long id, @RequestBody SousChapitreRequest sousChapitresRequest) {
+//        //Long pageNumber = requestBody.get("pageNumber");
+//        return sousChapitreService.setLastReadPage(id, sousChapitresRequest);
+//    }
+//    @GetMapping("/getLastReadPage/{id}")
+//    public SousChapitres getLastReadPage(@PathVariable Long id){
+//        return sousChapitreService.getLastReadPage(id);
+//    }
 
 }

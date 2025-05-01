@@ -1,12 +1,15 @@
 package app.chbebiwin.backend.entities.SousChapitre;
 
 import app.chbebiwin.backend.entities.Chapitre.Chapitre;
+import app.chbebiwin.backend.entities.UserSousChapitreProgress;
 import app.chbebiwin.backend.entities.Utilisateur;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Entity
@@ -16,10 +19,6 @@ public class SousChapitres {
     @Id
     @GeneratedValue
     private Long id;
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    @JsonIgnore
-    private Utilisateur user;
 
     @ManyToOne
     @JoinColumn(name = "chapitreId")
@@ -28,11 +27,11 @@ public class SousChapitres {
 
     private String lienVideo;
     private String pdf;
-    private Long lastPageRead;
     private String image;
     private String title;
     private String description;
-    @Column(nullable = false)
-    private long pourcentage = 0;
+
+    @OneToMany(mappedBy = "sousChapitre", cascade = CascadeType.ALL)
+    private List<UserSousChapitreProgress> userProgresses;
 
 }
