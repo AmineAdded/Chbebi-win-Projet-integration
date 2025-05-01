@@ -11,17 +11,40 @@
 
   <div v-else class="dashboard-container">
     <!-- Sidebar -->
-    <div class="nav"><Sidebar @showUpdateAccount="show = true" /></div>
-    
+    <div class="nav">
+      <Sidebar
+        @showUpdateAccount="show = true"
+        @menuSelected="scrollToSection"
+      />
+    </div>
 
     <!-- Main Content -->
     <div class="main-content">
       <DashboardOverview />
 
-      <ChaptersTable /><br><br>
-      <TestsTable /><br><br>
-      <QuotesTable /><br><br>
-      <AnalyticsChart /><br>
+      <div ref="chaptersSection">
+        <ChaptersTable />
+      </div>
+      <br /><br />
+
+      <div ref="quizzesSection">
+        <QuizzesTable />
+      </div>
+      <br /><br />
+
+      <div ref="testsSection">
+        <TestsTable />
+      </div>
+      <br /><br />
+
+      <div ref="quotesSection">
+        <QuotesTable />
+      </div>
+      <br /><br />
+
+      <div ref="analyticsSection">
+        <AnalyticsChart />
+      </div>
 
       <v-dialog v-model="show" persistent width="auto">
         <UpdateAccount @closeUpdateAccount="show = false" />
@@ -47,12 +70,11 @@ export default {
     TestsTable,
     QuotesTable,
     AnalyticsChart,
-    UpdateAccount
-
+    UpdateAccount,
   },
   name: "AdminView",
-  data(){
-    return{
+  data() {
+    return {
       isLoading: true,
       show: false,
     };
@@ -61,6 +83,22 @@ export default {
     setTimeout(() => {
       this.isLoading = false;
     }, 1000);
+  },
+  methods: {
+    scrollToSection(section) {
+      const sectionRefMap = {
+        classes: "chaptersSection",
+        surveys: "quizzesSection",
+        tests: "testsSection",
+        quotes: "quotesSection",
+        analytics: "analyticsSection",
+      };
+
+      const refName = sectionRefMap[section];
+      if (refName && this.$refs[refName]) {
+        this.$refs[refName].scrollIntoView({ behavior: "smooth" });
+      }
+    },
   },
 };
 </script>
@@ -136,7 +174,7 @@ export default {
   padding: 20px;
   background: white;
   margin-right: 250px;
-    width: calc(100% - 270px);
+  width: calc(100% - 270px);
 }
 
 @media (max-width: 900px) {

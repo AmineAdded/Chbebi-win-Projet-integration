@@ -7,7 +7,7 @@
         <span>إضافة مستخدم</span>
       </button>
     </div>
-    
+
     <div class="table-container">
       <table>
         <thead>
@@ -15,6 +15,7 @@
             <th>#</th>
             <th>الاسم</th>
             <th>البريد الإلكتروني</th>
+            <th>الدور</th>
             <th>الحالة</th>
             <th>الإجراءات</th>
           </tr>
@@ -24,28 +25,84 @@
             <td>{{ user.id }}</td>
             <td>
               <div class="user-info">
-                <div class="avatar">{{ user.name.charAt(0) }}</div>
-                <span>{{ user.name }}</span>
+                <div class="avatar">
+                  {{ user.nom ? user.nom.charAt(0) : "?" }}
+                </div>
+                {{ user.nom }}
               </div>
             </td>
             <td>{{ user.email }}</td>
             <td>
-              <span :class="['status', user.status === 'active' ? 'status-active' : 'status-inactive']">
-                {{ user.status === 'active' ? 'نشط' : 'غير نشط' }}
+              {{
+                user.role === 0
+                  ? "مستخدم"
+                  : user.role === 1
+                  ? "مشرف"
+                  : user.role === 2
+                  ? "مدير"
+                  : "غير معروف"
+              }}
+            </td>
+
+            <td>
+              <span
+                :class="[
+                  'status',
+                  user.id === currentUserId
+                    ? 'status-active'
+                    : 'status-inactive',
+                ]"
+              >
+                {{ user.id === currentUserId ? "نشط" : "غير نشط" }}
               </span>
             </td>
+
             <td>
               <div class="actions">
-                <button class="icon-button edit" @click="editUser(user.id)" title="تعديل">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                <button
+                  class="icon-button edit"
+                  @click="editUser(user.id)"
+                  title="تعديل"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                    ></path>
+                    <path
+                      d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                    ></path>
                   </svg>
                 </button>
-                <button class="icon-button delete" @click="showDeleteConfirm(user.id)" title="حذف">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <button
+                  class="icon-button delete"
+                  @click="showDeleteConfirm(user.id)"
+                  title="حذف"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
                     <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <path
+                      d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                    ></path>
                   </svg>
                 </button>
               </div>
@@ -66,27 +123,128 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal de mise à jour de l'utilisateur amélioré avec le champ de rôle au lieu du statut -->
+    <Transition name="modal-fade">
+      <div v-if="showEditModal" class="modal-overlay" @click.self="cancelEdit">
+        <div class="modal" :class="{ 'rtl-content': true }">
+          <div class="modal-header">
+            <h3>تحديث معلومات المستخدم</h3>
+            <button class="close-button" @click="cancelEdit">
+              <span>&times;</span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="userName">الاسم</label>
+              <input
+                id="userName"
+                v-model="editedUser.nom"
+                type="text"
+                placeholder="أدخل الاسم"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="userEmail">البريد الإلكتروني</label>
+              <input
+                id="userEmail"
+                v-model="editedUser.email"
+                type="email"
+                placeholder="أدخل البريد الإلكتروني"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="userRole">الدور</label>
+              <select
+                id="userRole"
+                v-model="editedUser.role"
+                class="role-select"
+              >
+                <option value="" disabled>اختر الدور</option>
+                <option :value="0">مستخدم</option>
+                <option :value="1">مشرف</option>
+                <option :value="2">مدير</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn cancel-button" @click="cancelEdit">إلغاء</button>
+            <button class="btn confirm-button" @click="confirmEdit">
+              تأكيد التحديث
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </section>
 </template>
 
 <script>
+import userService from "@/Services/userService";
+
 export default {
   data() {
     return {
-      users: [
-        { id: 1, name: "أحمد", email: "ahmed@example.com", status: "active" },
-        { id: 2, name: "سارة", email: "sarah@example.com", status: "active" },
-        { id: 3, name: "محمد", email: "mohamed@example.com", status: "inactive" },
-      ],
+      currentUserId: null,
+      users: [],
       showDeleteModal: false,
-      userToDelete: null
+      showEditModal: false,
+      userToDelete: null,
+      editedUser: {
+        id: null,
+        nom: "",
+        email: "",
+        role: "", // Changement de status à role
+      },
     };
   },
   methods: {
-    editUser(id) {
-      // Logique pour éditer l'utilisateur
-      console.log(`Éditer l'utilisateur ${id}`);
+    fetchUsers() {
+      userService
+        .getAllUsers()
+        .then((response) => {
+          this.users = response.data;
+        })
+        .catch((error) => {
+          console.error(
+            "Erreur lors de la récupération des utilisateurs :",
+            error
+          );
+        });
     },
+    editUser(id) {
+      const user = this.users.find((u) => u.id === id);
+      if (user) {
+        this.editedUser = { ...user }; // clone de l'objet
+        // Convertir le rôle en chaîne pour le select
+        this.editedUser.role = this.editedUser.role.toString();
+        this.showEditModal = true;
+      }
+    },
+    cancelEdit() {
+      this.showEditModal = false;
+      this.editedUser = { id: null, nom: "", email: "", role: "" }; // Réinitialisation avec role au lieu de status
+    },
+    confirmEdit() {
+      const userToUpdate = { ...this.editedUser };
+      userToUpdate.role = parseInt(userToUpdate.role);
+      console.log(userToUpdate)
+
+      userService
+        .updateUser(userToUpdate.id, userToUpdate)
+        .then(() => {
+          this.fetchUsers();
+          this.cancelEdit();
+        })
+        .catch((error) => {
+          console.error("Erreur lors de la mise à jour :", error);
+        });
+    },
+
     showDeleteConfirm(id) {
       this.userToDelete = id;
       this.showDeleteModal = true;
@@ -97,12 +255,26 @@ export default {
     },
     confirmDelete() {
       if (this.userToDelete) {
-        this.users = this.users.filter(user => user.id !== this.userToDelete);
-        this.showDeleteModal = false;
-        this.userToDelete = null;
+        userService
+          .deleteUser(this.userToDelete)
+          .then(() => {
+            this.fetchUsers(); // mise à jour après suppression
+            this.cancelDelete();
+          })
+          .catch((error) => {
+            console.error("Erreur lors de la suppression :", error);
+          });
       }
+    },
+  },
+  mounted() {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      this.currentUserId = user.id;
     }
-  }
+    this.fetchUsers();
+  },
 };
 </script>
 
@@ -110,7 +282,8 @@ export default {
 /* Réinitialisation et styles de base */
 * {
   box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
 .user-management {
@@ -273,27 +446,51 @@ tbody tr:hover {
   background-color: #fecaca;
 }
 
-/* Modal de confirmation */
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  width: 100%;
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: 1000;
 }
 
 .modal {
-  background-color: white;
-  border-radius: 12px;
+  background-color: #fff;
+  border-radius: 8px;
   padding: 24px;
-  width: 400px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
   text-align: right;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.rtl-content {
+  direction: rtl;
+}
+
+.modal-header {
+  background-color: #f8f9fa;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #3c4257;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .modal h3 {
@@ -301,14 +498,78 @@ tbody tr:hover {
   color: #333;
 }
 
-.modal-actions {
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.close-button:hover {
+  color: #333;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #454545;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #409eff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+}
+
+/* Style spécifique pour le select de rôle */
+.role-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23555' d='M6 8.5l-4-4 1-1 3 3 3-3 1 1z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 12px center;
+  padding-left: 30px;
+}
+
+.rtl-content .role-select {
+  background-position: right 12px center;
+  padding-right: 30px;
+  padding-left: 12px;
+}
+
+.modal-actions,
+.modal-footer {
+  padding: 16px 20px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #eaeaea;
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 24px;
 }
 
-.cancel-button {
+.cancel-button,
+.btn.cancel {
   background-color: #f3f4f6;
   color: #4b5563;
   border: none;
@@ -318,8 +579,9 @@ tbody tr:hover {
   font-weight: 500;
 }
 
-.confirm-button {
-  background-color: #ef4444;
+.confirm-button,
+.btn.confirm {
+  background-color: #409eff;
   color: white;
   border: none;
   border-radius: 8px;
@@ -328,12 +590,30 @@ tbody tr:hover {
   font-weight: 500;
 }
 
-.cancel-button:hover {
+.cancel-button:hover,
+.btn.cancel:hover {
   background-color: #e5e7eb;
 }
 
-.confirm-button:hover {
-  background-color: #dc2626;
+.confirm-button:hover,
+.btn.confirm:hover {
+  background-color: #66b1ff;
+}
+
+/* Transition d'animation pour le modal */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-to,
+.modal-fade-leave-from {
+  opacity: 1;
 }
 
 /* Responsive design */
@@ -341,20 +621,37 @@ tbody tr:hover {
   .user-management {
     padding: 16px;
   }
-  
+
   .header {
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
   }
-  
+
   table {
     display: block;
     overflow-x: auto;
   }
-  
-  th, td {
+
+  th,
+  td {
     padding: 10px 12px;
+  }
+
+  .modal {
+    width: 95%;
+  }
+
+  .modal-actions,
+  .modal-footer {
+    flex-direction: column;
+  }
+
+  .cancel-button,
+  .confirm-button,
+  .btn {
+    width: 100%;
+    margin-bottom: 8px;
   }
 }
 </style>
