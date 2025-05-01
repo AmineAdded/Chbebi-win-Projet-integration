@@ -370,7 +370,7 @@ export default {
 
     async handleUtilisableChange() {
       if (
-        this.currentTest.type_test.toLowerCase() === "personnalité" &&
+        this.currentTest.type_test.toLowerCase() === "personnalite" &&
         this.currentTest.utilisable
       ) {
         this.personnaliteTestBackup = { ...this.currentTest };
@@ -392,7 +392,7 @@ export default {
       try {
         this.loading = true;
 
-        const personnaliteTests = await TestService.getTestsByType("personnalité");
+        const personnaliteTests = await TestService.getTestsByType("personnalite");
         console.log("Found personnalité tests:", personnaliteTests);
 
         for (const test of personnaliteTests) {

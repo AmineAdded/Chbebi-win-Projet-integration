@@ -158,23 +158,7 @@
         snackbarIcon: 'mdi-alert-circle',
         text: "",
         criters:[],
-        traits: [
-          {
-            title: "التحليل المنطقي",
-            description: "القدرة على تحليل المواقف بشكل موضوعي وعقلاني",
-            icon: "mdi-brain"
-          },
-          {
-            title: "حل المشكلات",
-            description: "مهارة عالية في إيجاد حلول منطقية للتحديات المعقدة",
-            icon: "mdi-puzzle"
-          },
-          {
-            title: "الدقة والتنظيم",
-            description: "الاهتمام بالتفاصيل والعمل بطريقة منهجية ومنظمة",
-            icon: "mdi-arrange-send-backward"
-          }
-        ]
+        
       };
     },
     created() {

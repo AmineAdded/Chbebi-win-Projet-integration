@@ -1,6 +1,7 @@
 package app.chbebiwin.backend.controllers;
 
 import app.chbebiwin.backend.entities.Authentification.UpdateProfileRequest;
+import app.chbebiwin.backend.entities.Authentification.UserReturn;
 import app.chbebiwin.backend.entities.Authentification.loginRequest;
 import app.chbebiwin.backend.entities.Authentification.signUpRequest;
 import app.chbebiwin.backend.entities.Personnalite.PersonnaliteRequest;
@@ -35,7 +36,7 @@ public class UtilisateurController {
     }
 
     @PostMapping("/login")
-    public Utilisateur login (@RequestBody loginRequest request){
+    public UserReturn login (@RequestBody loginRequest request){
         return utilisateurService.loginUser(request);
     }
 

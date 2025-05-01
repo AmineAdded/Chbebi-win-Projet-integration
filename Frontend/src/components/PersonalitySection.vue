@@ -8,24 +8,57 @@
         <div class="text-section">
           <div class="personality-type"><br>
             <span class="label">النوع الشخصي  </span>
-            <span class="thinker">Thinker</span>
+            <span class="thinker">{{ Personnalite.nomEnglish }}</span>
           </div>
           <p class="description">
-            المفكر هو شخص يعتمد على المنطق والتحليل في اتخاذ القرارات، ما يتأثر بالعواطف. يجب أن يكون دقيق
-            ويحل المشاكل بطريقة منظمة، لكن في المواقف العاطفية أو مع الناس الحساسين، يلقى صعوبة في التفاعل.
+            {{ Personnalite.contenu }}
           </p>
           <a href="DetailsPersonnality" class="more-link">أعرف أكثر</a>
         </div>
         <div class="image-section">
-          <img :src="require('@/assets/thinker-icon.png')" alt="Thinker Icon" class="thinker-icon" />        </div>
+          <img v-if="imageUrl" :src="imageUrl" alt="Thinker Icon" class="thinker-icon" />
+          <img v-else src="@/assets/thinker-icon.png" alt="Default Icon" class="thinker-icon" />
+        </div>
       </div>
     </v-card>
   </v-container>
 </template>
 
 <script>
+import PersonnaliteService from "@/Services/PersonnaliteService";
+import { useUserStore } from '../store/User/userStore.js';
+
 export default {
   name: "Personality",
+  data() {
+    return {
+      Personnalite: {},
+      imageUrl: null
+    }
+  },
+  mounted() {
+    this.getPersonnalite();
+  },
+  methods: {
+    async getPersonnalite() {
+      try {
+        const store = useUserStore();
+        const personnalite_id = store.user.personnalite_id;
+        
+        this.Personnalite = await PersonnaliteService.getAllCriteres(personnalite_id);
+      
+        if (this.Personnalite && this.Personnalite.image) {
+          try {
+            this.imageUrl = require(`@/assets/${this.Personnalite.image}`);
+          } catch (error) {
+            console.error("Image introuvable:", error);
+          }
+        }
+      } catch (err) {
+        console.log("Erreur lors du chargement de la personnalité:", err);
+      }
+    }
+  }
 };
 </script>
 

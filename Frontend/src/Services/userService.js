@@ -28,9 +28,8 @@ export default {
       };
 
       localStorage.setItem("email", mail);
-
       store.login(filteredUser);
-      store.setPersonnalite(personnalite_id);
+      
 
       return response.data;
     } catch (error) {

@@ -25,7 +25,7 @@ export default {
     async setPersonnalite(type, id) {
         try {
             const store = useUserStore();
-            await Axios.post("api/Utilisateur/setPersonnalite", {
+            await Axios.post("Utilisateur/setPersonnalite", {
                 type: type,
                 id: id
             });

@@ -53,7 +53,7 @@ public class TestService {
     public Test getTestUtilisable() {
         List<Test> tests = testRepository.findAll();
         for (Test test : tests) {
-            if ("personnalité".equals(test.getTypeTest()) && test.getUtilisable() == 1) {
+            if ("personnalite".equals(test.getTypeTest()) && test.getUtilisable() == 1) {
                 return test;
             }
         }
