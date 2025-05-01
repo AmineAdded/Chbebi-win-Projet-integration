@@ -1,8 +1,7 @@
 package app.chbebiwin.backend.entities.SousChapitre;
 
 import app.chbebiwin.backend.entities.Chapitre.Chapitre;
-import app.chbebiwin.backend.entities.UserSousChapitreProgress;
-import app.chbebiwin.backend.entities.Utilisateur;
+import app.chbebiwin.backend.entities.UserSousChapitreProgress.UserSousChapitreProgress;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

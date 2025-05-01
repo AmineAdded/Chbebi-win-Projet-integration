@@ -1,6 +1,7 @@
 package app.chbebiwin.backend.services;
 
-import app.chbebiwin.backend.entities.UserSousChapitreProgress;
+import app.chbebiwin.backend.entities.UserSousChapitreProgress.UserSousChapitreProgress;
+import app.chbebiwin.backend.entities.UserSousChapitreProgress.UserSousChapitreProgressRequest;
 import app.chbebiwin.backend.repositories.UserSousChapitreProgressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,12 @@ public class UserSousChapitreProgressService {
     public UserSousChapitreProgress getLastReadPage(Long userId, Long sousChapitreId) {
         return userSousChapitreProgressRepository.findByUtilisateurIdAndSousChapitreId(userId, sousChapitreId);
     }
-//    public UserSousChapitreProgress setLastPageRead(Long userId, Long sousChapitreId) {
-//
-//    }
+    public UserSousChapitreProgress setLastPageRead(UserSousChapitreProgressRequest request) {
+        UserSousChapitreProgress u = userSousChapitreProgressRepository.findByUtilisateurIdAndSousChapitreId(request.getUserId(),request.getSousChapitreId());
+        u.setLastPageRead(request.getLastPageRead());
+        u.setPourcentage(request.getPourcentage());
+        userSousChapitreProgressRepository.save(u);
+
+        return u;
+    }
 }
