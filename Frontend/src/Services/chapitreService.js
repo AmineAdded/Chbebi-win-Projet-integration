@@ -11,7 +11,7 @@ export default {
    */
   getChaptersByThematic(thematicId) {
     return axios.get(`${API_URL}/chapitres/get/${thematicId}`)
-      .then(response => response.data)
+      .then(response => response.data) // تأكد من بنية البيانات من الخادم
       .catch(error => {
         console.error('Error fetching chapters:', error);
         throw error;

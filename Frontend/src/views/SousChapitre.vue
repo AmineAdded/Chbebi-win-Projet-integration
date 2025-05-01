@@ -9,8 +9,7 @@
     <v-container fluid>
       <h2 class="section-title">الفصول الخاصة بموضوع: {{ chapitreTitle }}</h2>
       <div class="cards-wrapper">
-        <div v-for="(sousChapitre, index) in sousChapitres" :key="index" class="card"
-          @click="openModal(sousChapitre)">
+        <div v-for="(sousChapitre, index) in sousChapitres" :key="index" class="card" @click="openModal(sousChapitre)">
           <img :src="require('@/assets/' + sousChapitre.image)" alt="chapitre" class="card-img" />
           <div class="card-body">
             <h3 class="card-title">{{ sousChapitre.title }}</h3>
@@ -19,16 +18,10 @@
               <!-- Barre de progression améliorée -->
               <div class="progress-stats">
                 <div class="stats-label">إحصائيات التقدم</div>
-                <v-progress-linear
-                  v-if="sousChapitre.lastPageRead && sousChapitre.totalPages"
-                  :color="getProgressColor(sousChapitre.pourcentage || 0)"
-                  :buffer-value="100"
-                  buffer-color="light-blue-lighten-4"
-                  :model-value="sousChapitre.pourcentage || 0"
-                  height="14"
-                  rounded
-                  striped
-                >
+                <v-progress-linear v-if="sousChapitre.lastPageRead && sousChapitre.totalPages"
+                  :color="getProgressColor(sousChapitre.pourcentage || 0)" :buffer-value="100"
+                  buffer-color="light-blue-lighten-4" :model-value="sousChapitre.pourcentage || 0" height="14" rounded
+                  striped>
                   <template v-slot:default="{ value }">
                     <strong class="progress-value">{{ value }}%</strong>
                   </template>
@@ -38,24 +31,15 @@
                     {{ sousChapitre.pourcentage || 0 }}% مكتمل
                     <v-tooltip location="bottom">
                       <template v-slot:activator="{ props }">
-                        <v-icon
-                          small
-                          color="primary"
-                          v-bind="props"
-                          class="info-icon"
-                        >
+                        <v-icon small color="primary" v-bind="props" class="info-icon">
                           mdi-information
                         </v-icon>
                       </template>
                       <span>صفحة {{ sousChapitre.lastPageRead || 0 }} من {{ sousChapitre.totalPages || '?' }}</span>
                     </v-tooltip>
                   </div>
-                  <v-chip
-                    :color="getStatusColor(sousChapitre.pourcentage || 0)"
-                    size="small"
-                    class="status-chip"
-                    variant="outlined"
-                  >
+                  <v-chip :color="getStatusColor(sousChapitre.pourcentage || 0)" size="small" class="status-chip"
+                    variant="outlined">
                     {{ getStatusText(sousChapitre.pourcentage || 0) }}
                   </v-chip>
                 </div>
@@ -68,12 +52,9 @@
 
     <!-- Préchargement invisible des PDFs -->
     <div style="display: none; width: 0; height: 0; overflow: hidden;">
-      <div v-for="(sousChapitre, index) in sousChapitres" :key="'loader-'+index">
-        <PdfEmbed 
-          v-if="sousChapitre.pdf" 
-          :source="`/PDFs/${sousChapitre.pdf}`" 
-          @loaded="pdf => onPdfPreloaded(pdf, sousChapitre.id)" 
-        />
+      <div v-for="(sousChapitre, index) in sousChapitres" :key="'loader-' + index">
+        <PdfEmbed v-if="sousChapitre.pdf" :source="`/PDFs/${sousChapitre.pdf}`"
+          @loaded="pdf => onPdfPreloaded(pdf, sousChapitre.id)" />
       </div>
     </div>
 
@@ -181,14 +162,14 @@ export default {
           : '';
       return `https://www.youtube.com/embed/${videoId}`;
     },
-    
+
     // Nouvelle méthode pour précharger les PDFs
     onPdfPreloaded(pdf, sousChapitreId) {
       if (pdf && pdf.numPages) {
         // Mettre en cache le nombre de pages
         this.pdfCache[sousChapitreId] = pdf.numPages;
         this.savePdfCacheToStorage();
-        
+
         // Mise à jour du nombre total de pages pour ce sous-chapitre
         const index = this.sousChapitres.findIndex(sc => sc.id === sousChapitreId);
         if (index !== -1) {
@@ -196,7 +177,7 @@ export default {
         }
       }
     },
-    
+
     // Méthodes pour stocker le cache des pages PDF
     savePdfCacheToStorage() {
       try {
@@ -205,7 +186,7 @@ export default {
         console.error("Erreur lors de la sauvegarde du cache PDF:", err);
       }
     },
-    
+
     loadPdfCacheFromStorage() {
       try {
         const cachedData = localStorage.getItem('pdf_pages_cache');
@@ -217,7 +198,7 @@ export default {
         this.pdfCache = {};
       }
     },
-    
+
     async saveCurrentPage() {
       try {
         if (!this.currentPage || !this.totalPages || this.totalPages === 0) {
@@ -225,7 +206,7 @@ export default {
         }
         const pourcentage = Math.min(Math.round((this.currentPage / this.totalPages) * 100), 100);
         const res = await SousChapitre.setLastReadPage(this.selectedChapter.id, this.currentPage, pourcentage);
-        
+
         // Mettre à jour également la progression dans la liste des sous-chapitres
         const index = this.sousChapitres.findIndex(sc => sc.id === this.selectedChapter.id);
         if (index !== -1) {
@@ -240,21 +221,21 @@ export default {
         console.error("Erreur lors de la sauvegarde du numéro de page:", err);
       }
     },
-    
+
     prevPage() {
       if (this.currentPage > 1) {
         this.currentPage--;
         this.saveCurrentPage();
       }
     },
-    
+
     nextPage() {
       if (this.currentPage < this.totalPages) {
         this.currentPage++;
         this.saveCurrentPage();
       }
     },
-    
+
     async openModal(chapter) {
       this.selectedChapter = chapter;
       this.showModal = true;
@@ -266,7 +247,7 @@ export default {
 
       try {
         const lastPageData = await SousChapitre.getLastReadPage(chapter.id);
-        
+
         if (lastPageData) {
           this.currentPage = lastPageData.lastPageRead || 1;
           // S'assurer que le chapitre sélectionné a aussi la bonne valeur de pourcentage
@@ -282,15 +263,15 @@ export default {
         this.currentPage = 1;
       }
     },
-    
+
     onPdfLoaded(pdf) {
       if (pdf && pdf.numPages) {
         this.totalPages = pdf.numPages;
-        
+
         // Mettre à jour le cache
         this.pdfCache[this.selectedChapter.id] = pdf.numPages;
         this.savePdfCacheToStorage();
-        
+
         // Mettre à jour totalPages dans la liste des sous-chapitres
         const index = this.sousChapitres.findIndex(sc => sc.id === this.selectedChapter.id);
         if (index !== -1) {
@@ -298,26 +279,28 @@ export default {
         }
       }
     },
-    
+
     async loadAllSousChapitre(chapitreId) {
       try {
-        const response = await SousChapitre.getAllSousChapitre(chapitreId);
-        this.sousChapitres = response.data;
-        
-        // Application des données de cache pour les totalPages
+        const response = await SousChapitre.getSousChaptersByChapterId(chapitreId);
+        // تحقق من أن البيانات مصفوفة
+        this.sousChapitres = Array.isArray(response) ? response : [];
+        console.log("Sous chapitres:", this.sousChapitres);
+
+        // تطبيق بيانات الذاكرة المؤقتة
         this.sousChapitres.forEach(sc => {
           if (this.pdfCache[sc.id]) {
             sc.totalPages = this.pdfCache[sc.id];
           }
         });
-        
-        // Charger les informations de progression pour chaque sous-chapitre
+
         await this.loadProgressInfo();
       } catch (error) {
         console.error("Erreur lors de la récupération des sous chapitres :", error);
+        this.sousChapitres = []; // إعادة تعيين مصفوفة فارغة عند الخطأ
       }
     },
-    
+
     async loadProgressInfo() {
       // Charger les informations de progression pour chaque sous-chapitre
       for (const sousChapitre of this.sousChapitres) {
