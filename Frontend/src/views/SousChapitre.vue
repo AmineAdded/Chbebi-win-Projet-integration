@@ -297,7 +297,7 @@ export default {
           return 0;
         }
         const pourcentage = Math.min(Math.round((this.currentPage / this.totalPages) * 100), 100);
-        const res = await SousChapitre.setLastReadPage(this.selectedChapter.id, this.currentPage, pourcentage);
+        const res = await SousChapitre.setLastReadPage({LastPageRead:this.currentPage, pourcentage:pourcentage});
         
         const index = this.sousChapitres.findIndex(sc => sc.id === this.selectedChapter.id);
         if (index !== -1) {

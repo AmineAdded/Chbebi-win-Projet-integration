@@ -67,13 +67,13 @@ export default {
    * @param {Object} sousChapter - The sub-chapter with lastPageRead property
    * @returns {Promise} Promise object representing the updated sub-chapter
    */
-  setLastReadPage(id, sousChapter) {
-    return axios.put(`${API_URL}/SousChapitres/setLastPageRead/${id}`, sousChapter)
+  setLastReadPage( sousChapter) {
+    return axios.put(`${API_URL}/SousChapitres/setLastPageRead`, sousChapter)
       .then(response => response.data)
       .catch(error => {
         console.error('Error setting last read page:', error);
         throw error;
-      });
+      }); 
   },
   
   /**
