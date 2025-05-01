@@ -1,5 +1,8 @@
 <template>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
   <nav class="sidebar" :class="{ expanded: isExpanded }">
     <div class="sidebar-header">
       <div class="logo-container">
@@ -13,40 +16,32 @@
         <i class="fas fa-user-circle fa-2x"></i>
       </div>
       <div class="user-info">
-        <p class="user-name">مرحبًا، {{userName}}</p>
+        <p class="user-name">مرحبًا، {{ userName }}</p>
         <span class="user-role">مدير النظام</span>
       </div>
     </div>
 
     <div class="menu-container">
       <ul class="menu-items">
-        <!-- <li class="menu-item" :class="{ active: activeMenu === 'home' }">
-          <a href="#" class="menu-link" @click.prevent="setActiveMenu('home')">
-            <span class="menu-icon">🏠</span>
-            <span class="menu-text">الرئيسية</span>
-          </a>
-        </li> -->
-        
-        <!-- <li class="menu-item" :class="{ active: activeMenu === 'users' }">
-          <a href="/" class="menu-link" @click.prevent="setActiveMenu('users')">
-            <span class="menu-icon">👥</span>
-            <span class="menu-text">المستخدمين</span>
-          </a>
-        </li> -->
-
-        
-
         <li class="menu-item" :class="{ active: activeMenu === 'classes' }">
-          <a href="#" class="menu-link" @click.prevent="setActiveMenu('classes')">
+          <a
+            href="#"
+            class="menu-link"
+            @click.prevent="setActiveMenu('classes')"
+          >
             <span class="menu-icon">📖</span>
             <span class="menu-text">الفصول</span>
           </a>
         </li>
 
         <li class="menu-item" :class="{ active: activeMenu === 'surveys' }">
-          <a href="#" class="menu-link" @click.prevent="setActiveMenu('surveys')">
+          <a
+            href="#"
+            class="menu-link"
+            @click.prevent="setActiveMenu('surveys')"
+          >
             <span class="menu-icon">📝</span>
-            <span class="menu-text">الاستبيانات</span>
+            <span class="menu-text">الكويزات</span>
           </a>
         </li>
 
@@ -58,19 +53,31 @@
         </li>
 
         <li class="menu-item" :class="{ active: activeMenu === 'quotes' }">
-          <a href="#" class="menu-link" @click.prevent="setActiveMenu('quotes')">
+          <a
+            href="#"
+            class="menu-link"
+            @click.prevent="setActiveMenu('quotes')"
+          >
             <span class="menu-icon">💬</span>
             <span class="menu-text">الاقتباسات</span>
           </a>
         </li>
 
         <li class="menu-item" :class="{ active: activeMenu === 'analytics' }">
-          <a href="#" class="menu-link" @click.prevent="setActiveMenu('analytics')">
+          <a
+            href="#"
+            class="menu-link"
+            @click.prevent="setActiveMenu('analytics')"
+          >
             <span class="menu-icon">📊</span>
-            <span class="menu-text">التحليلات</span>
+            <span class="menu-text">الإحصائيات</span>
           </a>
         </li>
-        <li v-if="userRole == 2" class="menu-item" :class="{ active: activeMenu === 'super-admin' }">
+        <li
+          v-if="userRole == 2"
+          class="menu-item"
+          :class="{ active: activeMenu === 'super-admin' }"
+        >
           <a href="#" class="menu-link" @click.prevent="goToSuperAdmin">
             <span class="menu-icon">🛡️</span>
             <span class="menu-text">الإدارة العليا</span>
@@ -84,12 +91,14 @@
         <li class="menu-item" :class="{ active: activeMenu === 'settings' }">
           <a href="#" class="menu-link" @click.prevent="updateInfos">
             <span class="menu-icon">⚙️</span>
-            <span class="menu-text">الإعدادات</span>
+            <span class="menu-text">
+              {{ userRole == 2 ? "إعدادات المدير" : "إعدادات المشرف" }}
+            </span>
           </a>
         </li>
 
         <li class="menu-item logout">
-          <a href="#" class="menu-link" @click.prevent="logout">
+          <a href="#" class="menu-link" @click.prevent="showLogoutConfirm">
             <span class="menu-icon">🔒</span>
             <span class="menu-text">تسجيل الخروج</span>
           </a>
@@ -97,38 +106,82 @@
       </ul>
     </div>
   </nav>
+
+  <!-- Modal de confirmation de déconnexion -->
+  <Transition name="modal-fade">
+    <div
+      v-if="showLogoutModal"
+      class="modal-overlay"
+      @click.self="cancelLogout"
+    >
+      <div class="modal" :class="{ 'rtl-content': true }">
+        <div class="modal-header">
+          <h3>تأكيد تسجيل الخروج</h3>
+          <button class="close-button" @click="cancelLogout">
+            <span>&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="logout-icon">
+            <i class="fas fa-sign-out-alt"></i>
+          </div>
+          <p>هل أنت متأكد أنك تريد تسجيل الخروج من النظام؟</p>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn cancel-button" @click="cancelLogout">إلغاء</button>
+          <button class="btn confirm-button" @click="confirmLogout">
+            تأكيد الخروج
+          </button>
+        </div>
+      </div>
+    </div>
+  </Transition>
 </template>
 
 <script>
-import { useUserStore } from '@/store/User/userStore';
+import { useUserStore } from "@/store/User/userStore";
 export default {
   data() {
     return {
       isExpanded: true,
-      activeMenu: 'SideBar',
-      userRole: localStorage.getItem('role')
+      activeMenu: "SideBar",
+      showLogoutModal: false,
+      userRole: Number(localStorage.getItem('role'))
     };
   },
   methods: {
     updateInfos() {
-      this.$emit('showUpdateAccount');
+      this.$emit("showUpdateAccount");
     },
-    logout(){
+    showLogoutConfirm() {
+      this.showLogoutModal = true;
+    },
+    cancelLogout() {
+      this.showLogoutModal = false;
+    },
+    confirmLogout() {
       const store = useUserStore();
       store.logout();
-      this.$router.push('/');
+      this.showLogoutModal = false;
+      this.$router.push("/");
     },
     goToSuperAdmin() {
       if (this.userRole == 2) {
-        this.$router.push('/super-admin-verify');
+        this.$router.push("/super-admin-verify");
       }
-    }
+    },
+    setActiveMenu(menu) {
+      this.activeMenu = menu;
+      this.$emit("menuSelected", menu); // scroll depuis le parent
+    },
   },
-  computed:{
-    userName(){
+  computed: {
+    userName() {
       const store = useUserStore();
       return store.nom;
-    }
+    },
   },
   mounted() {
     // Initialize sidebar state based on screen size
@@ -137,18 +190,173 @@ export default {
     } else {
       this.isExpanded = true;
     }
-    
+
     // Add resize listener
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       if (window.innerWidth <= 768) {
         this.isExpanded = false;
       } else {
         this.isExpanded = true;
       }
     });
-  }
+  },
 };
 </script>
+
+<style scoped>
+/* Styles existants de la barre latérale */
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: #fff;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  text-align: right;
+}
+
+.rtl-content {
+  direction: rtl;
+}
+
+.modal-header {
+  background-color: #f8f9fa;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #3c4257;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.close-button:hover {
+  color: #333;
+}
+
+.modal-body {
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.logout-icon {
+  font-size: 48px;
+  color: #f56565;
+  margin-bottom: 16px;
+}
+
+.modal-body p {
+  font-size: 16px;
+  color: #4a5568;
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+.modal-footer {
+  padding: 16px 20px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #eaeaea;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancel-button {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.confirm-button {
+  background-color: #f56565;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.cancel-button:hover {
+  background-color: #e5e7eb;
+}
+
+.confirm-button:hover {
+  background-color: #e53e3e;
+}
+
+/* Animation de transition */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: all 0.3s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.modal-fade-enter-to,
+.modal-fade-leave-from {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .modal {
+    width: 95%;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+  }
+
+  .cancel-button,
+  .confirm-button {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+}
+</style>
 
 <style scoped>
 .sidebar {
@@ -334,7 +542,8 @@ export default {
   padding: 1rem 0;
   position: sticky;
   bottom: 0;
-  background: linear-gradient(to bottom, 
+  background: linear-gradient(
+    to bottom,
     rgba(248, 249, 250, 0.9) 0%,
     rgba(233, 236, 239, 0.9) 100%
   );
@@ -404,7 +613,7 @@ export default {
   .menu-container {
     max-height: calc(100vh - 200px);
   }
-  
+
   .bottom-menu {
     padding: 0.5rem 0;
   }

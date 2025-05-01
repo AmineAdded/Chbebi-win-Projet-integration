@@ -11,6 +11,7 @@ import app.chbebiwin.backend.repositories.PersonnaliteRepository;
 import app.chbebiwin.backend.repositories.UtilisateurRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -131,13 +132,11 @@ public class UtilisateurService {
 
         Utilisateur user = optionalUser.get();
 
-        // Vérifier email en double s’il est modifié
         if (!user.getEmail().equals(request.getEmail()) &&
                 utilisateurRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("البريد الإلكتروني مُستخدم بالفعل");
         }
 
-        // Si mot de passe doit être changé
         if (request.getCurrentPassword() != null && !request.getCurrentPassword().isEmpty()) {
             if (!passwordEncoder.matches(request.getCurrentPassword(), user.getMdpsCompte())) {
                 throw new RuntimeException("كلمة المرور الحالية غير صحيحة");
@@ -151,8 +150,14 @@ public class UtilisateurService {
         user.setNom(request.getNom());
         user.setEmail(request.getEmail());
 
-        return utilisateurRepository.save(user);
+        if (request.getRole() != null) {
+            user.setRole(request.getRole());
+        }
+
+        utilisateurRepository.save(user);
+        return user;
     }
+
     public Utilisateur setPersonnalite(PersonnaliteRequest request){
         Utilisateur u = utilisateurRepository.findById(request.getId()).get();
         Personnalite p = personnaliteRepository.findById(request.getType()).get();
