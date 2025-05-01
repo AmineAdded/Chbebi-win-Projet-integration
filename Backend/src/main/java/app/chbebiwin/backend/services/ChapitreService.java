@@ -125,9 +125,9 @@ public class ChapitreService {
             return 0;
         }
 
-        for (SousChapitres x : s) {
-            sum += x.getPourcentage();
-        }
+//        for (SousChapitres x : s) {
+//            sum += x.getPourcentage();
+//        }
 
         long result = sum / s.size();
         c.setPourcentage(result);

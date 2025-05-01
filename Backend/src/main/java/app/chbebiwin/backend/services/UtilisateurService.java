@@ -79,6 +79,7 @@ public class UtilisateurService {
         u.setEmail(user.getEmail());
         u.setMdpsCompte(user.getMdpsCompte());
         u.setPersonnalite_id(user.getPersonnalite().getId());
+        u.setId(user.getId());
         utilisateurRepository.save(user);
         return u;
     }

@@ -10,4 +10,5 @@ public class UserReturn {
     private int role;
     private String accessToken;
     private Long personnalite_id;
+    private Long id;
 }

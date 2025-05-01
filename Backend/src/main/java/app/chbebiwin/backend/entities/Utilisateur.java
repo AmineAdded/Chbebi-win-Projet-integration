@@ -3,8 +3,8 @@ package app.chbebiwin.backend.entities;
 import app.chbebiwin.backend.entities.AgendaPage.AgendaPage;
 import app.chbebiwin.backend.entities.Feedback.Feedback;
 import app.chbebiwin.backend.entities.Personnalite.Personnalite;
-import app.chbebiwin.backend.entities.SousChapitre.SousChapitres;
 import app.chbebiwin.backend.entities.Tache.Tache;
+import app.chbebiwin.backend.entities.UserSousChapitreProgress.UserSousChapitreProgress;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -51,8 +51,8 @@ public class Utilisateur {
     @OneToMany(mappedBy = "user")
     private List<Tache> taches;
 
-    @OneToMany(mappedBy = "user")
-    private List<SousChapitres> sousChapitres;
+    @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL)
+    private List<UserSousChapitreProgress> sousChapitreProgresses;
 
 
 }
