@@ -51,17 +51,30 @@
           </template>
 
           <v-card class="theme-menu-card" elevation="8">
-            <v-card-title class="pb-0 text-primary font-weight-bold text-center">
-              <v-icon color="primary" class="me-2">mdi-bookmark-multiple</v-icon>
+            <v-card-title
+              class="pb-0 text-primary font-weight-bold text-center"
+            >
+              <v-icon color="primary" class="me-2"
+                >mdi-bookmark-multiple</v-icon
+              >
               المواضيع المتاحة
             </v-card-title>
             <v-divider class="mt-2"></v-divider>
-            
-            <v-list class="theme-menu-list py-2" v-if="thematics && thematics.length > 0">
+
+            <v-list
+              class="theme-menu-list py-2"
+              v-if="thematics && thematics.length > 0"
+            >
               <v-list-item
                 v-for="(thematic, index) in thematics"
                 :key="index"
-                :to="{ name: 'Chapitre', params: { thematicId: thematic.id, thematicTitle: thematic.nom } }"
+                :to="{
+                  name: 'Chapitre',
+                  params: {
+                    thematicId: thematic.id,
+                    thematicTitle: thematic.nom,
+                  },
+                }"
                 link
                 active-class="theme-menu-item-active"
                 class="theme-menu-item"
@@ -69,19 +82,26 @@
                 <template v-slot:prepend>
                   <v-icon color="grey" class="theme-icon">mdi-label</v-icon>
                 </template>
-                <v-list-item-title class="text-right">{{ thematic.nom }}</v-list-item-title>
+                <v-list-item-title class="text-right">{{
+                  thematic.nom
+                }}</v-list-item-title>
               </v-list-item>
             </v-list>
-            
+
             <!-- Message quand la liste est vide -->
             <v-card-text v-else class="text-center py-6">
-              <v-icon size="64" color="grey" class="mb-3">mdi-alert-circle-outline</v-icon>
-              <p class="text-subtitle-1 font-weight-medium text-center">لا توجد مواضيع متاحة حالياً</p>
-              <p class="text-body-2 text-grey text-center">سيتم إضافة مواضيع جديدة قريباً</p>
+              <v-icon size="64" color="grey" class="mb-3"
+                >mdi-alert-circle-outline</v-icon
+              >
+              <p class="text-subtitle-1 font-weight-medium text-center">
+                لا توجد مواضيع متاحة حالياً
+              </p>
+              <p class="text-body-2 text-grey text-center">
+                سيتم إضافة مواضيع جديدة قريباً
+              </p>
             </v-card-text>
 
             <v-divider v-if="thematics && thematics.length > 0"></v-divider>
-            
           </v-card>
         </v-menu>
 
@@ -102,15 +122,26 @@
 
           <v-card class="user-menu-card">
             <v-list>
-              <v-list-item prepend-icon="mdi-account-circle" class="user-menu-header" density="compact">
-                <v-list-item-title class="text-right font-weight-bold">{{ userName }}</v-list-item-title>
+              <v-list-item
+                prepend-icon="mdi-account-circle"
+                class="user-menu-header"
+                density="compact"
+              >
+                <v-list-item-title class="text-right font-weight-bold">{{
+                  userName
+                }}</v-list-item-title>
               </v-list-item>
               <v-divider></v-divider>
-              <v-list-item @click="$emit('openUpdateAccount')" class="user-menu-item">
+              <v-list-item
+                @click="$emit('openUpdateAccount')"
+                class="user-menu-item"
+              >
                 <template v-slot:prepend>
                   <v-icon color="primary">mdi-account-cog</v-icon>
                 </template>
-                <v-list-item-title class="text-right">إدارة الحساب</v-list-item-title>
+                <v-list-item-title class="text-right"
+                  >إدارة الحساب</v-list-item-title
+                >
               </v-list-item>
 
               <v-divider></v-divider>
@@ -119,7 +150,9 @@
                 <template v-slot:prepend>
                   <v-icon color="error">mdi-logout</v-icon>
                 </template>
-                <v-list-item-title class="text-right">تسجيل الخروج</v-list-item-title>
+                <v-list-item-title class="text-right"
+                  >تسجيل الخروج</v-list-item-title
+                >
               </v-list-item>
             </v-list>
           </v-card>
@@ -148,20 +181,24 @@
         <v-list-group prepend-icon="mdi-bookmark-multiple" color="primary">
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" class="text-right">
-              <v-list-item-title class="nav-drawer-item">المواضيع</v-list-item-title>
+              <v-list-item-title class="nav-drawer-item"
+                >المواضيع</v-list-item-title
+              >
             </v-list-item>
           </template>
 
           <div v-if="thematics && thematics.length > 0">
-            <v-list-item 
-              v-for="(thematic, index) in thematics" 
+            <v-list-item
+              v-for="(thematic, index) in thematics"
               :key="index"
-              :to="'/theme/' + thematic.id" 
+              :to="'/theme/' + thematic.id"
               link
               class="mobile-theme-item"
             >
               <template v-slot:prepend>
-                <v-icon size="small" color="grey" class="me-2">mdi-label</v-icon>
+                <v-icon size="small" color="grey" class="me-2"
+                  >mdi-label</v-icon
+                >
               </template>
               <v-list-item-title class="text-right nav-drawer-item pr-4">
                 {{ thematic.nom }}
@@ -203,15 +240,45 @@
       </v-list>
     </v-navigation-drawer>
 
-    <!-- Dialog de confirmation -->
-    <v-dialog v-model="logoutDialog" max-width="400">
-      <v-card>
-        <v-card-title class="text-right text-h5">تسجيل الخروج</v-card-title>
-        <v-card-text class="text-right">هل أنت متأكد أنك تريد تسجيل الخروج؟</v-card-text>
-        <v-card-actions>
+    <!-- Dialog de confirmation amélioré -->
+    <v-dialog
+      v-model="logoutDialog"
+      max-width="500"
+      transition="dialog-bottom-transition"
+    >
+      <v-card class="logout-modal">
+        <div class="modal-header">
+          <v-card-title class="text-right text-h5">
+            <h3>تأكيد تسجيل الخروج</h3>
+          </v-card-title>
+          <v-btn icon class="close-button" @click="logoutDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </div>
+
+        <v-card-text class="modal-body text-right">
+          <div class="logout-icon">
+            <v-icon color="#f56565" size="64">mdi-logout</v-icon>
+          </div>
+          <p class="logout-message">
+            هل أنت متأكد أنك تريد تسجيل الخروج من النظام؟
+          </p>
+        </v-card-text>
+
+        <v-card-actions class="modal-footer">
           <v-spacer></v-spacer>
-          <v-btn color="grey darken-1" text @click="logoutDialog = false">إلغاء</v-btn>
-          <v-btn color="error" text @click="confirmLogout">تأكيد</v-btn>
+          <v-btn class="cancel-button" text @click="logoutDialog = false" large>
+            إلغاء
+          </v-btn>
+          <v-btn
+            class="confirm-button"
+            color="#f56565"
+            text
+            @click="confirmLogout"
+            large
+          >
+            تأكيد الخروج
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -233,18 +300,19 @@ export default {
       hoverTheme: false,
       thematics: [],
       isLoading: true,
-      hasError: false
+      hasError: false,
     };
   },
   mounted() {
-    thematicService.getAllThematics()
-    .then(data => {
-      console.log('Thématiques récupérées:', data);
-      this.thematics = data;
-    })
-    .catch(error => {
-      console.error('Erreur lors du chargement des thématiques:', error);
-    });
+    thematicService
+      .getAllThematics()
+      .then((data) => {
+        console.log("Thématiques récupérées:", data);
+        this.thematics = data;
+      })
+      .catch((error) => {
+        console.error("Erreur lors du chargement des thématiques:", error);
+      });
   },
   computed: {
     showMenu() {
@@ -310,11 +378,93 @@ export default {
 </script>
 
 <style scoped>
+/* Styles pour le modal de déconnexion */
+.logout-modal {
+  border-radius: 12px !important;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  background-color: #f8f9fa;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #333;
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.close-button {
+  margin-left: auto;
+  color: #666;
+}
+
+.modal-body {
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.logout-icon {
+  margin-bottom: 20px;
+}
+
+.logout-message {
+  font-size: 1.1rem;
+  color: #555;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.modal-footer {
+  padding: 15px 20px;
+  border-top: 1px solid #eee;
+  background-color: #f8f9fa;
+}
+
+.cancel-button {
+  color: #666 !important;
+  font-weight: 500;
+  margin-left: 10px;
+  padding: 0 20px !important;
+}
+
+.confirm-button {
+  font-weight: 500;
+  color: white !important;
+  background-color: #f56565 !important;
+  padding: 0 20px !important;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(245, 101, 101, 0.3);
+}
+
+.confirm-button:hover {
+  background-color: #e04f4f !important;
+  transition: background-color 0.3s ease;
+}
+
+/* Animation */
+.dialog-bottom-transition-enter-active,
+.dialog-bottom-transition-leave-active {
+  transition: transform 0.2s ease-in-out, opacity 0.3s ease;
+}
+
+.dialog-bottom-transition-enter,
+.dialog-bottom-transition-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
 /* Styles améliorés pour le dropdown desktop */
 .theme-menu-btn {
   position: relative;
   transition: all 0.3s ease;
-  font-family: 'Segoe UI', 'Dubai', sans-serif;
+  font-family: "Segoe UI", "Dubai", sans-serif;
 }
 
 .theme-menu-btn:hover {
@@ -322,7 +472,7 @@ export default {
 }
 
 .theme-menu-btn::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 50%;

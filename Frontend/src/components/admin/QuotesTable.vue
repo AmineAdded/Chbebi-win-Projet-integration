@@ -52,7 +52,7 @@
           :disabled="currentPage === 1" 
           @click="goToPage(currentPage - 1)"
         >
-          <span class="pagination-icon">◀</span>
+          <span class="pagination-icon">▶</span>
           السابق
         </button>
         
@@ -74,7 +74,7 @@
           @click="goToPage(currentPage + 1)"
         >
           التالي
-          <span class="pagination-icon">▶</span>
+          <span class="pagination-icon">◀</span>
         </button>
         
         <div class="pagination-info">

@@ -34,17 +34,6 @@
           </a>
         </li>
 
-        <li class="menu-item" :class="{ active: activeMenu === 'surveys' }">
-          <a
-            href="#"
-            class="menu-link"
-            @click.prevent="setActiveMenu('surveys')"
-          >
-            <span class="menu-icon">📝</span>
-            <span class="menu-text">الكويزات</span>
-          </a>
-        </li>
-
         <li class="menu-item" :class="{ active: activeMenu === 'tests' }">
           <a href="#" class="menu-link" @click.prevent="setActiveMenu('tests')">
             <span class="menu-icon">🧪</span>

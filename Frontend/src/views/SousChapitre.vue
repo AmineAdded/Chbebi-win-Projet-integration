@@ -363,21 +363,6 @@ export default {
         this.sousChapitres = []; // إعادة تعيين مصفوفة فارغة عند الخطأ
       }
     },
-
-    // async loadProgressInfo() {
-
-    //   for (const sousChapitre of this.sousChapitres) {
-    //     try {
-    //       const lastPageData = await SousChapitre.getLastReadPage(sousChapitre.id);
-    //       if (lastPageData) {
-    //         sousChapitre.lastPageRead = lastPageData.lastPageRead || 0;
-    //         sousChapitre.pourcentage = lastPageData.pourcentage || 0;
-    //       }
-    //     } catch (err) {
-    //       console.error(`Erreur lors du chargement de la progression pour ${sousChapitre.id}:`, err);
-    //     }
-    //   }
-    // }
   },
   watch: {
     showPdfViewer(newValue) {
