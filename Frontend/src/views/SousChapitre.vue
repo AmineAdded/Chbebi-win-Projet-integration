@@ -10,8 +10,8 @@
       <h2 class="section-title">الفصول الخاصة بموضوع: {{ chapitreTitle }}</h2>
 
       <!-- Slider avec navigation -->
-      <div class="slider-container">
-        <button v-if="sousChapitres.length > 4" class="nav-btn prev-btn" @click="slidePrev"
+      <div class="slider-container" :class="{ 'centered-cards': sousChapitres.length < 5 }">
+        <button v-if="sousChapitres.length >= 5" class="nav-btn prev-btn" @click="slidePrev"
           :disabled="currentSlide <= 0">
           <v-icon>mdi-chevron-right</v-icon>
         </button>
@@ -20,46 +20,47 @@
           <div class="slider-track" :style="{ transform: `translateX(${-currentSlide * slideWidth}px)` }">
             <div v-for="(sousChapitre, index) in sousChapitres" :key="index" class="card"
               @click="openModal(sousChapitre)">
-              <img :src="require('@/assets/' + sousChapitre.image)" alt="chapitre" class="card-img" />
-              <div class="card-body">
-                <h3 class="card-title">{{ sousChapitre.title }}</h3>
-                <p class="card-desc">{{ sousChapitre.description }}</p>
-                <div class="progress-container" v-if="sousChapitreProgress[index]">
-                  <div class="progress-stats">
-                    <div class="stats-label">إحصائيات التقدم</div>
-                    <v-progress-linear v-if="sousChapitreProgress[index].lastPageRead !== undefined"
-                      :color="getProgressColor(sousChapitreProgress[index].pourcentage || 0)"
-                      :model-value="sousChapitreProgress[index].pourcentage || 0" height="14" rounded striped>
-                      <template v-slot:default="{ value }">
-                        <strong class="progress-value">{{ value }}%</strong>
-                      </template>
-                    </v-progress-linear>
-                    <div class="progress-text">
-                      <div class="progress-detailed">
-                        {{ sousChapitreProgress[index].pourcentage || 0 }}% مكتمل
-                        <v-icon small color="primary" class="info-icon">mdi-information</v-icon>
+              <div class="card-inner">
+                <img :src="require('@/assets/' + sousChapitre.image)" alt="chapitre" class="card-img" />
+                <div class="card-body">
+                  <h3 class="card-title">{{ sousChapitre.title }}</h3>
+                  <p class="card-desc">{{ sousChapitre.description }}</p>
+                  <div class="progress-container" v-if="sousChapitreProgress[index]">
+                    <div class="progress-stats">
+                      <div class="stats-label">إحصائيات التقدم</div>
+                      <v-progress-linear v-if="sousChapitreProgress[index].lastPageRead !== undefined"
+                        :color="getProgressColor(sousChapitreProgress[index].pourcentage || 0)"
+                        :model-value="sousChapitreProgress[index].pourcentage || 0" height="16" rounded striped>
+                        <template v-slot:default="{ value }">
+                          <strong class="progress-value">{{ value }}%</strong>
+                        </template>
+                      </v-progress-linear>
+                      <div class="progress-text">
+                        <div class="progress-detailed">
+                          {{ sousChapitreProgress[index].pourcentage || 0 }}% مكتمل
+                          <v-icon small color="primary" class="info-icon">mdi-information</v-icon>
+                        </div>
+                        <v-chip :color="getStatusColor(sousChapitreProgress[index].pourcentage || 0)" size="small"
+                          class="status-chip" variant="outlined">
+                          {{ getStatusText(sousChapitreProgress[index].pourcentage || 0) }}
+                        </v-chip>
                       </div>
-                      <v-chip :color="getStatusColor(sousChapitreProgress[index].pourcentage || 0)" size="small"
-                        class="status-chip" variant="outlined">
-                        {{ getStatusText(sousChapitreProgress[index].pourcentage || 0) }}
-                      </v-chip>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
 
-        <button v-if="sousChapitres.length > 4" class="nav-btn next-btn" @click="slideNext"
+        <button v-if="sousChapitres.length >= 5" class="nav-btn next-btn" @click="slideNext"
           :disabled="currentSlide >= maxSlide">
           <v-icon>mdi-chevron-left</v-icon>
         </button>
       </div>
 
       <!-- Indicateurs de pagination -->
-      <div v-if="sousChapitres.length > 4" class="slider-dots">
+      <div v-if="sousChapitres.length >= 5" class="slider-dots">
         <span v-for="n in slidesCount" :key="n" class="dot" :class="{ active: Math.floor(currentSlide / 4) === n - 1 }"
           @click="goToSlide((n - 1) * 4)"></span>
       </div>
@@ -78,26 +79,35 @@
         <iframe class="video-frame" :src="getEmbedUrl(selectedChapter.lienVideo)" frameborder="0"
           allowfullscreen></iframe>
         <p>{{ selectedChapter.description }}</p>
-        <a :href="`/PDFs/${selectedChapter.pdf}`" target="_blank" download class="styled-download-link">تحميل الملف
-          PDF</a>
-        <button class="download-btn" @click="showPdfViewer = true">📄 عرض الملف PDF</button>
+        <div class="action-buttons">
+          <a :href="`/PDFs/${selectedChapter.pdf}`" target="_blank" download class="styled-download-link">
+            <v-icon left>mdi-download</v-icon> تحميل الملف PDF
+          </a>
+          <button class="view-btn" @click="showPdfViewer = true">
+            <v-icon left>mdi-file-document-outline</v-icon> عرض الملف PDF
+          </button>
+        </div>
       </div>
     </v-dialog>
 
     <v-dialog v-model="showPdfViewer" max-width="900">
       <div class="popup-content">
         <div class="pdf-controls">
-          <button @click="prevPage" :disabled="currentPage <= 1">⬅ الصفحة السابقة</button>
-          <span>صفحة {{ currentPage }} من {{ totalPages }}</span>
-          <button @click="nextPage" :disabled="currentPage >= totalPages">➡ الصفحة التالية</button>
+          <button @click="prevPage" :disabled="currentPage <= 1">
+            <v-icon small left>mdi-chevron-left</v-icon> الصفحة السابقة
+          </button>
+          <span class="page-indicator">صفحة {{ currentPage }} من {{ totalPages }}</span>
+          <button @click="nextPage" :disabled="currentPage >= totalPages">
+            الصفحة التالية <v-icon small right>mdi-chevron-right</v-icon>
+          </button>
         </div>
         <PdfEmbed ref="pdfViewer" :source="`/PDFs/${selectedChapter.pdf}`" @loaded="onPdfLoaded" :page="currentPage"
           style="width: 100%; height: 80vh" />
       </div>
     </v-dialog>
 
-    <Footer />
   </div>
+  <Footer />
 </template>
 
 <script>
@@ -123,7 +133,7 @@ export default {
       sousChapitreProgress: [],
       pdfCache: {}, // Pour stocker les informations de pages des PDFs déjà chargés
       currentSlide: 0,
-      slideWidth: 305, // Largeur d'une carte + marge
+      slideWidth: 340, // Augmenté la largeur d'une carte + marge
       maxSlide: 0,
       slidesCount: 1,
       resizeTimer: null
@@ -384,7 +394,7 @@ export default {
 
 <style scoped>
 .chapters-container {
-  background-color: #f0f8ff;
+  background-color: #d2e7f7;
   min-height: 100vh;
   direction: rtl;
   padding-bottom: 30px;
@@ -394,10 +404,11 @@ export default {
   text-align: center;
   color: #0d47a1;
   margin-top: 30px;
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: bold;
   position: relative;
-  padding-bottom: 10px;
+  padding-bottom: 15px;
+  margin-bottom: 25px;
 }
 
 .section-title::after {
@@ -406,8 +417,8 @@ export default {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 60px;
-  height: 3px;
+  width: 80px;
+  height: 4px;
   background: linear-gradient(90deg, #0d47a1, #42a5f5);
   border-radius: 2px;
 }
@@ -416,8 +427,13 @@ export default {
 .slider-container {
   position: relative;
   width: 100%;
-  margin: 30px auto;
-  padding: 0 40px;
+  margin: 40px auto;
+  padding: 0 50px;
+}
+
+.slider-container.centered-cards .slider-track {
+  justify-content: center;
+  margin: 0 auto;
 }
 
 .slider-wrapper {
@@ -435,8 +451,8 @@ export default {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   background: linear-gradient(145deg, #1976d2, #1565c0);
   border: none;
@@ -446,19 +462,21 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
   transition: all 0.3s ease;
 }
 
 .nav-btn:hover {
   background: linear-gradient(145deg, #1565c0, #0d47a1);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
+  transform: translateY(-50%) scale(1.05);
 }
 
 .nav-btn:disabled {
   background: #bdbdbd;
   box-shadow: none;
   cursor: not-allowed;
+  transform: translateY(-50%) scale(1);
 }
 
 .prev-btn {
@@ -473,12 +491,12 @@ export default {
   display: flex;
   justify-content: center;
   gap: 12px;
-  margin: 20px 0;
+  margin: 25px 0;
 }
 
 .dot {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background-color: #bbdefb;
   cursor: pointer;
@@ -487,63 +505,75 @@ export default {
 
 .dot.active {
   background-color: #1976d2;
-  transform: scale(1.3);
+  transform: scale(1.5);
 }
 
 /* Styles pour les cartes */
 .card {
-  flex: 0 0 280px;
-  margin: 0 12px;
-  background-color: white;
-  border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-  transition: all 0.4s ease;
+  flex: 0 0 320px;
+  margin: 0 10px;
   cursor: pointer;
   position: relative;
-  border: 1px solid rgba(230, 230, 230, 0.8);
+  transition: all 0.3s ease;
+  height: 100%;
 }
 
-.card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 12px 45px rgba(0, 0, 0, 0.12);
+.card-inner {
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  height: 100%;
+  border: 1px solid rgba(230, 230, 230, 0.8);
+  transition: all 0.4s ease;
+}
+
+.card:hover .card-inner {
+  transform: translateY(-12px);
+  box-shadow: 0 16px 50px rgba(13, 71, 161, 0.15);
 }
 
 .card-img {
   width: 100%;
-  height: 180px;
+  height: 200px;
   object-fit: cover;
   transition: transform 0.5s ease;
 }
 
 .card:hover .card-img {
-  transform: scale(1.08);
+  transform: scale(1.1);
 }
 
 .card-body {
-  padding: 20px;
+  padding: 25px;
 }
 
 .card-title {
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   color: #1565c0;
-  margin-bottom: 10px;
-  font-weight: 600;
+  margin-bottom: 12px;
+  font-weight: 700;
+  transition: color 0.3s ease;
+}
+
+.card:hover .card-title {
+  color: #0d47a1;
 }
 
 .card-desc {
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: #424242;
-  line-height: 1.5;
-  margin-bottom: 15px;
+  line-height: 1.6;
+  margin-bottom: 18px;
 }
 
 .progress-container {
-  margin-top: 15px;
-  padding: 10px;
+  margin-top: 20px;
+  padding: 15px;
   background-color: #f5f9ff;
-  border-radius: 10px;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(13, 71, 161, 0.08);
 }
 
 .progress-stats {
@@ -553,18 +583,18 @@ export default {
 }
 
 .stats-label {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: bold;
   color: #0d47a1;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .progress-text {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 8px;
-  font-size: 0.85rem;
+  margin-top: 10px;
+  font-size: 0.9rem;
   color: #424242;
 }
 
@@ -575,28 +605,30 @@ export default {
 
 .progress-value {
   color: #fff;
-  font-size: 0.75rem;
-  text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+  font-size: 0.8rem;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
 }
 
 .info-icon {
-  margin-right: 5px;
+  margin-right: 8px;
   cursor: help;
 }
 
 .status-chip {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: bold;
+  padding: 0 8px;
 }
 
 /* Modal Styling */
 .popup-content {
   background: #fff;
-  padding: 25px;
-  border-radius: 16px;
+  padding: 30px;
+  border-radius: 20px;
   position: relative;
   max-height: 90vh;
   overflow-y: auto;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
 }
 
 .close-btn {
@@ -607,97 +639,121 @@ export default {
   color: white;
   border: none;
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
   transition: all 0.3s ease;
+  font-size: 1.2rem;
+  z-index: 10;
 }
 
 .close-btn:hover {
   background-color: #d32f2f;
   transform: rotate(90deg);
+  box-shadow: 0 6px 15px rgba(211, 47, 47, 0.4);
 }
 
 .video-frame {
   width: 100%;
-  height: 400px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  height: 450px;
+  border-radius: 16px;
+  margin-bottom: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
-.download-btn {
-  margin-top: 10px;
+.action-buttons {
+  display: flex;
+  margin-top: 20px;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.view-btn,
+.styled-download-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  min-width: 180px;
+}
+
+.view-btn {
   background: linear-gradient(145deg, #1976d2, #1565c0);
   border: none;
   color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
   cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(21, 101, 192, 0.3);
+  box-shadow: 0 6px 15px rgba(21, 101, 192, 0.3);
 }
 
-.download-btn:hover {
+.view-btn:hover {
   background: linear-gradient(145deg, #1565c0, #0d47a1);
-  box-shadow: 0 6px 15px rgba(13, 71, 161, 0.4);
-  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(13, 71, 161, 0.4);
+  transform: translateY(-3px);
 }
 
 .styled-download-link {
-  display: inline-block;
-  margin-top: 15px;
-  margin-right: 15px;
-  padding: 10px 20px;
   background: linear-gradient(145deg, #0d47a1, #1565c0);
   color: white;
-  font-weight: bold;
-  text-decoration: none;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  box-shadow: 0 6px 15px rgba(13, 71, 161, 0.3);
   font-size: 1rem;
   text-align: center;
-  box-shadow: 0 4px 10px rgba(13, 71, 161, 0.3);
 }
 
 .styled-download-link:hover {
   background: linear-gradient(145deg, #1565c0, #42a5f5);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(13, 71, 161, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(13, 71, 161, 0.4);
 }
 
 .pdf-controls {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 15px;
-  margin: 15px 0;
-  padding: 10px;
+  gap: 20px;
+  margin: 20px 0;
+  padding: 15px;
   background-color: #f5f9ff;
-  border-radius: 10px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.page-indicator {
+  font-weight: bold;
+  color: #1565c0;
+  background-color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .pdf-controls button {
-  padding: 8px 16px;
+  padding: 10px 20px;
   background: linear-gradient(145deg, #1976d2, #1565c0);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(21, 101, 192, 0.2);
+  box-shadow: 0 4px 10px rgba(21, 101, 192, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .pdf-controls button:hover:not(:disabled) {
   background: linear-gradient(145deg, #1565c0, #0d47a1);
   transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(21, 101, 192, 0.3);
 }
 
 .pdf-controls button:disabled {
@@ -707,38 +763,72 @@ export default {
 }
 
 /* Media Queries pour le responsive */
+@media (max-width: 992px) {
+  .card {
+    flex: 0 0 300px;
+  }
+  
+  .slideWidth {
+    width: 320px;
+  }
+}
+
 @media (max-width: 768px) {
   .slider-container {
-    padding: 0 30px;
+    padding: 0 40px;
   }
 
   .nav-btn {
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 40px;
   }
 
   .card {
-    flex: 0 0 260px;
+    flex: 0 0 280px;
+  }
+  
+  .slideWidth {
+    width: 300px;
+  }
+  
+  .video-frame {
+    height: 380px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
   }
 }
 
 @media (max-width: 480px) {
   .slider-container {
-    padding: 0 25px;
+    padding: 0 30px;
   }
 
   .nav-btn {
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
   }
 
   .card {
-    flex: 0 0 240px;
+    flex: 0 0 260px;
     margin: 0 8px;
+  }
+  
+  .slideWidth {
+    width: 280px;
   }
 
   .card-img {
-    height: 160px;
+    height: 180px;
+  }
+  
+  .popup-content {
+    padding: 25px 15px;
+  }
+  
+  .video-frame {
+    height: 300px;
   }
 }
 </style>

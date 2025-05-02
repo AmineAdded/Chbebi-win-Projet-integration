@@ -103,7 +103,7 @@
               >
                 {{ item.title }}
                 <span v-if="item.pourcentage > 0" class="progress-indicator">
-                  %{{ item.pourcentage }}
+                  
                 </span>
               </span>
             </td>
@@ -182,14 +182,7 @@
               class="form-control"
             />
           </div>
-          <div class="form-group">
-            <label for="thematicDescription">وصف المجال</label>
-            <textarea
-              id="thematicDescription"
-              v-model="newThematic.description"
-              class="form-control"
-            ></textarea>
-          </div>
+
         </div>
         <div class="modal-footer">
           <button class="cancel-btn" @click="closeThematicModal">إلغاء</button>
