@@ -277,7 +277,7 @@ export default {
     },
 
     async saveCurrentPage() {
-      try {
+      
         if (!this.currentPage || !this.totalPages || this.totalPages === 0) {
           return 0;
         }
@@ -285,11 +285,14 @@ export default {
         const store = useUserStore();
         const idUser = store.user.id;
         const pourcentage = Math.min(Math.round((this.currentPage / this.totalPages) * 100), 100);
-        const res = await SousChapitre.setLastReadPage({ userId: idUser, sousChapitreId: index, lastPageRead: this.currentPage, pourcentage: pourcentage });
+        console.log(index);
+        try{
+        const res = await SousChapitre.setLastReadPage({ userId: idUser, sousChapitreId: this.selectedChapter.id, lastPageRead: this.currentPage, pourcentage: pourcentage });
         
         const sousChapitreIds = this.sousChapitres.map(sc => sc.id);
         const response = await SousChapitre.getAllUserSouschapitreProgress(idUser, sousChapitreIds);
         this.sousChapitreProgress = response;
+
         return res;
 
       } catch (err) {
@@ -320,11 +323,11 @@ export default {
       }
 
       try {
-        const index = this.sousChapitres.findIndex(sc => sc.id === this.selectedChapter.id);
+        console.log("selectedChapter", this.selectedChapter.id);
         const store = useUserStore();
         const idUser = store.user.id;
 
-        const lastPageData = await SousChapitre.getLastReadPage({ userId: idUser, sousChapitreId: index });
+        const lastPageData = await SousChapitre.getLastReadPage({ userId: idUser, sousChapitreId: this.selectedChapter.id });
 
         if (lastPageData) {
           this.currentPage = lastPageData.lastPageRead || 1;
