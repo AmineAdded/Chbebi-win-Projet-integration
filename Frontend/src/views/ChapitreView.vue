@@ -66,19 +66,7 @@
                         </div>
                       </div>
                     </div>
-                    
-                    <!-- Bouton pour télécharger le certificat avec hover effect -->
-                    <v-btn
-                      v-if="chapitre.pourcentage === 100"
-                      color="success"
-                      class="download-btn mt-3"
-                      prepend-icon="mdi-certificate"
-                      @click.stop="generateCertificate(chapitre)"
-                      block
-                      variant="elevated"
-                    >
-                      تحميل الشهادة
-                    </v-btn>
+                  
                   </div>
                 </router-link>
               </div>
@@ -150,18 +138,6 @@
                 </div>
               </div>
               
-              <!-- Bouton pour télécharger le certificat -->
-              <v-btn
-                v-if="chapitre.pourcentage === 100"
-                color="success"
-                class="download-btn mt-3"
-                prepend-icon="mdi-certificate"
-                @click.stop="generateCertificate(chapitre)"
-                block
-                variant="elevated"
-              >
-                تحميل الشهادة
-              </v-btn>
             </div>
           </router-link>
         </div>
@@ -177,9 +153,6 @@ import Navbar from "../components/Navbar.vue";
 import Footer from "../components/Footer.vue";
 import UpdateAccount from "@/components/UpdateAccount.vue";
 import SuperChapitre from "@/Services/chapitreService.js";
-import { PDFDocument, rgb } from 'pdf-lib';
-import { saveAs } from 'file-saver';
-import fontkit from '@pdf-lib/fontkit';
 import { useUserStore } from "@/store/User/userStore";
 
 export default {
@@ -332,67 +305,6 @@ export default {
       }
     },
     
-    async generateCertificate(chapitre) {
-      try {
-        console.log("🚀 بدء إنشاء الشهادة");
-
-        // 1. تحميل ملف الشهادة الأساسي
-        const existingPdfBytes = await fetch('/PDFs/Certificate.pdf').then(res => {
-          if (!res.ok) throw new Error("فشل في تحميل شهادة القالب");
-          return res.arrayBuffer();
-        });
-
-        // 2. تحميل مستند PDF
-        const pdfDoc = await PDFDocument.load(existingPdfBytes);
-        pdfDoc.registerFontkit(fontkit);
-        const page = pdfDoc.getPages()[0];
-
-        // 3. تحميل الخط العربي
-        const arabicFontBytes = await fetch('/fonts/Amiri-Bold.ttf').then(res => {
-          if (!res.ok) throw new Error("فشل في تحميل الخط العربي");
-          return res.arrayBuffer();
-        });
-        const arabicFont = await pdfDoc.embedFont(arabicFontBytes);
-
-        // 4. إعداد النصوص
-        const texts = {
-          name: this.user.name || 'اسم المستخدم',
-          chapter: chapitre.title || 'عنوان الفصل',
-          date: new Date().toLocaleDateString('ar-SA', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          })
-        };
-
-        // 6. وظيفة مساعدة للرسم المركزي
-        const drawCenteredText = (text, xPage, yPage, size, color = rgb(0, 0, 0)) => {
-          page.drawText(text, {
-            x: xPage,
-            y: yPage,
-            size,
-            font: arabicFont,
-            color,
-          });
-        };
-
-        // 7. رسم العناصر بمسافات متناسقة
-        drawCenteredText(texts.name, 308, 300, 16); // الاسم (الحجم الأكبر)
-        drawCenteredText(texts.chapter, 305, 227, 14, rgb(0.1, 0.4, 0.6)); // الفصل
-        drawCenteredText(texts.date, 170, 208, 14, rgb(0.3, 0.3, 0.3)); // التاريخ
-
-        // 7. حفظ الملف النهائي
-        const pdfBytes = await pdfDoc.save();
-        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-        saveAs(blob, `شهادة_${chapitre.title.replace(/\s+/g, '_')}.pdf`);
-
-        console.log("✅ تم إنشاء الشهادة بنجاح");
-      } catch (error) {
-        console.error('❌ حصل خطأ أثناء إنشاء الشهادة:', error);
-        alert(`فشل إنشاء الشهادة: ${error.message}`);
-      }
-    },
 
     async loadUserInfo() {
       try {
@@ -625,38 +537,6 @@ export default {
 .status-chip {
   font-size: 0.75rem;
   font-weight: 600;
-}
-
-/* Style du bouton de téléchargement */
-.download-btn {
-  margin-top: 20px !important;
-  transition: all 0.4s ease;
-  border-radius: 10px;
-  font-weight: 700;
-  letter-spacing: 0.8px;
-  padding: 12px 24px !important;
-  position: relative;
-  overflow: hidden;
-}
-
-.download-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0));
-  transition: all 0.5s ease;
-}
-
-.download-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.35);
-}
-
-.download-btn:hover::before {
-  left: 100%;
 }
 
 /* Styles pour le slider */
