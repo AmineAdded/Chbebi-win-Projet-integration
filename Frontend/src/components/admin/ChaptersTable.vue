@@ -740,7 +740,7 @@ export default {
             title: result.sousChapter.title,
             description: result.sousChapter.description,
             image: result.sousChapter.image,
-            lien_video: result.sousChapter.lien_video || "",
+            lien_video: result.sousChapter.lienVideo || "",
             pdf: result.sousChapter.pdf || "",
             chapitreId: result.parentId,
             pourcentage: result.sousChapter.pourcentage,
@@ -772,9 +772,9 @@ export default {
               title: this.currentChapter.title,
               description: this.currentChapter.description,
               image: this.currentChapter.image,
-              lien_video: this.currentChapter.lien_video,
+              lienVideo: this.currentChapter.lien_video,
               pdf: this.currentChapter.pdf,
-              chapitre: { id: this.parentId },
+              chapitreId: this.parentId ,
             };
             console.log("Updating sous-chapter with data:", sousChapterData);
             await SousChapterService.updateSousChapter(
@@ -787,7 +787,7 @@ export default {
               title: this.currentChapter.title,
               description: this.currentChapter.description,
               image: this.currentChapter.image,
-              thematic: { id: this.selectedThematicId },
+              thematicId:  this.selectedThematicId,
             };
 
             await ChapterService.updateChapter(
@@ -803,7 +803,7 @@ export default {
               title: this.currentChapter.title,
               description: this.currentChapter.description,
               image: this.currentChapter.image,
-              lien_video: this.currentChapter.lien_video,
+              lienVideo: this.currentChapter.lien_video,
               pdf: this.currentChapter.pdf,
               chapitreId: this.parentId,
             };
