@@ -9,8 +9,13 @@
     <v-container fluid>
       <h2 class="section-title">الفصول الخاصة بموضوع: {{ chapitreTitle }}</h2>
 
+      <div v-if="sousChapitres.length === 0" class="no-content">
+        <v-alert type="info" border="start" colored-border color="blue-lighten-4" elevation="2">
+          لم يتم العثور على فصول فرعية لهذا الفصل حاليا. يرجى المحاولة لاحقا أو العودة لاحقا 🌱
+        </v-alert>
+      </div>
       <!-- Slider avec navigation -->
-      <div class="slider-container" :class="{ 'centered-cards': sousChapitres.length < 5 }">
+      <div v-else class="slider-container" :class="{ 'centered-cards': sousChapitres.length < 5 }">
         <button v-if="sousChapitres.length >= 5" class="nav-btn prev-btn" @click="slidePrev"
           :disabled="currentSlide <= 0">
           <v-icon>mdi-chevron-right</v-icon>
@@ -396,6 +401,12 @@ export default {
 </script>
 
 <style scoped>
+.no-content {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
 .chapters-container {
   background-color: #d2e7f7;
   min-height: 100vh;

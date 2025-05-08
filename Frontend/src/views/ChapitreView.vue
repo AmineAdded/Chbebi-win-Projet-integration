@@ -1,35 +1,45 @@
 <template>
   <div class="chapitre-container">
     <Navbar @openUpdateAccount="showUpdateAccount = true" />
-    
+
     <v-dialog v-model="showUpdateAccount" persistent width="auto">
       <UpdateAccount @closeUpdateAccount="showUpdateAccount = false" />
     </v-dialog>
 
-    <v-container fluid class="main-content"> 
+    <v-container fluid class="main-content">
       <h2 class="section-title">{{ thematicTitle }}</h2>
-      
+
       <!-- Mode slider pour plus de 4 chapitres -->
       <div v-if="chapitres.length > 4" class="slider-container">
-        <v-btn 
-          icon="mdi-chevron-right" 
-          variant="text" 
-          color="primary" 
-          class="nav-btn prev-btn" 
+        <v-btn
+          icon="mdi-chevron-right"
+          variant="text"
+          color="primary"
+          class="nav-btn prev-btn"
           @click="slideLeft"
           :disabled="currentSlide === 0"
         />
-        
+
         <div class="slider-wrapper" ref="sliderWrapper">
-          <div 
-            class="slider-track" 
-            :style="{ transform: `translateX(${-currentSlide * slideOffset}px)` }"
+          <div
+            class="slider-track"
+            :style="{
+              transform: `translateX(${-currentSlide * slideOffset}px)`,
+            }"
           >
-            <div v-for="(chapitre, index) in chapitres" :key="index" class="card-slide">
+            <div
+              v-for="(chapitre, index) in chapitres"
+              :key="index"
+              class="card-slide"
+            >
               <div class="card card-elevated">
-                <router-link :to="{ name: 'SousChapitre', params: { chapitreId: chapitre.id, chapitreTitle: chapitre.title } }" class="card-link">
+                <div class="card-link" @click="handleCardClick(chapitre)">
                   <div class="card-image-container">
-                    <img :src="require('@/assets/' + chapitre.image)" alt="Chapitre image" class="card-img" />
+                    <img
+                      :src="require('@/assets/' + chapitre.image)"
+                      alt="Chapitre image"
+                      class="card-img"
+                    />
                     <div class="card-overlay">
                       <v-chip
                         :color="getStatusColor(chapitre.pourcentage || 0)"
@@ -44,12 +54,14 @@
                   <div class="card-body">
                     <h3 class="card-title">{{ chapitre.title }}</h3>
                     <p class="card-desc">{{ chapitre.description }}</p>
-                    
+
                     <!-- Barre de progression avec animation -->
                     <div class="progress-container">
                       <div class="progress-header">
                         <div class="stats-label">إحصائيات التقدم</div>
-                        <div class="progress-value">{{ Math.ceil(chapitre.pourcentage || 0) }}%</div>
+                        <div class="progress-value">
+                          {{ Math.ceil(chapitre.pourcentage || 0) }}%
+                        </div>
                       </div>
                       <v-progress-linear
                         :color="getProgressColor(chapitre.pourcentage || 0)"
@@ -66,41 +78,48 @@
                         </div>
                       </div>
                     </div>
-                  
                   </div>
-                </router-link>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        
-        <v-btn 
-          icon="mdi-chevron-left" 
-          variant="text" 
-          color="primary" 
+
+        <v-btn
+          icon="mdi-chevron-left"
+          variant="text"
+          color="primary"
           class="nav-btn next-btn"
           @click="slideRight"
           :disabled="currentSlide >= maxSlide"
         />
-        
+
         <!-- Indicateurs de pagination -->
         <div class="slider-pagination">
-          <div 
-            v-for="n in totalSlides" 
-            :key="n" 
-            class="pagination-dot" 
-            :class="{ active: currentSlide === n-1 }"
-            @click="currentSlide = n-1" 
+          <div
+            v-for="n in totalSlides"
+            :key="n"
+            class="pagination-dot"
+            :class="{ active: currentSlide === n - 1 }"
+            @click="currentSlide = n - 1"
           />
         </div>
       </div>
-      
+
       <!-- Mode normal pour moins de 5 chapitres -->
       <div v-else class="cards-wrapper">
-        <div v-for="(chapitre, index) in chapitres" :key="index" class="card card-elevated">
-          <router-link :to="{ name: 'SousChapitre', params: { chapitreId: chapitre.id, chapitreTitle: chapitre.title } }" class="card-link">
+        <div
+          v-for="(chapitre, index) in chapitres"
+          :key="index"
+          class="card card-elevated"
+        >
+          <div class="card-link" @click="handleCardClick(chapitre)">
             <div class="card-image-container">
-              <img :src="require('@/assets/' + chapitre.image)" alt="Chapitre image" class="card-img" />
+              <img
+                :src="require('@/assets/' + chapitre.image)"
+                alt="Chapitre image"
+                class="card-img"
+              />
               <div class="card-overlay">
                 <v-chip
                   :color="getStatusColor(chapitre.pourcentage || 0)"
@@ -115,12 +134,14 @@
             <div class="card-body">
               <h3 class="card-title">{{ chapitre.title }}</h3>
               <p class="card-desc">{{ chapitre.description }}</p>
-              
+
               <!-- Barre de progression avec animation -->
               <div class="progress-container">
                 <div class="progress-header">
                   <div class="stats-label">إحصائيات التقدم</div>
-                  <div class="progress-value">{{ Math.ceil(chapitre.pourcentage || 0) }}%</div>
+                  <div class="progress-value">
+                    {{ Math.ceil(chapitre.pourcentage || 0) }}%
+                  </div>
                 </div>
                 <v-progress-linear
                   :color="getProgressColor(chapitre.pourcentage || 0)"
@@ -137,15 +158,24 @@
                   </div>
                 </div>
               </div>
-              
             </div>
-          </router-link>
+          </div>
         </div>
       </div>
     </v-container>
-
   </div>
   <Footer />
+  <v-dialog v-model="showLogin" persistent width="auto">
+      <Login @closeLogin="showLogin = false, showSignUp = true" @openSignUp="showLogin = false,showSignUp= true " @openForgotPassword="showLogin = false,showForgotPassword= true "/>
+    </v-dialog>
+
+    <v-dialog v-model="showForgotPassword" persistent width="auto">
+      <ForgotPassword @closeForgotPassword="showForgotPassword = false, showLogin = true" />
+    </v-dialog>
+
+    <v-dialog v-model="showSignUp" persistent width="auto">
+      <SignUp @closeSignUp="showSignUp = false" @openLogin="showLogin = true, showSignUp = false" />
+    </v-dialog>
 </template>
 
 <script>
@@ -154,13 +184,19 @@ import Footer from "../components/Footer.vue";
 import UpdateAccount from "@/components/UpdateAccount.vue";
 import SuperChapitre from "@/Services/chapitreService.js";
 import { useUserStore } from "@/store/User/userStore";
+import Login from "../components/Login.vue";
+import SignUp from "../components/SignUp.vue";
+import ForgotPassword from "@/components/ForgotPassword.vue"
 
 export default {
   name: "ChapitreView",
   components: {
     Navbar,
     Footer,
-    UpdateAccount
+    UpdateAccount,
+    Login,
+    SignUp,
+    ForgotPassword
   },
   data() {
     return {
@@ -175,6 +211,9 @@ export default {
       maxSlide: 0,
       totalSlides: 1,
       autoSlideInterval: null,
+      showSignUp: false,
+      showLogin: false,
+      showForgotPassword : false
     };
   },
   computed: {
@@ -186,6 +225,20 @@ export default {
     },
   },
   methods: {
+    handleCardClick(chapitre) {
+      const store = useUserStore();
+      const isAuthenticated = store.user && store.user.id;
+
+      if (isAuthenticated) {
+        this.$router.push({ 
+          name: 'SousChapitre', 
+          params: { chapitreId: chapitre.id, chapitreTitle: chapitre.title } 
+        });
+      } else {
+        this.showLogin = true;
+      }
+    },
+
     // Gestion du slider
     calculateSliderParams() {
       if (!this.$refs.sliderWrapper) return;
@@ -212,25 +265,6 @@ export default {
         this.currentSlide++;
       }
     },
-    
-    // startAutoSlide() {
-    //   // Slide automatique toutes les 5 secondes si plus de 4 chapitres
-    //   if (this.chapitres.length > 4) {
-    //     this.autoSlideInterval = setInterval(() => {
-    //       if (this.currentSlide < this.maxSlide) {
-    //         this.currentSlide++;
-    //       } else {
-    //         this.currentSlide = 0;
-    //       }
-    //     }, 5000);
-    //   }
-    // },
-    
-    // stopAutoSlide() {
-    //   if (this.autoSlideInterval) {
-    //     clearInterval(this.autoSlideInterval);
-    //   }
-    // },
     
     handleResize() {
       this.calculateSliderParams();
@@ -355,13 +389,17 @@ export default {
 }
 
 .chapitre-container::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 200px;
-  background: linear-gradient(180deg, rgba(25, 118, 210, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(25, 118, 210, 0.05) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
   z-index: 1;
 }
 
@@ -382,7 +420,7 @@ export default {
 }
 
 .section-title::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -15px;
   left: 50%;
@@ -471,7 +509,7 @@ export default {
 }
 
 .card-title::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   right: 0;
@@ -626,15 +664,15 @@ export default {
   .cards-wrapper {
     gap: 30px; /* Réduire légèrement l'espacement pour les écrans moyens */
   }
-  
+
   .card {
     width: 280px;
   }
-  
+
   .slider-container {
     padding: 20px 50px;
   }
-  
+
   .card-slide {
     min-width: 280px;
     margin: 0 10px; /* Réduire les marges pour les écrans moyens */
@@ -646,24 +684,24 @@ export default {
     font-size: 2rem;
     margin: 30px 0;
   }
-  
+
   .slider-container {
     padding: 10px 40px;
   }
-  
+
   .nav-btn {
     width: 40px;
     height: 40px;
   }
-  
+
   .cards-wrapper {
     gap: 20px; /* Réduire davantage l'espacement pour les petits écrans */
   }
-  
+
   .card-slide {
     margin: 0 8px; /* Réduire encore les marges pour les petits écrans */
   }
-  
+
   .card-desc {
     height: 60px;
     -webkit-line-clamp: 2;
@@ -674,12 +712,12 @@ export default {
   .card {
     width: 260px;
   }
-  
+
   .card-slide {
     min-width: 260px;
     margin: 0 5px; /* Marges minimales pour très petits écrans */
   }
-  
+
   .cards-wrapper {
     flex-direction: column;
     align-items: center;
