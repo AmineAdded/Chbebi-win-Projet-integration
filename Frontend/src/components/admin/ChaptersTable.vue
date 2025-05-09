@@ -103,7 +103,6 @@
               >
                 {{ item.title }}
                 <span v-if="item.pourcentage > 0" class="progress-indicator">
-                  
                 </span>
               </span>
             </td>
@@ -123,10 +122,7 @@
                 >
                   <i class="icon">➕</i>
                 </button>
-                <button
-                  class="edit-btn"
-                  @click="editChapter(item)"
-                >
+                <button class="edit-btn" @click="editChapter(item)">
                   <i class="icon">✏️</i>
                 </button>
                 <button class="delete-btn" @click="deleteChapter(item.id)">
@@ -182,7 +178,6 @@
               class="form-control"
             />
           </div>
-
         </div>
         <div class="modal-footer">
           <button class="cancel-btn" @click="closeThematicModal">إلغاء</button>
@@ -220,9 +215,9 @@
           <div class="form-group">
             <label for="chapterImage">الصورة</label>
             <input
-              type="text"
+              type="file"
               id="chapterImage"
-              v-model="currentChapter.image"
+              @change="handleFileUpload"
               class="form-control"
               placeholder="رابط الصورة"
             />
@@ -241,9 +236,9 @@
           <div v-if="parentId" class="form-group">
             <label for="pdfLink">ملف PDF</label>
             <input
-              type="text"
+              type="file"
               id="pdfLink"
-              v-model="currentChapter.pdf"
+              @change="handlePdfUpload"
               class="form-control"
             />
           </div>
@@ -312,6 +307,7 @@
 import ChapterService from "@/Services/chapitreService";
 import SousChapterService from "@/Services/sousChapitreService";
 import ThematicService from "@/Services/thematicService";
+import axios from "axios";
 
 export default {
   data() {
@@ -443,6 +439,42 @@ export default {
     }
   },
   methods: {
+    async handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const res = await axios.post("http://localhost:9090/api/upload", formData);
+        this.currentChapter.image = res.data; // exemple: "/files/images/uuid_nom.jpg"
+      } catch (err) {
+        console.error("Erreur upload image", err);
+      }
+    },
+
+    async handlePdfUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const response = await axios.post("http://localhost:9090/api/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        // Exemple : /files/xyz.pdf
+        this.currentChapter.pdf = response.data;
+      } catch (error) {
+        console.error("Erreur upload PDF", error);
+        this.error = "Échec du téléchargement du fichier PDF.";
+      }
+    },
+
     getChapterType(item) {
       return item.level === 0 ? "main" : "sub";
     },

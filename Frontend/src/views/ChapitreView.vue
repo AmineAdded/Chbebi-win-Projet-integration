@@ -36,7 +36,7 @@
                 <div class="card-link" @click="handleCardClick(chapitre)">
                   <div class="card-image-container">
                     <img
-                      :src="require('@/assets/' + chapitre.image)"
+                      :src="'http://localhost:9090' + chapitre.image"
                       alt="Chapitre image"
                       class="card-img"
                     />
@@ -116,7 +116,7 @@
           <div class="card-link" @click="handleCardClick(chapitre)">
             <div class="card-image-container">
               <img
-                :src="require('@/assets/' + chapitre.image)"
+                :src="'http://localhost:9090' + chapitre.image"
                 alt="Chapitre image"
                 class="card-img"
               />

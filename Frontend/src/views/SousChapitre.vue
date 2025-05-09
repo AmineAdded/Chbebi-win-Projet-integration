@@ -26,7 +26,7 @@
             <div v-for="(sousChapitre, index) in sousChapitres" :key="index" class="card"
               @click="openModal(sousChapitre)">
               <div class="card-inner">
-                <img :src="require('@/assets/' + sousChapitre.image)" alt="chapitre" class="card-img" />
+                <img :src="'http://localhost:9090' + sousChapitre.image" alt="chapitre" class="card-img" />
                 <div class="card-body">
                   <h3 class="card-title">{{ sousChapitre.title }}</h3>
                   <p class="card-desc">{{ sousChapitre.description }}</p>
@@ -73,7 +73,7 @@
 
     <div style="display: none; width: 0; height: 0; overflow: hidden;">
       <div v-for="(sousChapitre, index) in sousChapitres" :key="'loader-' + index">
-        <PdfEmbed v-if="sousChapitre.pdf" :source="`/PDFs/${sousChapitre.pdf}`"
+        <PdfEmbed v-if="sousChapitre.pdf" :source="'http://localhost:9090' + sousChapitre.pdf"
           @loaded="pdf => onPdfPreloaded(pdf, sousChapitre.id)" />
       </div>
     </div>
@@ -85,7 +85,7 @@
           allowfullscreen></iframe>
         <p>{{ selectedChapter.description }}</p>
         <div class="action-buttons">
-          <a :href="`/PDFs/${selectedChapter.pdf}`" target="_blank" download class="styled-download-link">
+          <a :href="'http://localhost:9090' + selectedChapter.pdf" target="_blank" download class="styled-download-link">
             <v-icon left>mdi-download</v-icon> تحميل الملف PDF
           </a>
           <button class="view-btn" @click="showPdfViewer = true">
@@ -106,7 +106,7 @@
             الصفحة التالية <v-icon small right>mdi-chevron-right</v-icon>
           </button>
         </div>
-        <PdfEmbed ref="pdfViewer" :source="`/PDFs/${selectedChapter.pdf}`" @loaded="onPdfLoaded" :page="currentPage"
+        <PdfEmbed ref="pdfViewer" :source="'http://localhost:9090' + selectedChapter.pdf" @loaded="onPdfLoaded" :page="currentPage"
           style="width: 100%; height: 80vh" />
       </div>
     </v-dialog>
