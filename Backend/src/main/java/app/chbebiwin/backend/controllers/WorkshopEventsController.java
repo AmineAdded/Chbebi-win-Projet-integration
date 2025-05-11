@@ -48,14 +48,6 @@ public class WorkshopEventsController {
         return workshopEventsService.deleteAllWorkshopEvents();
     }
 
-    @PostMapping("/upload-image")
-    public String uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
-        String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        Path path = Paths.get("uploads/" + filename);
-        Files.write(path, file.getBytes());
-        return filename; // ou un lien complet genre "http://localhost:9090/uploads/" + filename
-    }
-
     @DeleteMapping("/deleteExpired")
     public String deleteExpired() {
         return workshopEventsService.deletePastWorkshopEvents();

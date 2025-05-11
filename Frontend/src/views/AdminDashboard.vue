@@ -42,6 +42,11 @@
       </div>
       <br /><br />
 
+      <div ref="workshopSection">
+        <WorkshopTable />
+      </div>
+      <br /><br />
+
       <div ref="analyticsSection">
         <AnalyticsChart />
       </div>
@@ -61,6 +66,7 @@ import TestsTable from "@/components/admin/TestsTable.vue";
 import QuotesTable from "@/components/admin/QuotesTable.vue";
 import AnalyticsChart from "@/components/admin/AnalyticsChart.vue";
 import UpdateAccount from "@/components/UpdateAccount.vue";
+import WorkshopTable from "@/components/admin/WorkshopTable.vue";
 
 export default {
   components: {
@@ -71,6 +77,7 @@ export default {
     QuotesTable,
     AnalyticsChart,
     UpdateAccount,
+    WorkshopTable
   },
   name: "AdminView",
   data() {
@@ -92,6 +99,7 @@ export default {
         tests: "testsSection",
         quotes: "quotesSection",
         analytics: "analyticsSection",
+        workshops: "workshopSection",
       };
 
       const refName = sectionRefMap[section];

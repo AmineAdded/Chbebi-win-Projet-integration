@@ -8,7 +8,7 @@
           <div class="event-content-wrapper">
             <div class="event-image mt-2">
               <img
-                :src="require('@/assets/' + event.image)"
+                :src="'http://localhost:9090' + event.image"
                 alt="Event image"
                 class="rounded-lg"
               />
@@ -42,8 +42,7 @@
 </template>
 
 <script>
-import { getAllEvents } from "@/Services/eventService";
-import { deleteExpiredEvents } from "@/Services/eventService";
+import eventService from "@/Services/eventService";
 
 export default {
   name: "EventsWorkshops",
@@ -59,10 +58,10 @@ export default {
     async loadEvents() {
       try {
         // Supprimer les événements expirés d'abord
-        await deleteExpiredEvents();
+        await eventService.deleteExpiredEvents();
 
         // Puis charger les événements restants
-        const res = await getAllEvents();
+        const res = await eventService.getAllEvents();
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);

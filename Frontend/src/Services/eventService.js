@@ -1,10 +1,31 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = 'http://localhost:9090/api/WorkshopEvents';
+export default {
+  getAllEvents() {
+    return axios.get("WorkshopEvents/getAll");
+  },
 
-export const getAllEvents = () => {
-    return axios.get(`${API_URL}/getAll`);
+  getEventById(id) {
+    return axios.get(`WorkshopEvents/get/${id}`);
+  },
+
+  createEvent(eventData) {
+    return axios.post("WorkshopEvents/create", eventData);
+  },
+
+  updateEvent(id, eventData) {
+    return axios.put(`WorkshopEvents/update/${id}`, eventData);
+  },
+
+  deleteEvent(id) {
+    return axios.delete(`WorkshopEvents/delete/${id}`);
+  },
+
+  deleteAllEvents() {
+    return axios.delete("WorkshopEvents/deleteAll");
+  },
+
+  deleteExpiredEvents() {
+    return axios.delete("WorkshopEvents/deleteExpired");
+  },
 };
-export const deleteExpiredEvents = () => {
-    return axios.delete(`${API_URL}/deleteExpired`);
-};  

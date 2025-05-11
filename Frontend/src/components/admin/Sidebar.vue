@@ -52,6 +52,17 @@
           </a>
         </li>
 
+        <li class="menu-item" :class="{ active: activeMenu === 'workshops' }">
+          <a
+            href="#"
+            class="menu-link"
+            @click.prevent="setActiveMenu('workshops')"
+          >
+            <span class="menu-icon">📍</span>
+            <span class="menu-text">الفعاليات وورش العمل القراب</span>
+          </a>
+        </li>
+
         <li class="menu-item" :class="{ active: activeMenu === 'analytics' }">
           <a
             href="#"

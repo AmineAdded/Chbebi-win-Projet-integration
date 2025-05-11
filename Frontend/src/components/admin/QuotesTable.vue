@@ -92,7 +92,7 @@
     </div>
 
     <!-- Modal for delete confirmation -->
-    <div class="modal" v-if="showDeleteModal">
+    <div class="modal1" v-if="showDeleteModal">
       <div class="modal-content">
         <h3>تأكيد الحذف</h3>
         <p>هل أنت متأكد من رغبتك في حذف هذا الاقتباس؟</p>
