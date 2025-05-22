@@ -221,12 +221,12 @@
       </div>
     </div>
 
-    <!-- Personnalité Test Alert Modal -->
+    <!-- Personnalite Test Alert Modal -->
     <div class="modal" v-if="showPersonnaliteAlert">
       <div class="modal-content alert-modal">
         <h3>تنبيه: اختبار الشخصية</h3>
         <p>يمكن أن يكون هناك اختبار شخصية واحد فقط متاح للاستخدام في النظام.</p>
-        <p>إذا قمت بتفعيل هذا الاختبار، سيتم إلغاء تفعيل الاختبار الآخر من نوع "personnalité" تلقائيًا.</p>
+        <p>إذا قمت بتفعيل هذا الاختبار، سيتم إلغاء تفعيل الاختبار الآخر من نوع "personnalite" تلقائيًا.</p>
         <p>هل تريد المتابعة؟</p>
         <div class="modal-actions">
           <button class="cancel-button" @click="cancelPersonnaliteAlert">إلغاء</button>
@@ -483,7 +483,7 @@ export default {
 
     async handleUtilisableChange() {
       if (
-        this.currentTest.type_test.toLowerCase() === "personnalité" &&
+        this.currentTest.type_test.toLowerCase() === "personnalite" &&
         this.currentTest.utilisable
       ) {
         this.personnaliteTestBackup = { ...this.currentTest };
@@ -505,8 +505,8 @@ export default {
       try {
         this.loading = true;
 
-        const personnaliteTests = await TestService.getTestsByType("personnalité");
-        console.log("Found personnalité tests:", personnaliteTests);
+        const personnaliteTests = await TestService.getTestsByType("personnalite");
+        console.log("Found personnalite tests:", personnaliteTests);
 
         for (const test of personnaliteTests) {
           if (this.editingTest && test.id === this.editingTest.id) {
@@ -536,7 +536,7 @@ export default {
         this.personnaliteTestBackup = null;
         this.showSuccessMessage("تم تحديث حالة الاختبارات بنجاح");
       } catch (error) {
-        console.error("Error updating personnalité tests:", error);
+        console.error("Error updating personnalite tests:", error);
         this.error = "فشل في تحديث حالة الاختبارات";
       } finally {
         this.loading = false;
@@ -634,13 +634,13 @@ export default {
 
         let savedTest;
 
-        // Check if this is a personnalité test and it's utilisable
+        // Check if this is a personnalite test and it's utilisable
         if (
-          testData.typeTest.toLowerCase() === "personnalité" &&
+          testData.typeTest.toLowerCase() === "personnalite" &&
           testData.utilisable === 1
         ) {
-          // Check if there's already an active personnalité test before proceeding
-          const personnaliteTests = await TestService.getTestsByType("personnalité");
+          // Check if there's already an active personnalite test before proceeding
+          const personnaliteTests = await TestService.getTestsByType("personnalite");
           const hasActiveTest = personnaliteTests.some(test =>
             (test.utilisable === 1 || test.utilisable === true) &&
             (!this.editingTest || test.id !== this.currentTest.id)
@@ -694,7 +694,7 @@ export default {
           this.currentPage = this.totalPages;
         }
 
-        if (testData.typeTest.toLowerCase() === "personnalité") {
+        if (testData.typeTest.toLowerCase() === "personnalite") {
           await this.fetchTests();
         }
 
@@ -710,7 +710,7 @@ export default {
 
     async handlePersonnaliteLogic() {
       try {
-        const personnaliteTests = await TestService.getTestsByType("personnalité");
+        const personnaliteTests = await TestService.getTestsByType("personnalite");
 
         for (const test of personnaliteTests) {
           if (this.editingTest && test.id === this.editingTest.id) {
