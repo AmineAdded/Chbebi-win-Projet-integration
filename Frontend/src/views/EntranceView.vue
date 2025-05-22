@@ -68,23 +68,24 @@ export default {
     },
     methods: {
         navigateTo(route) {
-            const routes = {
-                privatehome: '/privatehome',
-                learn: '/islamic/:topicId',
-                religion: '/islam',
-                personality: '/DetailsPersonnality',
-            };
+        const routes = {
+            privatehome: '/privatehome',
+            learn: '/Chapitre/7,الثقافة التونسية', // Navigate to Chapitre with thematic ID 7
+            religion: '/Chapitre/8,الدين الإسلامي', // Navigate to Chapitre with thematic ID 8
+            personality: '/DetailsPersonnality',
+        };
 
-            const buttons = document.querySelectorAll('.custom-button');
-            buttons.forEach(button => {
-                button.classList.add('fade-out');
-            });
+        const buttons = document.querySelectorAll('.custom-button');
+        buttons.forEach(button => {
+            button.classList.add('fade-out');
+        });
 
-            setTimeout(() => {
-                this.$router.push(routes[route]);
-            }, 300);
-        }
+        setTimeout(() => {
+            this.$router.push(routes[route]);
+        }, 300);
+    
     }
+}
 };
 </script>
 
