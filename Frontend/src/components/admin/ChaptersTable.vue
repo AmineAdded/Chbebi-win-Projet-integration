@@ -1,4 +1,3 @@
-
 <template>
   <div class="table-card">
     <div class="card-header">
@@ -14,32 +13,18 @@
           <i class="icon">🔍</i>
         </button>
         <div class="thematic-selector">
-          <select
-            v-if="thematics.length > 0"
-            v-model="selectedThematicId"
-            class="thematic-select"
-            @change="loadChaptersByThematic"
-          >
+          <select v-if="thematics.length > 0" v-model="selectedThematicId" class="thematic-select"
+            @change="loadChaptersByThematic">
             <option value="" disabled>-- اختر مجال --</option>
-            <option
-              v-for="thematic in thematics"
-              :key="thematic.id"
-              :value="thematic.id"
-            >
+            <option v-for="thematic in thematics" :key="thematic.id" :value="thematic.id">
               {{ thematic.nom }}
             </option>
           </select>
           <div v-if="selectedThematicId" class="thematic-actions">
-            <button
-              class="edit-thematic-btn"
-              @click="editThematic(selectedThematicId)"
-            >
+            <button class="edit-thematic-btn" @click="editThematic(selectedThematicId)">
               <i class="icon">✏️</i>
             </button>
-            <button
-              class="delete-thematic-btn"
-              @click="deleteThematic(selectedThematicId)"
-            >
+            <button class="delete-thematic-btn" @click="deleteThematic(selectedThematicId)">
               <i class="icon">🗑</i>
             </button>
           </div>
@@ -50,14 +35,8 @@
     <!-- Search bar -->
     <div v-if="showSearch" class="search-container">
       <div class="search-input-wrapper">
-        <input
-          type="text"
-          v-model="searchTerm"
-          class="search-input"
-          placeholder="ابحث عن فصل..."
-          @input="performSearch"
-          dir="rtl"
-        />
+        <input type="text" v-model="searchTerm" class="search-input" placeholder="ابحث عن فصل..." @input="performSearch"
+          dir="rtl" />
         <button v-if="searchTerm" class="clear-search" @click="clearSearch">
           ✕
         </button>
@@ -84,23 +63,15 @@
         </thead>
         <tbody>
           <!-- Render flattened hierarchy -->
-          <tr
-            v-for="item in displayedChapters"
-            :key="item.id"
-            class="table-row"
-            :class="{
-              'child-row': item.level === 1,
-              'grandchild-row': item.level === 2,
-              'third-level-row': item.level >= 3,
-              'search-highlight': isSearchMatch(item),
-            }"
-          >
+          <tr v-for="item in displayedChapters" :key="item.id" class="table-row" :class="{
+            'child-row': item.level === 1,
+            'grandchild-row': item.level === 2,
+            'third-level-row': item.level >= 3,
+            'search-highlight': isSearchMatch(item),
+          }">
             <td class="id-column">{{ item.numbering }}</td>
             <td class="title-column">
-              <span
-                class="title-content"
-                :style="{ paddingRight: item.level * 20 + 'px' }"
-              >
+              <span class="title-content" :style="{ paddingRight: item.level * 20 + 'px' }">
                 {{ item.title }}
                 <span v-if="item.pourcentage > 0" class="progress-indicator">
                 </span>
@@ -108,24 +79,17 @@
             </td>
             <td class="actions-column">
               <div class="action-buttons">
-                <button
-                  v-if="hasChildren(item)"
-                  class="view-btn"
-                  @click="toggleExpand(item.id)"
-                >
+                <button v-if="hasChildren(item)" class="view-btn" @click="toggleExpand(item.id)">
                   <i class="icon">{{ isExpanded(item.id) ? "👁️" : "👁️" }}</i>
                 </button>
-                <button
-                  class="add-btn"
-                  v-if="hasChildren(item) || getChapterType(item) === 'main'"
-                  @click="addNewChapter(item.id)"
-                >
+                <button class="add-btn" v-if="hasChildren(item) || getChapterType(item) === 'main'"
+                  @click="addNewChapter(item.id)">
                   <i class="icon">➕</i>
                 </button>
                 <button class="edit-btn" @click="editChapter(item)">
                   <i class="icon">✏️</i>
                 </button>
-                <button class="delete-btn" @click="deleteChapter(item.id)">
+                <button class="delete-btn" @click="deleteChapter(item)">
                   <i class="icon">🗑</i>
                 </button>
               </div>
@@ -140,21 +104,11 @@
 
     <div class="table-footer">
       <div class="pagination">
-        <button
-          class="page-btn"
-          :disabled="currentPage <= 1"
-          @click="changePage(-1)"
-        >
+        <button class="page-btn" :disabled="currentPage <= 1" @click="changePage(-1)">
           <i class="icon">⬅️</i>
         </button>
-        <span class="page-info"
-          >صفحة {{ currentPage }} من {{ totalPages }}</span
-        >
-        <button
-          class="page-btn"
-          :disabled="currentPage >= totalPages"
-          @click="changePage(1)"
-        >
+        <span class="page-info">صفحة {{ currentPage }} من {{ totalPages }}</span>
+        <button class="page-btn" :disabled="currentPage >= totalPages" @click="changePage(1)">
           <i class="icon">➡️</i>
         </button>
       </div>
@@ -171,12 +125,7 @@
         <div class="modal-body">
           <div class="form-group">
             <label for="thematicName">اسم المجال</label>
-            <input
-              type="text"
-              id="thematicName"
-              v-model="newThematic.nom"
-              class="form-control"
-            />
+            <input type="text" id="thematicName" v-model="newThematic.nom" class="form-control" />
           </div>
         </div>
         <div class="modal-footer">
@@ -197,66 +146,34 @@
           <!-- Standard fields for both chapters and sub-chapters -->
           <div class="form-group">
             <label for="chapterTitle">عنوان الفصل</label>
-            <input
-              type="text"
-              id="chapterTitle"
-              v-model="currentChapter.title"
-              class="form-control"
-            />
+            <input type="text" id="chapterTitle" v-model="currentChapter.title" class="form-control" />
           </div>
           <div class="form-group">
             <label for="chapterDescription">وصف الفصل</label>
-            <textarea
-              id="chapterDescription"
-              v-model="currentChapter.description"
-              class="form-control"
-            ></textarea>
+            <textarea id="chapterDescription" v-model="currentChapter.description" class="form-control"></textarea>
           </div>
           <div class="form-group">
             <label for="chapterImage">الصورة</label>
-            <input
-              type="file"
-              id="chapterImage"
-              @change="handleFileUpload"
-              class="form-control"
-              placeholder="رابط الصورة"
-            />
+            <input type="file" id="chapterImage" @change="handleFileUpload" class="form-control"
+              placeholder="رابط الصورة" />
           </div>
 
           <!-- Additional fields for sous-chapters only -->
           <div v-if="parentId" class="form-group">
             <label for="videoLink">رابط الفيديو</label>
-            <input
-              type="text"
-              id="videoLink"
-              v-model="currentChapter.lien_video"
-              class="form-control"
-            />
+            <input type="text" id="videoLink" v-model="currentChapter.lien_video" class="form-control" />
           </div>
           <div v-if="parentId" class="form-group">
             <label for="pdfLink">ملف PDF</label>
-            <input
-              type="file"
-              id="pdfLink"
-              @change="handlePdfUpload"
-              class="form-control"
-            />
+            <input type="file" id="pdfLink" @change="handlePdfUpload" class="form-control" />
           </div>
 
           <!-- Thematic selection for main chapters (when adding new) -->
           <div v-if="!parentId && !isEditing" class="form-group">
             <label for="thematicSelect">المجال</label>
-            <select
-              id="thematicSelect"
-              v-model="currentChapter.thematicId"
-              class="form-control"
-            >
+            <select id="thematicSelect" v-model="currentChapter.thematicId" class="form-control">
               <option value="" disabled>-- اختر مجال --</option>
-              <option
-                v-for="thematic in thematics"
-                :key="thematic.id"
-                :value="thematic.id"
-              >
+              <option v-for="thematic in thematics" :key="thematic.id" :value="thematic.id">
                 {{ thematic.nom }}
               </option>
             </select>
@@ -353,36 +270,34 @@ export default {
     flattenedChapters() {
       const result = [];
 
-      const processChapter = (chapter, parentIndex = "", level = 0) => {
-        // Don't include children if parent is not expanded, unless it's top level
-        if (level === 0 || this.isParentExpanded(chapter.id)) {
-          const numbering = parentIndex
-            ? `${parentIndex}`
-            : `${result.filter((item) => item.level === 0).length + 1}`;
+      const processChapter = (chapter, parentIndex = "", level = 0, parentId = null) => {
+        const numbering = parentIndex
+          ? `${parentIndex}`
+          : `${result.filter((item) => item.level === 0).length + 1}`;
 
-          result.push({
-            id: chapter.id,
-            title: chapter.title,
-            description: chapter.description,
-            image: chapter.image,
-            numbering: numbering,
-            level: level,
-            pourcentage: chapter.pourcentage || 0,
-            hasChildren:
-              chapter.sousChapitres && chapter.sousChapitres.length > 0,
+        // Always add the current chapter to results
+        result.push({
+          id: chapter.id,
+          title: chapter.title,
+          description: chapter.description,
+          image: chapter.image,
+          numbering: numbering,
+          level: level,
+          parentId: parentId, // Track the parent ID
+          pourcentage: chapter.pourcentage || 0,
+          hasChildren: chapter.sousChapitres && chapter.sousChapitres.length > 0,
+        });
+
+        // Process children only if this chapter is expanded
+        if (
+          this.isExpanded(chapter.id) &&
+          chapter.sousChapitres &&
+          chapter.sousChapitres.length > 0
+        ) {
+          chapter.sousChapitres.forEach((child, childIndex) => {
+            const childNumbering = `${numbering}.${childIndex + 1}`;
+            processChapter(child, childNumbering, level + 1, chapter.id);
           });
-
-          // Process children if parent is expanded
-          if (
-            this.isExpanded(chapter.id) &&
-            chapter.sousChapitres &&
-            chapter.sousChapitres.length > 0
-          ) {
-            chapter.sousChapitres.forEach((child, childIndex) => {
-              const childNumbering = `${numbering}.${childIndex + 1}`;
-              processChapter(child, childNumbering, level + 1);
-            });
-          }
         }
       };
 
@@ -628,41 +543,41 @@ export default {
       }
     },
 
-    isParentExpanded(childId) {
-      // For sub-chapters, check if the parent chapter is expanded
-      const findParentChapterId = (childId) => {
-        for (const chapter of this.chapters) {
-          if (chapter.sousChapitres) {
-            for (const sousChapter of chapter.sousChapitres) {
-              if (sousChapter.id === childId) {
-                return chapter.id;
-              }
+    // isParentExpanded(childId) {
+    //   // For sub-chapters, check if the parent chapter is expanded
+    //   const findParentChapterId = (childId) => {
+    //     for (const chapter of this.chapters) {
+    //       if (chapter.sousChapitres) {
+    //         for (const sousChapter of chapter.sousChapitres) {
+    //           if (sousChapter.id === childId) {
+    //             return chapter.id;
+    //           }
 
-              // Check deeper levels if necessary - adjust as needed for your structure
-              if (sousChapter.sousChapitres) {
-                for (const subSousChapter of sousChapter.sousChapitres) {
-                  if (subSousChapter.id === childId) {
-                    return sousChapter.id;
-                  }
-                }
-              }
-            }
-          }
-        }
-        return null;
-      };
+    //           // Check deeper levels if necessary - adjust as needed for your structure
+    //           if (sousChapter.sousChapitres) {
+    //             for (const subSousChapter of sousChapter.sousChapitres) {
+    //               if (subSousChapter.id === childId) {
+    //                 return sousChapter.id;
+    //               }
+    //             }
+    //           }
+    //         }
+    //       }
+    //     }
+    //     return null;
+    //   };
 
-      const parentId = findParentChapterId(childId);
-      if (!parentId) return true;
+    //   const parentId = findParentChapterId(childId);
+    //   if (!parentId) return true;
 
-      // Also check if parent's parent is expanded
-      const grandParentId = findParentChapterId(parentId);
+    //   // Also check if parent's parent is expanded
+    //   const grandParentId = findParentChapterId(parentId);
 
-      return (
-        this.expandedItems.has(parentId) &&
-        (!grandParentId || this.expandedItems.has(grandParentId))
-      );
-    },
+    //   return (
+    //     this.expandedItems.has(parentId) &&
+    //     (!grandParentId || this.expandedItems.has(grandParentId))
+    //   );
+    // },
 
     hasChildren(chapter) {
       return chapter.hasChildren;
@@ -673,11 +588,18 @@ export default {
     },
 
     toggleExpand(id) {
+      console.log(`Toggling expansion for chapter ID: ${id}`);
+
       if (this.expandedItems.has(id)) {
         this.expandedItems.delete(id);
+        console.log(`Collapsed chapter ${id}`);
       } else {
         this.expandedItems.add(id);
+        console.log(`Expanded chapter ${id}`);
       }
+
+      // Force reactivity update
+      this.$forceUpdate();
     },
 
     findChapter(id) {
@@ -806,7 +728,7 @@ export default {
               image: this.currentChapter.image,
               lienVideo: this.currentChapter.lien_video,
               pdf: this.currentChapter.pdf,
-              chapitreId: this.parentId ,
+              chapitreId: this.parentId,
             };
             console.log("Updating sous-chapter with data:", sousChapterData);
             await SousChapterService.updateSousChapter(
@@ -819,7 +741,7 @@ export default {
               title: this.currentChapter.title,
               description: this.currentChapter.description,
               image: this.currentChapter.image,
-              thematicId:  this.selectedThematicId,
+              thematicId: this.selectedThematicId,
             };
 
             await ChapterService.updateChapter(
@@ -909,13 +831,12 @@ export default {
         return;
       }
 
-      // Search in all chapters and sous-chapters
       const searchTermLower = this.searchTerm.toLowerCase();
 
-      // Generate complete flattened hierarchy for searching
+      // Generate complete flattened hierarchy for searching (including non-expanded items)
       const allItems = [];
 
-      const flattenForSearch = (chapters, parentIndex = "", level = 0) => {
+      const flattenForSearch = (chapters, parentIndex = "", level = 0, parentId = null) => {
         if (!chapters || !chapters.length) return;
 
         chapters.forEach((chapter, index) => {
@@ -929,13 +850,14 @@ export default {
             description: chapter.description || "",
             numbering: numbering,
             level: level,
+            parentId: parentId,
             pourcentage: chapter.pourcentage || 0,
-            hasChildren:
-              chapter.sousChapitres && chapter.sousChapitres.length > 0,
+            hasChildren: chapter.sousChapitres && chapter.sousChapitres.length > 0,
           });
 
+          // Always include children in search, regardless of expansion state
           if (chapter.sousChapitres && chapter.sousChapitres.length > 0) {
-            flattenForSearch(chapter.sousChapitres, numbering, level + 1);
+            flattenForSearch(chapter.sousChapitres, numbering, level + 1, chapter.id);
           }
         });
       };
@@ -952,43 +874,59 @@ export default {
       // Reset pagination when search changes
       this.currentPage = 1;
 
-      // Expand parents of all search results to ensure visibility
+      // Expand all parents of search results to ensure visibility
       this.searchResults.forEach((item) => {
-        if (item.level > 0) {
-          // Find all parent IDs for this item
-          let current = item;
-          while (current.level > 0) {
-            const parent = this.findParentByChildId(current.id);
-            if (parent) {
-              this.expandedItems.add(parent.id);
-              current = parent;
-            } else {
-              break;
-            }
+        this.expandParentsOfItem(item);
+      });
+    },
+    expandParentsOfItem(item) {
+      if (!item.parentId) return;
+
+      // Expand the direct parent
+      this.expandedItems.add(item.parentId);
+
+      // Find the parent item and recursively expand its parents
+      const parentItem = this.findItemById(item.parentId);
+      if (parentItem) {
+        this.expandParentsOfItem(parentItem);
+      }
+    },
+    findItemById(id) {
+      const findInChapters = (chapters, parentId = null) => {
+        for (const chapter of chapters) {
+          if (chapter.id === id) {
+            return { ...chapter, parentId };
+          }
+
+          if (chapter.sousChapitres && chapter.sousChapitres.length > 0) {
+            const found = findInChapters(chapter.sousChapitres, chapter.id);
+            if (found) return found;
           }
         }
-      });
+        return null;
+      };
+
+      return findInChapters(this.chapters);
     },
 
     findParentByChildId(childId) {
-      // Find parent for a given child ID
-      for (const chapter of this.chapters) {
-        if (chapter.sousChapitres) {
-          const found = chapter.sousChapitres.find((sc) => sc.id === childId);
-          if (found) return chapter;
-
-          // Look deeper if needed
-          for (const sousChapter of chapter.sousChapitres) {
-            if (sousChapter.sousChapitres) {
-              const subFound = sousChapter.sousChapitres.find(
-                (ssc) => ssc.id === childId
-              );
-              if (subFound) return sousChapter;
+      const findParent = (chapters) => {
+        for (const chapter of chapters) {
+          if (chapter.sousChapitres && chapter.sousChapitres.length > 0) {
+            // Check if childId is a direct child
+            if (chapter.sousChapitres.some(child => child.id === childId)) {
+              return chapter;
             }
+
+            // Recursively check in sub-chapters
+            const found = findParent(chapter.sousChapitres, chapter);
+            if (found) return found;
           }
         }
-      }
-      return null;
+        return null;
+      };
+
+      return findParent(this.chapters);
     },
 
     clearSearch() {
@@ -1009,17 +947,27 @@ export default {
       }
     },
 
-    deleteChapter(chapterId) {
-      this.itemToDelete = chapterId;
+    deleteChapter(to_delete) {
       this.deleteType = "chapter";
+       const chapterToDelete = this.flattenedChapters.find(item => item.id === to_delete.id);
+
+      if (!chapterToDelete) {
+        this.error = "لم يتم العثور على الفصل";
+        return;
+      }
+      // Determine if this is a main chapter or sous-chapter based on its level
+      const isMainChapter = to_delete.level === 0;
+
+      this.itemToDelete = {
+        id: to_delete.id,
+        isMainChapter: isMainChapter,
+        title: to_delete.title || "هذا الفصل"
+      };
+      console.log(this.itemToDelete);
 
       // Trouver le chapitre pour afficher son titre dans le message
-      const chapter =
-        this.findChapter(chapterId) ||
-        this.findSousChapter(chapterId)?.sousChapter;
-      const chapterTitle = chapter?.title || "هذا الفصل";
 
-      this.deleteConfirmationMessage = `هل أنت متأكد من حذف ${chapterTitle}؟ سيتم حذف جميع الفصول المرتبطة به أيضًا.`;
+      this.deleteConfirmationMessage = `هل أنت متأكد من حذف ${this.itemToDelete.title}؟ ${isMainChapter ? "سيتم حذف جميع الفصول الفرعية المرتبطة به أيضًا." : ""}`;
       this.showDeleteConfirmation = true;
     },
 
@@ -1042,13 +990,13 @@ export default {
         this.showDeleteConfirmation = false;
 
         if (this.deleteType === "chapter") {
-          const chapterId = this.itemToDelete;
-          const mainChapter = this.findChapter(chapterId);
+          const { id, isMainChapter } = this.itemToDelete;
 
-          if (mainChapter) {
-            await ChapterService.deleteChapter(chapterId);
+         if (isMainChapter) {
+            // Delete main chapter using ChapterService
+            await ChapterService.deleteChapter(id);
           } else {
-            await SousChapterService.deleteSousChapter(chapterId);
+            await SousChapterService.deleteSousChapter(id);
           }
 
           await this.loadChaptersByThematic();
