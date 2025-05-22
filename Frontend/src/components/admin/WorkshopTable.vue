@@ -30,12 +30,9 @@
           :key="event.id"
           class="event-card"
         >
-          <div class="event-image">
-            <img :src="'http://localhost:9090' + event.image" alt="صورة الحدث" width="100%" height="100%"/>
-          </div>
           <div class="event-content">
             <div class="event-number">{{ startIndex + index + 1 }}</div>
-            <div class="event-title">{{ event.nom }}</div>
+            <div class="event-title"><strong>{{ event.nom }}</strong></div>
             <div class="event-date">📅 {{ formatDate(event.date) }}</div>
             <div class="event-description">{{ event.description }}</div>
             <a :href="event.lien" target="_blank" class="event-link"
@@ -620,7 +617,7 @@ h2 {
   flex-direction: column;
   transition: transform 0.3s, box-shadow 0.3s;
   width: 20rem;
-  height: 20rem;
+  height: 23rem;
 }
 
 .event-card:hover {

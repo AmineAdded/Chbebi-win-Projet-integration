@@ -9,6 +9,12 @@
     <v-container fluid class="main-content">
       <h2 class="section-title">{{ thematicTitle }}</h2>
 
+      <div v-if="chapitres.length === 0" class="no-content">
+        <v-alert type="info" border="start" colored-border color="blue-lighten-4" elevation="2">
+          لم يتم العثور على فصول حاليا. يرجى المحاولة لاحقا أو العودة لاحقا 🌱
+        </v-alert>
+      </div>
+
       <!-- Mode slider pour plus de 4 chapitres -->
       <div v-if="chapitres.length > 4" class="slider-container">
         <v-btn
@@ -380,6 +386,11 @@ export default {
 </script>
 
 <style scoped>
+.no-content {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
 .chapitre-container {
   background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 70%, #90caf9 100%);
   min-height: 100vh;

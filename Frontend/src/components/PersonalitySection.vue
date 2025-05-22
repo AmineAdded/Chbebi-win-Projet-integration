@@ -101,7 +101,7 @@ export default {
 
 /* Add styling for the thinker icon */
 .thinker-icon {
-    width: 60px;
+    width: 170px;
     height: auto;
 }
 
