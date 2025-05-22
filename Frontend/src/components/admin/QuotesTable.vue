@@ -92,16 +92,16 @@
     </div>
 
     <!-- Modal for delete confirmation -->
-    <div class="modal1" v-if="showDeleteModal">
+    <div class="modal" v-if="showDeleteModal">
       <div class="modal-content">
         <h3>تأكيد الحذف</h3>
         <p>هل أنت متأكد من رغبتك في حذف هذا الاقتباس؟</p>
-        <p class="modal-warning">"{{ quoteToDelete?.contenu }}"</p>
+        <p class="modal-warning" v-if="quoteToDelete">"{{ quoteToDelete.contenu }}"</p>
         <div class="modal-actions">
-          <button class="cancel-btn" @click="showDeleteModal = false">
+          <button class="cancel-btn" @click="cancelDelete">
             إلغاء
           </button>
-          <button class="confirm-btn delete" @click="deleteQuote(quoteToDelete)">
+          <button class="confirm-btn delete" @click="deleteQuote">
             تأكيد الحذف
           </button>
         </div>
@@ -257,27 +257,44 @@ export default {
           this.loading = false;
         });
     },
+    
     confirmDelete(quote) {
+      console.log("confirmDelete called with:", quote);
       this.quoteToDelete = quote;
       this.showDeleteModal = true;
     },
+    
+    cancelDelete() {
+      this.showDeleteModal = false;
+      this.quoteToDelete = null;
+    },
+    
     showSuccessMessage(message) {
       this.successMessage = message;
-      // Disparaît après 3 secondes (3000 millisecondes)
       setTimeout(() => {
         this.successMessage = null;
       }, 3000);
     },
     
     deleteQuote() {
+      if (!this.quoteToDelete) {
+        console.error("No quote to delete");
+        return;
+      }
+      
+      console.log("Attempting to delete quote:", this.quoteToDelete);
       this.loading = true;
+      
       quoteService
         .deleteQuote(this.quoteToDelete.id)
         .then(() => {
+          console.log("Quote deleted successfully");
           this.quotes = this.quotes.filter((q) => q.id !== this.quoteToDelete.id);
           this.showDeleteModal = false;
+          this.quoteToDelete = null;
           this.showSuccessMessage("تم حذف الاقتباس بنجاح");
           
+          // Adjust pagination if necessary
           if (this.paginatedQuotes.length === 0 && this.currentPage > 1) {
             this.currentPage = this.currentPage - 1;
           }
@@ -340,6 +357,7 @@ export default {
       };
       this.showAddForm = true;
     },
+    
     cancelEdit() {
       this.showAddForm = false;
       this.editingQuote = null;
